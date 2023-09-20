@@ -1,0 +1,10 @@
+---
+- name: Conf Web and App
+  hosts:
+    - web
+    - app
+  become: true
+  serial: 1
+  max_fail_percentage: 0
+  roles:
+    - restart_web_app

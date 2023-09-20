@@ -1,0 +1,11 @@
+# no user
+---
+- name: Delete user
+  ansible.builtin.user:
+    name: '{{ webuser.name }}'
+    state: absent
+
+- name: Delete user home dir
+  ansible.builtin.file:
+    path: '{{ webuser.dir }}'
+    state: absent

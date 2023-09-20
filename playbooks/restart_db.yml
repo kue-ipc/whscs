@@ -1,0 +1,8 @@
+---
+- name: Conf DB
+  hosts: db
+  become: true
+  serial: 1
+  max_fail_percentage: 0
+  roles:
+    - restart_db

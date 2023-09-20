@@ -1,0 +1,43 @@
+# php-fpm
+---
+- name: Install php-fpm
+  ansible.builtin.dnf:
+    state: present
+    name: php-fpm
+
+# - name: Set SELinux file context for php-fpm
+#   community.general.sefcontext:
+#     target: '{{ item.target }}'
+#     ftype: '{{ item.ftype | default("a") }}'
+#     selevel: '{{ item.selevel | default("s0") }}'
+#     setype: '{{ item.setype }}'
+#     seuser: '{{ item.seuser | default("system_u") }}'
+#   loop:
+#     - { target: '{{ web_var_dir }}/\w+/log/php-fpm(/.*)?', setype: httpd_log_t }
+#     - { target: '{{ web_var_dir }}/\w+/run/php-fpm(/.*)?', setype: httpd_var_run_t }
+#   notify: 'run restorecon'
+
+- name: Make systemd php-fpm.d
+  ansible.builtin.file:
+    path: /etc/systemd/system/php-fpm.service.d/
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Copy systemd conf php-fpm
+  ansible.builtin.copy:
+    src: 'systemd/{{ item }}'
+    dest: '/etc/systemd/system/php-fpm.service.d/{{ item }}'
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - dependencies.conf
+  notify: 'reload systemd'
+
+- name: Enable and start php-fpm
+  ansible.builtin.systemd:
+    name: php-fpm.service
+    enabled: true
+    state: started

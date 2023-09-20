@@ -1,0 +1,13 @@
+# no nginx
+---
+- name: Remove nginx conf for user
+  ansible.builtin.file:
+    path: '/etc/nginx/virtual.d/{{ webuser.name }}.conf'
+    state: absent
+  register: remove_nginx_conf
+
+- name: Reload nginx
+  ansible.builtin.systemd:
+    name: 'nginx.service'
+    state: reloaded
+  when: remove_nginx_conf.changed

@@ -1,0 +1,13 @@
+# LDAP Auth
+<Directory "/public_html">
+    AuthName "{{ ldap_auth_name | default("LDAP Auth") }}"
+    AuthType Basic
+    AuthBasicProvider ldap
+    AuthLDAPUrl "{{ ldap_url }}"
+{% if ldap_bind_dn is defined %}
+    AuthLDAPBindDN "{{ ldap_bind_dn }}"
+{% endif %}
+{% if ldap_bind_password is defined %}
+    AuthLDAPBindPassword "{{ ldap_bind_password }}"
+{% endif %}
+</Directory>

@@ -1,0 +1,6 @@
+---
+- name: Restart keepalived
+  ansible.builtin.systemd:
+    name: keepalived.service
+    state: restarted
+  listen: 'restart keepalived'

@@ -1,0 +1,9 @@
+---
+- ansible.builtin.import_playbook: conf_ctl.yml
+- ansible.builtin.import_playbook: conf_fs.yml
+- ansible.builtin.import_playbook: conf_db.yml
+- ansible.builtin.import_playbook: conf_bk.yml
+- ansible.builtin.import_playbook: conf_mgt.yml
+- ansible.builtin.import_playbook: conf_app.yml
+- ansible.builtin.import_playbook: conf_web.yml
+- ansible.builtin.import_playbook: conf_rp.yml

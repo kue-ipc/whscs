@@ -1,0 +1,100 @@
+---
+- name: Create temp directory in pg server
+  delegate_to: '{{ pg_main_server }}'
+  become_user: postgres
+  ansible.builtin.tempfile:
+    state: directory
+  register: pg_tempdir
+
+- name: Make backup directory in pg server
+  delegate_to: '{{ pg_main_server }}'
+  become_user: postgres
+  ansible.builtin.file:
+    path: '{{ pg_tempdir.path }}/{{ backup_time }}'
+    state: directory
+    owner: postgres
+    mode: '0755'
+  when: pg_tempdir.path is defined
+
+- name: Get PostgreSQL info in pg server
+  delegate_to: '{{ pg_main_server }}'
+  become_user: postgres
+  community.postgresql.postgresql_info:
+    filter: databases
+  register: result_postgresql_info
+
+- name: Backup PostgreSQL in pg server
+  delegate_to: '{{ pg_main_server }}'
+  become_user: postgres
+  community.postgresql.postgresql_db:
+    encoding: UTF-8
+    state: dump
+    name: '{{ item }}'
+    target: '{{ pg_tempdir.path }}/{{ backup_time }}/{{ item }}.sql'
+  loop: '{{ result_postgresql_info.databases.keys() }}'
+  when: pg_tempdir.path is defined
+
+- name: Archive backup sql in db server
+  delegate_to: '{{ pg_main_server }}'
+  become_user: postgres
+  community.general.archive:
+    path: '{{ pg_tempdir.path }}/{{ backup_time }}'
+    dest: '{{ pg_tempdir.path }}/{{ backup_time }}.tar.xz'
+    format: xz
+    mode: '0600'
+  when: pg_tempdir.path is defined
+
+- name: Fetch backup pg archive
+  delegate_to: '{{ pg_main_server }}'
+  become_user: postgres
+  ansible.builtin.fetch:
+    src: '{{ pg_tempdir.path }}/{{ backup_time }}.tar.xz'
+    dest: '{{ local_tempdir.path }}/pg_{{ backup_time }}.tar.xz'
+    flat: true
+  when:
+    - pg_tempdir.path is defined
+    - local_tempdir.path is defined
+
+- name: Copy backup pg archive
+  ansible.builtin.copy:
+    src: '{{ local_tempdir.path }}/pg_{{ backup_time }}.tar.xz'
+    dest: '{{ backup_data_dir }}/pg/{{ backup_time }}.tar.xz'
+    mode: '0600'
+  when: local_tempdir.path is defined
+
+- name: Remove temp directory in pg server
+  delegate_to: '{{ pg_main_server }}'
+  become_user: postgres
+  ansible.builtin.file:
+    path: '{{ pg_tempdir.path }}'
+    state: absent
+  when: pg_tempdir.path is defined
+
+- name: Find old pg archives
+  ansible.builtin.find:
+    path: '{{ backup_data_dir }}/pg'
+    pattern: '*.tar.xz'
+    age: '{{ backup_retention_peroid }}d'
+  register: find_old_pg_archives
+
+- name: Remove old pg archives
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: absent
+  loop: >-
+    {{ find_old_pg_archives.files | map(attribute="path") }}
+
+- name: Find pg archives
+  ansible.builtin.find:
+    path: '{{ backup_data_dir }}/pg'
+    pattern: '^\d{8}_\d{6}\.tar\.xz$'
+    use_regex: true
+  register: find_pg_archives
+
+- name: Remove old pg archives
+  ansible.builtin.file:
+    path: '{{ backup_data_dir }}/pg/{{ item }}'
+    state: absent
+  loop: >-
+    {{ find_pg_archives.files | map(attribute="path") | map("basename")
+      | select("lt", backup_retention_time ~ ".tar.xz") }}

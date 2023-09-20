@@ -1,0 +1,4 @@
+# common lvs dr
+---
+- name: Task firewalld
+  ansible.builtin.import_tasks: firewalld.yml

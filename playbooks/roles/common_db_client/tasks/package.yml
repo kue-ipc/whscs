@@ -1,0 +1,16 @@
+# package for db client
+---
+- name: Install HAProxy
+  ansible.builtin.dnf:
+    state: present
+    name: haproxy
+
+- name: Install MariaDB client
+  ansible.builtin.dnf:
+    state: present
+    name: mariadb
+
+- name: Install PostgreSQL client
+  ansible.builtin.dnf:
+    state: present
+    name: postgresql

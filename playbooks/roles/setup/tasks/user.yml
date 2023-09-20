@@ -1,0 +1,11 @@
+# 管理用ユーザー固有の設定
+---
+- name: Set proxy .bashrc
+  become: false
+  ansible.builtin.blockinfile:
+    path: ~/.bashrc
+    marker: '# {mark} ANSIBLE MANAGED BLOCK proxy'
+    block: |
+      export http_proxy={{ proxy_uri }}
+      export https_proxy={{ proxy_uri }}
+  when: proxy_uri is defined

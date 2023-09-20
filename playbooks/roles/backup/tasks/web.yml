@@ -1,0 +1,55 @@
+---
+- name: Find backups
+  ansible.builtin.find:
+    path: '{{ backup_data_dir }}/web'
+    pattern: '^\d{8}_\d{6}$'
+    use_regex: true
+    file_type: directory
+  register: find_backups
+
+- name: Set last backup
+  ansible.builtin.set_fact:
+    last_backup: >-
+      {{ find_backups.files | map(attribute="path") | map("basename") | sort | reverse | first }}
+  when: find_backups.matched > 0
+
+
+- name: Sync web with link-dest
+  delegate_to: '{{ inventory_hostname }}'
+  ansible.posix.synchronize:
+    src: '{{ web_dir }}/'
+    dest: '{{ backup_data_dir }}/web/work/'
+    link_dest: '{{ backup_data_dir }}/web/{{ last_backup }}/'
+    archive: true
+    rsync_opts: '--one-file-system '
+    # delete: true
+  when:
+    - last_backup is defined
+    - last_backup != backup_time
+
+- name: Sync web without link-dest
+  delegate_to: '{{ inventory_hostname }}'
+  ansible.posix.synchronize:
+    src: '{{ web_dir }}/'
+    dest: '{{ backup_data_dir }}/web/work/'
+    archive: true
+    rsync_opts: '--one-file-system'
+    # delete: true
+  when: last_backup is not defined
+
+- name: Move work to name
+  ansible.builtin.command:
+    argv:
+      - mv
+      - '{{ backup_data_dir }}/web/work'
+      - '{{ backup_data_dir }}/web/{{ backup_time }}'
+    removes: '{{ backup_data_dir }}/web/work'
+    creates: '{{ backup_data_dir }}/web/{{ backup_time }}'
+
+- name: Remove old backups
+  ansible.builtin.file:
+    path: '{{ backup_data_dir }}/web/{{ item }}'
+    state: absent
+  loop: >-
+    {{ find_backups.files | map(attribute="path") | map("basename")
+      | select("lt", backup_retention_time) }}

@@ -1,0 +1,5 @@
+---
+- name: Load webuser
+  hosts: localhost
+  roles:
+    - create_webuser

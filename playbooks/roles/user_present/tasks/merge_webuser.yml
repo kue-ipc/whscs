@@ -1,0 +1,74 @@
+# merge webuser
+---
+- name: Check require parameters
+  ansible.builtin.assert:
+    that: webuser[item] is defined
+    msg: 'Missing required parametercs: {{ item }}'
+    quiet: true
+  loop:
+    - name
+    - site
+    - uid
+
+- name: Check name
+  ansible.builtin.assert:
+    that: webuser.name == user
+    msg: 'Not match name'
+    quiet: true
+
+- name: Set webuser var
+  ansible.builtin.set_fact:
+    webuser: >-
+      {{ {
+        "enabled": false,
+        "host": default_host,
+        "group": default_user_group,
+        "groups": default_user_groups,
+        "dir": default_user_dir | regex_replace("%u", user),
+        "shell": default_user_shell,
+        "gecos": default_user_gecos | regex_replace("%u", user),
+        "db_use": false,
+        "pg_use": false,
+        "app_use": false,
+        "public": false,
+      } | combine(webuser) }}
+
+- name: Check db_pass
+  ansible.builtin.assert:
+    that: webuser.db_pass | default("") | length > 0
+    msg: 'Required db_pass is missing or empty'
+    quiet: true
+  when: webuser.db_use
+
+- name: Check pg_pass
+  ansible.builtin.assert:
+    that: webuser.pg_pass | default("") | length > 0
+    msg: 'Required pg_pass is missing or empty'
+    quiet: true
+  when: webuser.pg_use
+
+- name: Set webuser ovrewrite port
+  ansible.builtin.set_fact:
+    webuser: >-
+      {{ {
+        "app_port": webuser.uid + 20000,
+        "app_path": "/",
+        "app_one": false,
+      } | combine(webuser) }}
+    when: webuser.app_use
+
+- name: Set webuser ovrewrite variable
+  ansible.builtin.set_fact:
+    webuser: >-
+      {{ webuser | combine({
+        "chroot_dir": web_dir ~ "/" ~ user,
+        "var_dir": web_var_dir ~ "/" ~ user,
+        "tls_cert": web_tls_certs_dir ~ "/" ~ webuser.site ~ ".cer",
+        "tls_key": web_tls_private_dir ~ "/" ~ webuser.site ~ ".key",
+        "httpd_port": webuser.uid + 7000,
+      }) }}
+
+- name: Debug webuser var
+  ansible.builtin.debug:
+    msg: '{{ webuser }}'
+  when: ansible_check_mode

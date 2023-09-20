@@ -1,0 +1,77 @@
+# user abest
+# 各サービスやユーザーは削除するが、データは削除しない。
+# データの削除は、全てのサーバーを再起動した後に実施する必要がある。
+---
+
+## webuser
+
+- name: Task webuser absent
+  ansible.builtin.import_tasks: webuser_absent.yml
+
+## web
+
+- name: Task no ngixn
+  ansible.builtin.include_tasks: no_nginx.yml
+  when: group_names | intersect(["web", "rp"]) | length > 0
+
+## app
+
+- name: Task no httpd
+  ansible.builtin.include_tasks: no_httpd.yml
+  when: '"app" in group_names'
+
+- name: Task no php-fpm
+  ansible.builtin.include_tasks: no_php-fpm.yml
+  when:
+    - httpd_php == "php-fpm"
+    - '"app" in group_names'
+
+- name: Task no app
+  ansible.builtin.include_tasks: no_app.yml
+  when: '"app" in group_names'
+
+## tls
+
+- name: Task no tls
+  ansible.builtin.include_tasks: no_tls.yml
+  when: group_names | intersect(["web", "app", "rp"]) | length > 0
+
+## mount
+
+- name: Task no web mount
+  ansible.builtin.include_tasks: no_web_mount.yml
+  when: group_names | intersect(["mgt", "app"]) | length > 0
+
+## user
+
+- name: Task no user
+  ansible.builtin.include_tasks: no_user.yml
+  when: group_names | intersect(["mgt", "app"]) | length > 0
+
+## unmount
+
+- name: Task unmount
+  ansible.builtin.include_tasks: unmount.yml
+  when: group_names | intersect(["mgt", "app"]) | length > 0
+
+## DB and PG
+
+- name: Task no mariadb
+  ansible.builtin.include_tasks: no_mariadb.yml
+  when: inventory_hostname == db_main_server
+
+- name: Task no postgresql
+  ansible.builtin.include_tasks: no_postgresql.yml
+  when: inventory_hostname == pg_main_server
+
+## var
+
+- name: Task no var
+  ansible.builtin.include_tasks: no_var.yml
+  when: '"app" in group_names'
+
+## chroot dir
+
+- name: Task no chroot dir
+  ansible.builtin.include_tasks: no_chroot_dir.yml
+  when: inventory_hostname == backup_main_server

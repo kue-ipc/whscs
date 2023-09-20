@@ -1,0 +1,17 @@
+[Unit]
+Description=Web User Mount
+After=local-fs.target remote-fs.target
+
+[Service]
+Type=oneshot
+ExecStartPre=/usr/bin/test -d {{ web_dir }}/%i
+{% for entry in web_mount_entries %}
+ExecStart=/usr/bin/bash -c '/usr/bin/grep {{ web_dir }}/%i{{ entry.name }} /proc/mounts > /dev/null || /usr/bin/mount {{ entry.opts }} {{ web_dir }}/%i{{ entry.name }}'
+{% endfor %}
+{% for entry in web_mount_entries | reverse %}
+ExecStop=/usr/bin/umount --lazy {{ web_dir }}/%i{{ entry.name }}
+{% endfor %}
+RemainAfterExit=yes
+
+[Install]
+WantedBy=web-fs.target

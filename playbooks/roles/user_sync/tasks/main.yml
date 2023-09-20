@@ -1,0 +1,44 @@
+# user sync
+---
+- name: Find webuser yml
+  delegate_to: localhost
+  ansible.builtin.find:
+    paths: '{{ data_dir }}/webuser'
+    patterns: '*.yml'
+  register: result_find_webuser
+
+- name: Set webuser_list
+  ansible.builtin.set_fact:
+    webuser_list: >-
+      {{ result_find_webuser.files | map(attribute="path") | map("basename") | map("splitext") | map("first") }}
+
+- name: Check existing users
+  delegate_to: '{{ groups["mgt"] | first }}'
+  ansible.builtin.find:
+    paths: '{{ web_dir }}'
+    file_type: directory
+  register: result_find_web_dir
+
+- name: Set existing_list
+  ansible.builtin.set_fact:
+    existing_list: >-
+      {{ result_find_web_dir.files | map(attribute="path") | map("basename") }}
+
+- name: Role user present
+  ansible.builtin.include_role:
+    name: user_present
+  loop: '{{ webuser_list }}'
+  loop_control:
+    loop_var: user
+
+# - name: Role user absent
+#   ansible.builtin.include_role:
+#     name: user_absent
+#   loop: '{{ existing_list | difference(webuser_list) }}'
+#   loop_control:
+#     loop_var: user
+
+- name: Dispaly users that need to be deleted
+  ansible.builtin.debug:
+    msg: '{{ existing_list | difference(webuser_list) }}'
+  when: existing_list | difference(webuser_list) | length > 0

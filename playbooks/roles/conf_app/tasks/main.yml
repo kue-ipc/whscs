@@ -1,0 +1,57 @@
+# web
+---
+- name: Fact serivce
+  ansible.builtin.service_facts:
+  when: ansible_facts.services is not defined
+
+- name: Task pkg app for version and life cypcle
+  ansible.builtin.include_tasks: 'pkg_el{{ ansible_distribution_major_version }}_{{ app_life_cycle }}.yml'
+
+- name: Task pkg dev
+  ansible.builtin.import_tasks: pkg_dev.yml
+  when: app_dev
+
+- name: Task pkg dev extra
+  ansible.builtin.import_tasks: pkg_dev_extra.yml
+  when: app_dev_extra
+
+- name: Task pkg util
+  ansible.builtin.import_tasks: pkg_util.yml
+  when: app_util
+
+- name: Role common tls
+  ansible.builtin.import_role:
+    name: common_tls
+
+- name: Role common db client
+  ansible.builtin.import_role:
+    name: common_db_client
+
+- name: Role common fs client
+  ansible.builtin.import_role:
+    name: common_fs_client
+
+- name: Task dir
+  ansible.builtin.import_tasks: dir.yml
+
+- name: Task msmtp
+  ansible.builtin.import_tasks: msmtp.yml
+
+- name: Task httpd
+  ansible.builtin.import_tasks: httpd.yml
+
+- name: Task php
+  ansible.builtin.import_tasks: php.yml
+
+- name: Task php-fpm
+  ansible.builtin.import_tasks: php-fpm.yml
+  when: httpd_php == "php-fpm"
+
+- name: Task logrotate
+  ansible.builtin.import_tasks: logrotate.yml
+
+- name: Task app
+  ansible.builtin.import_tasks: app.yml
+
+- name: Task sshd
+  ansible.builtin.import_tasks: sshd.yml

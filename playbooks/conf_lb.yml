@@ -1,0 +1,7 @@
+---
+- name: Conf Load Brancer
+  hosts: lb
+  become: true
+  max_fail_percentage: 0
+  roles:
+    - conf_lb

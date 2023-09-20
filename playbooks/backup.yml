@@ -1,0 +1,7 @@
+---
+- name: Backup
+  hosts:
+    - bk
+  become: true
+  roles:
+    - role: backup

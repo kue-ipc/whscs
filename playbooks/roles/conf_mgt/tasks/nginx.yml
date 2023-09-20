@@ -1,0 +1,119 @@
+# phpMyAdminをやめてAimerにする？
+# AWSatsは？
+---
+- name: Import role common nginx
+  ansible.builtin.import_role:
+    name: common_nginx
+
+- name: Instnall httpd-filesystem
+  ansible.builtin.dnf:
+    state: present
+    name: httpd-filesystem
+
+- name: Set seboolean for nginx
+  ansible.posix.seboolean:
+    name: '{{ item }}'
+    state: true
+    persistent: true
+  loop:
+    - httpd_can_network_relay
+    - httpd_can_network_connect_db
+    # - httpd_can_network_connect
+
+## nginx conf
+
+- name: Remove comment out ssl in nginx.conf
+  ansible.builtin.replace:
+    path: /etc/nginx/nginx.conf
+    regexp: '^#( {4}.*|[ \t]*)$'
+    replace: '\1'
+  notify: 'restart nginx'
+
+- name: Replace listen with default_server in nginx.conf
+  ansible.builtin.replace:
+    path: /etc/nginx/nginx.conf
+    regexp: '^(\s*listen\s+(?:\[::\]:)?(?:80|443)(?:\s+(?:ssl|http2))*\s*)(?:\s+default_server)?;'
+    replace: '\1 default_server;'
+  notify: 'restart nginx'
+
+- name: Replace root in nginx.conf
+  ansible.builtin.replace:
+    path: /etc/nginx/nginx.conf
+    regexp: '^(\s*root\s+).*;'
+    replace: '\1/var/www/html;'
+  notify: 'restart nginx'
+
+- name: Delete error_page server in nginx.conf
+  ansible.builtin.replace:
+    path: /etc/nginx/nginx.conf
+    regexp: '({{ item }})'
+    replace: ''
+  loop:
+    - '^\s*error_page\s+(\d+\s+)+/(?:\d+x?)\.html;\s*\n'
+    - '^\s*location\s+=\s*/(?:\d+x?)\.html\s*{\s*}\s*\n'
+  notify: 'restart nginx'
+
+- name: Replace ssl certificate file in nginx.conf
+  ansible.builtin.replace:
+    path: /etc/nginx/nginx.conf
+    regexp: '^(\s*{{ item.name }}\s+).*;'
+    replace: '\1"{{ item.file }}";'
+  loop:
+    - {name: ssl_certificate, file: '{{ mgt_tls_cert }}'}
+    - {name: ssl_certificate_key, file: '{{ mgt_tls_key }}'}
+  notify: 'restart nginx'
+
+- name: Replace include to return redirect server 80 in nginx.conf
+  ansible.builtin.replace:
+    path: /etc/nginx/nginx.conf
+    after: '\bserver\s*{\s*listen\s+80\b'
+    before: '}\s*# Settings for a TLS enabled server.'
+    regexp: '^(\s*)include\s+/etc/nginx/default.d/\*\.conf;'
+    replace: '\1return 301 https://$host$request_uri;'
+  notify: 'restart nginx'
+
+- name: Copy nginx conf file
+  ansible.builtin.copy:
+    src: nginx/conf.d/security.conf
+    dest: /etc/nginx/conf.d/security.conf
+    mode: '0644'
+  notify: 'restart nginx'
+
+- name: Run whoami
+  become: false
+  ansible.builtin.command:
+    cmd: whoami
+  register: result_whoami
+  changed_when: false
+
+- name: Set owner html root
+  ansible.builtin.file:
+    path: /var/www/html
+    owner: '{{ result_whoami.stdout }}'
+    group: '{{ result_whoami.stdout }}'
+    mode: '0755'
+    state: directory
+  when: not ansible_check_mode
+
+- name: Sync html dir
+  become: false
+  ansible.posix.synchronize:
+    src: '{{ data_html_dir }}/'
+    dest: /var/www/html/
+  when: not ansible_check_mode
+
+- name: Enable and start nginx
+  ansible.builtin.systemd:
+    name: nginx.service
+    enabled: true
+    state: started
+
+- name: Allow http/https service in firewall
+  ansible.posix.firewalld:
+    state: enabled
+    service: '{{ item }}'
+    permanent: true
+  loop:
+    - http
+    - https
+  notify: 'reload firewalld'

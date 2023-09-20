@@ -1,0 +1,11 @@
+# no tls
+---
+- name: Remove cert
+  ansible.builtin.file:
+    path: '{{ webuser.tls_cert }}'
+    state: absent
+
+- name: Remove private key
+  ansible.builtin.file:
+    path: '{{ webuser.tls_key }}'
+    state: absent

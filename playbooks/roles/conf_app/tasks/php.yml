@@ -1,0 +1,43 @@
+# php
+---
+- name: Install php
+  ansible.builtin.dnf:
+    state: present
+    name: php
+
+- name: Set SELinux file context for php
+  community.general.sefcontext:
+    target: '{{ item.target }}'
+    ftype: '{{ item.ftype | default("a") }}'
+    selevel: '{{ item.selevel | default("s0") }}'
+    setype: '{{ item.setype }}'
+    seuser: '{{ item.seuser | default("system_u") }}'
+  loop:
+    - { target: '{{ web_var_dir }}/\w+/lib/php(/.*)?', setype: httpd_var_lib_t }
+    - { target: '{{ web_var_dir }}/\w+/lib/php/session(/.*)?', setype: httpd_var_run_t }
+    - { target: '{{ web_var_dir }}/\w+/lib/php/wsdlcache(/.*)?', setype: httpd_var_run_t }
+  notify: 'run restorecon'
+
+- name: Set php.ini
+  ansible.builtin.replace:
+    path: /etc/php.ini
+    regexp: '^;?({{ item.key }})\s*=.*$'
+    replace: "\
+      \\1 = \
+      {% if item.value == None %}\
+      Null\
+      {% elif item.value == True %}\
+      On\
+      {% elif item.value == False %}\
+      Off\
+      {% elif item.value is string %}\
+      \"{{ item.value }}\"\
+      {% else %}\
+      {{ item.value }}\
+      {% endif %}"
+  with_dict:
+    expose_php: false
+    sendmail_path: '/usr/bin/msmtp -t -i'
+  notify:
+    - 'restart php-fpm'
+    - 'restart all httpd'

@@ -1,0 +1,36 @@
+# posgresql
+---
+- name: Add user in PostgreSQL
+  become_user: postgres
+  community.postgresql.postgresql_user:
+    state: present
+    name: "{{ webuser.name }}"
+    password: "{{ webuser.pg_pass }}"
+
+- name: Create user DB in PostgreSQL
+  become_user: postgres
+  community.postgresql.postgresql_db:
+    state: present
+    name: "{{ webuser.name }}"
+    owner: "{{ webuser.name }}"
+
+- name: Create user schema in PostgreSQL
+  become_user: postgres
+  community.postgresql.postgresql_schema:
+    state: present
+    database: "{{ webuser.name }}"
+    name: "{{ webuser.name }}"
+    owner: "{{ webuser.name }}"
+
+# https://wiki.postgresql.org/wiki/A_Guide_to_CVE-2018-1058%3A_Protect_Your_Search_Path
+# Not need for PostgreSQL 15
+# REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+- name: Revoke create on scheam public from public
+  become_user: postgres
+  community.postgresql.postgresql_privs:
+    db: "{{ webuser.name }}"
+    state: absent
+    priv: CREATE
+    type: schema
+    obj: public
+    role: public

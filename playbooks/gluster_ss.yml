@@ -1,0 +1,6 @@
+---
+- name: Gluster SS
+  hosts: fs
+  become: true
+  roles:
+    - gluster_ss

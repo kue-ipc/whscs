@@ -1,0 +1,13 @@
+{{ web_dir }}/*/var/log/nginx/access_{{ inventory_hostname }}.log {
+    create 0640 nginx root
+    {{ logrotate_frequency }}
+    rotate {{ logrotate_rotate }}
+    missingok
+    notifempty
+    compress
+    delaycompress
+    sharedscripts
+    postrotate
+        /bin/kill -USR1 `cat /run/nginx.pid 2>/dev/null` 2>/dev/null || true
+    endscript
+}

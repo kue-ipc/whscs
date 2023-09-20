@@ -1,0 +1,11 @@
+---
+- name: Check systemd
+  delegate_to: '{{ target_host }}'
+  ansible.builtin.systemd:
+    service: mariadb.service
+  register: systemd_mariadb
+
+- name: Add maridb active servers
+  ansible.builtin.set_fact:
+    mariadb_active_servers: '{{ mariadb_active_servers + [target_host] }}'
+  when: systemd_mariadb.status["ActiveState"] == "active"

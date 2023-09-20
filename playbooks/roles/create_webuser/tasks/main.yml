@@ -1,0 +1,97 @@
+---
+- name: Require user
+  ansible.builtin.assert:
+    that: user is defined
+    msg: 'Require `user` variable'
+    quiet: true
+
+- name: Check vaild user
+  ansible.builtin.assert:
+    that: user is match("^[a-z][0-9a-z_]*$")
+    msg: 'Invalid user name: {{ user }}'
+    quiet: true
+
+- name: Set site
+  ansible.builtin.set_fact:
+    site: '{{ user | regex_replace("_", "-") }}.{{ site_domain }}'
+  when: site is not defined
+
+- name: Check vaild site
+  ansible.builtin.assert:
+    that: site is match("^[0-9a-z-]+(\.[0-9a-z-]+)+$")
+    msg: 'Invalid site: {{ site }}'
+    quiet: true
+
+- name: Check vaild uid
+  ansible.builtin.assert:
+    that: uid is match("^[0-9]+$")
+    msg: 'Not number uid: {{ uid }}'
+    quiet: true
+  when: uid is defined
+
+- name: Role load webuser
+  ansible.builtin.import_role:
+    name: load_webuser
+
+- name: Set next uid
+  ansible.builtin.set_fact:
+    uid: >-
+      {% if webuser_list | length > 0 %}
+      {{ (webuser_list | map(attribute="uid") | max) + 1 }}
+      {% else %}
+      {{ user_uid_range.start }}
+      {% endif %}
+  when: uid is not defined
+
+- name: Check for name duplication
+  ansible.builtin.assert:
+    that: user not in webuser_list | map(attribute="name")
+    msg: 'User name exists: {{ user }}'
+    quiet: true
+
+- name: Check for site duplication
+  ansible.builtin.assert:
+    that: site not in webuser_list | map(attribute="site")
+    msg: 'Duplicate site: {{ site }}'
+    quiet: true
+
+- name: Check for uid duplication
+  ansible.builtin.assert:
+    that: (uid | int) not in webuser_list | map(attribute="uid")
+    msg: 'Duplicate uid: {{ uid }}'
+    quiet: true
+
+- name: Check uid covered by user uid range
+  ansible.builtin.assert:
+    that:
+      - (uid | int) >= user_uid_range.start
+      - (uid | int) < user_uid_range.stop
+    msg: 'Uid is out of range({{ user_uid_range.start }}, {{ user_uid_range.stop }}): {{ uid }}'
+    quiet: true
+
+- name: Set new webuser
+  ansible.builtin.set_fact:
+    new_webuser: >-
+      {{ {
+        "name": user,
+        "site": site,
+        "enabled": True,
+        "host": default_host,
+        "uid": uid | int,
+        "db_use": False,
+        "db_pass": "",
+        "pg_use": False,
+        "pg_pass": "",
+        "app_use": False,
+        "app_port": (uid | int) + 17000,
+        "app_path": "/",
+        "app_one": False,
+        "public": False
+      } }}
+
+- name: Copy webuser yml
+  ansible.builtin.copy:
+    content: '{{ new_webuser | to_yaml(indent=2, sort_keys=False, default_flow_style=False) }}'
+    dest: '{{ data_webuser_dir }}/{{ user }}.yml'
+    mode: '0644'
+    force: false

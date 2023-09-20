@@ -1,0 +1,20 @@
+# user
+---
+- name: Add user
+  ansible.builtin.user:
+    name: '{{ webuser.name }}'
+    uid: '{{ webuser.uid }}'
+    group: '{{ webuser.group }}'
+    groups: '{{ webuser.groups }}'
+    home: '{{ webuser.dir }}'
+    shell: '{{ webuser.shell }}'
+    comment: '{{ webuser.gecos }}'
+    createhome: false
+    state: present
+
+- name: Make symlink user home dir
+  ansible.builtin.file:
+    src: '{{ webuser.chroot_dir }}{{ webuser.dir }}'
+    dest: '{{ webuser.dir }}'
+    state: link
+    force: true

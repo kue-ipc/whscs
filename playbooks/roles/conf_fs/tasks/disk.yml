@@ -1,0 +1,31 @@
+---
+- name: Role common lvm
+  ansible.builtin.import_role:
+    name: common_lvm
+
+# メタデータ用の領域が必要なため、100%にはしないこと
+- name: Create a thin pool for glfs
+  community.general.lvol:
+    vg: '{{ lvm_vg }}'
+    thinpool: '{{ gluster_data_pool_name }}'
+    size: '{{ gluster_data_pool_size }}'
+
+# 128GiB
+- name: Create a thin volume for glfs
+  community.general.lvol:
+    vg: '{{ lvm_vg }}'
+    thinpool: '{{ gluster_data_pool_name }}'
+    lv: '{{ gluster_data_name }}'
+    size: '{{ gluster_data_size }}'
+
+- name: Create a xfs filesystem on data
+  community.general.filesystem:
+    dev: '/dev/{{ lvm_vg }}/{{ gluster_data_name }}'
+    fstype: xfs
+
+- name: Mount glunter data
+  ansible.posix.mount:
+    path: '{{ gluster_data_dir }}'
+    src: '/dev/{{ lvm_vg }}/{{ gluster_data_name }}'
+    fstype: xfs
+    state: mounted

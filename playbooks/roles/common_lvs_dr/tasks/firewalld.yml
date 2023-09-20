@@ -1,0 +1,11 @@
+# firewalld
+---
+# LVS DR
+# see https://firewalld.org/documentation/direct/options.html
+- name: Add rediret for LVS to firewalld
+  ansible.builtin.template:
+    src: firewalld/direct.xml.j2
+    dest: /etc/firewalld/direct.xml
+    mode: '0644'
+    owner: root
+  notify: 'reload firewalld'

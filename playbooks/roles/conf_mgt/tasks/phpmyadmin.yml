@@ -1,0 +1,18 @@
+# phpMyAdmin
+---
+- name: Install epel-release
+  ansible.builtin.dnf:
+    state: present
+    name: epel-release
+
+- name: Install phpmyadmin
+  ansible.builtin.dnf:
+    state: present
+    name: phpmyadmin
+  notify: 'restart nginx'
+
+- name: Replace host
+  ansible.builtin.replace:
+    path: /etc/phpMyAdmin/config.inc.php
+    regexp: ^(?:\s*//)?\s*\$cfg\['Servers'\]\[\$i\]\['host'\]\s*=[^;]*;
+    replace: "$cfg['Servers'][$i]['host'] = 'db';"

@@ -1,0 +1,33 @@
+! Configuration File for keepalived
+
+global_defs {
+    enable_script_security
+}
+
+vrrp_track_process nginx {
+    process nginx
+    interval 2
+}
+
+{% for address in vip_addresses %}
+vrrp_instance VT_{{ loop.index }} {
+    state {{ ((vrrp_index | int - loop.index0) % groups[vip_group] | length == 0) | ternary("MASTER", "BACKUP") }}
+    interface {{ ansible_facts["default_ipv" ~ (address | ansible.utils.ipaddr("version"))].interface }}
+    virtual_router_id {{ loop.index }}
+    priority {{ ((vrrp_index | int - loop.index0) % groups[vip_group] | length == 0)
+      | ternary(100,  50 - ((vrrp_index | int - loop.index0) % groups[vip_group] | length - 1) * 10) }}
+    advert_int 1
+    unicast_src_ip {{ ansible_facts["default_ipv" ~ (address | ansible.utils.ipaddr("version"))].address }}
+    unicast_peer {
+{% for peer in vrrp_peers | ansible.utils.ipaddr(version=(address | ansible.utils.ipaddr("version"))) %}
+        {{ peer }}
+{% endfor %}
+    }
+    virtual_ipaddress {
+        {{ address }}
+    }
+    track_process {
+        nginx
+    }
+}
+{% endfor %}

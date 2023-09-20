@@ -1,0 +1,12 @@
+- name: User absent
+  hosts:
+    - bk
+    - mgt
+    - web
+    - app
+    - db
+    - rp
+  become: true
+  max_fail_percentage: 0
+  roles:
+    - user_absent

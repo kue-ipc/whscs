@@ -1,0 +1,7 @@
+---
+- name: Conf App
+  hosts: app
+  become: true
+  max_fail_percentage: 0
+  roles:
+    - conf_app

@@ -1,0 +1,65 @@
+---
+- name: Role common lvm
+  ansible.builtin.import_role:
+    name: common_lvm
+
+# 16GiB
+- name: Create a volume for data
+  community.general.lvol:
+    vg: '{{ lvm_vg }}'
+    lv: '{{ item.lv }}'
+    size: '{{ item.size }}'
+  loop:
+    - { lv: '{{ db_data_name }}', size: '{{ db_data_size }}'}
+    - { lv: '{{ pg_data_name }}', size: '{{ pg_data_size }}'}
+
+- name: Create a xfs filesystem on data
+  community.general.filesystem:
+    dev: '/dev/{{ lvm_vg }}/{{ item }}'
+    fstype: xfs
+    resizefs: true
+  loop:
+    - '{{ db_data_name }}'
+    - '{{ pg_data_name }}'
+
+- name: Mount db data
+  ansible.posix.mount:
+    path: '/var/lib/mysql'
+    src: '/dev/{{ lvm_vg }}/{{ db_data_name }}'
+    fstype: xfs
+    state: mounted
+
+- name: Mount pg data
+  ansible.posix.mount:
+    path: '/var/lib/pgsql'
+    src: '/dev/{{ lvm_vg }}/{{ pg_data_name }}'
+    fstype: xfs
+    state: mounted
+
+- name: Set permission mysql
+  ansible.builtin.file:
+    path: /var/lib/mysql
+    owner: mysql
+    group: mysql
+    mode: '0755'
+    setype: mysqld_db_t
+
+- name: Set permission pgsql
+  ansible.builtin.file:
+    path: /var/lib/pgsql
+    owner: postgres
+    group: postgres
+    mode: '0700'
+    setype: postgresql_db_t
+
+- name: Make a directorcy in pgsql
+  ansible.builtin.file:
+    path: '/var/lib/pgsql/{{ item }}'
+    owner: postgres
+    group: postgres
+    mode: '0700'
+    setype: postgresql_db_t
+    state: directory
+  loop:
+    - backups
+    - data

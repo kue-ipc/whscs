@@ -1,0 +1,9 @@
+account default
+host {{ mail_smtp_host }}
+port {{ mail_smtp_port }}
+tls {{ mail_smtp_tls | ternary("on", "off") }}
+tls_starttls {{ mail_smtp_starttls | ternary("on", "off") }}
+from {{ mail_from }}
+allow_from_override on
+set_from_header on
+syslog LOG_MAIL

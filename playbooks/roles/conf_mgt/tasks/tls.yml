@@ -1,0 +1,43 @@
+# tls
+---
+- name: Set tls info
+  ansible.builtin.set_fact:
+    tls_info:
+      cn: '{{ mgt_site }}'
+      cert: '{{ data_tls_certs_dir }}/{{ mgt_site }}.cer'
+      key: '{{ data_tls_private_dir }}/{{ mgt_site }}.key'
+
+- name: Set issuer
+  ansible.builtin.set_fact:
+    tls_info: >-
+      {{ tls_info | combine({
+          "issuer": (lookup("file", tls_info.cert) | community.crypto.x509_certificate_info).issuer.commonName
+        }) }}
+
+- name: Copy cert (self sigend)
+  ansible.builtin.copy:
+    src: '{{ tls_info.cert }}'
+    dest: '{{ mgt_tls_cert }}'
+    owner: root
+    group: root
+    mode: '0644'
+  when: tls_info.cn == tls_info.issuer
+
+- name: Copy chained certs
+  ansible.builtin.copy:
+    content: |
+      {{ lookup("file", tls_info.cert) }}
+      {{ lookup("file", data_tls_im_certs_dir ~ "/" ~ tls_im_certs[tls_info.issuer]) }}
+    dest: '{{ mgt_tls_cert }}'
+    owner: root
+    group: root
+    mode: '0644'
+  when: tls_info.cn != tls_info.issuer
+
+- name: Copy private key
+  ansible.builtin.copy:
+    src: '{{ tls_info.key }}'
+    dest: '{{ mgt_tls_key }}'
+    owner: root
+    group: root
+    mode: '0600'

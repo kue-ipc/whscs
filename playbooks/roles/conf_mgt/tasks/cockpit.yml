@@ -1,0 +1,51 @@
+# cockpit
+---
+- name: Install cockpit
+  ansible.builtin.dnf:
+    state: present
+    name: cockpit
+    install_weak_deps: false
+
+- name: Remove unnecessary cockpit modules
+  ansible.builtin.dnf:
+    state: absent
+    name:
+      - cockpit-packagekit
+      - cockpit-storaged
+
+- name: Install necessary cockpit modules
+  ansible.builtin.dnf:
+    state: present
+    name:
+      - cockpit-navigator
+
+# - name: Copy cockpit.conf
+#   ansible.builtin.template:
+#     src: cockpit/cockpit.conf.j2
+#     dest: /etc/cockpit/cockpit.conf
+#     mode: '0644'
+
+- name: Remove cockpit.conf
+  ansible.builtin.file:
+    state: absent
+    path: /etc/cockpit/cockpit.conf
+
+- name: Enable and start cockpit
+  ansible.builtin.systemd:
+    name: cockpit.socket
+    enabled: true
+    state: started
+
+# - name: Set seport for nginx to cockpit
+#   community.general.seport:
+#     ports: 9090
+#     proto: tcp
+#     setype: http_port_t
+#     state: absent
+
+- name: Copy nginx conf
+  ansible.builtin.copy:
+    src: nginx/default.d/cockpit.conf
+    dest: /etc/nginx/default.d/cockpit.conf
+    mode: '0644'
+  notify: 'restart nginx'

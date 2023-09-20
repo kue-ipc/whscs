@@ -1,0 +1,47 @@
+# mgt
+---
+- name: Role common_vscode
+  ansible.builtin.import_role:
+    name: common_vscode
+
+- name: Task pkg
+  ansible.builtin.import_tasks: pkg.yml
+
+- name: Role common fs client
+  ansible.builtin.import_role:
+    name: common_fs_client
+
+- name: Role common db client
+  ansible.builtin.import_role:
+    name: common_db_client
+
+- name: Task dir
+  ansible.builtin.import_tasks: dir.yml
+
+- name: Task tls
+  ansible.builtin.import_tasks: tls.yml
+
+- name: Task sshd
+  ansible.builtin.import_tasks: sshd.yml
+
+- name: Task vsftpd
+  ansible.builtin.import_tasks: vsftpd.yml
+
+- name: Task nginx
+  ansible.builtin.import_tasks: nginx.yml
+
+- name: Task php
+  ansible.builtin.import_tasks: php.yml
+
+# userminで十分？なため、入れない
+# - name: Task phpmyadmin
+#   ansible.builtin.import_tasks: phpmyadmin.yml
+
+# FIXME: 端末などで見えてしまうので、使わない。
+# FIXME: http_port_tにすると起動しないので、リダイレクトできない。
+# FIXME: リダイレクトがそもそもおかしい。
+# - name: Task cockpit
+#   ansible.builtin.import_tasks: cockpit.yml
+
+- name: Task usermin
+  ansible.builtin.import_tasks: usermin.yml

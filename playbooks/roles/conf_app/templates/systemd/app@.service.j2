@@ -1,0 +1,11 @@
+[Unit]
+Description=The User Application Server
+After=web-fs.target network.target remote-fs.target nss-lookup.target
+
+[Service]
+Type=forking
+ExecStart=/usr/sbin/chroot --userspec=%i:apache {{ web_dir }}/%i /data/app/start
+ExecStop=/usr/sbin/chroot --userspec=%i:apache {{ web_dir }}/%i /data/app/stop
+
+[Install]
+WantedBy=multi-user.target

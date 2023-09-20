@@ -1,0 +1,77 @@
+# chroot user
+---
+- name: Make user web dir
+  ansible.builtin.file:
+    path: '{{ webuser.chroot_dir }}/{{ item }}'
+    owner: '{{ webuser.name }}'
+    group: '{{ webuser.group }}'
+    mode: '0755'
+    state: directory
+  loop:
+    - data
+    - public_html
+
+## home
+
+- name: Stat user home dir
+  ansible.builtin.stat:
+    path: '{{ webuser.chroot_dir }}{{ webuser.dir }}'
+  register: user_dir_stat
+
+- name: Make user home dir
+  ansible.builtin.file:
+    path: '{{ webuser.chroot_dir }}{{ webuser.dir }}'
+    owner: '{{ webuser.name }}'
+    group: '{{ webuser.group }}'
+    mode: '0700'
+    state: directory
+
+- name: Copy user home dir from skel
+  ansible.builtin.copy:
+    src: /etc/skel/
+    dest: '{{ webuser.chroot_dir }}{{ webuser.dir }}/'
+    owner: '{{ webuser.name }}'
+    group: '{{ webuser.group }}'
+    mode: '0644'
+  when: not user_dir_stat.stat.exists
+
+- name: Make user web symlink
+  ansible.builtin.file:
+    src: '../../{{ item }}'
+    dest: '{{ webuser.chroot_dir }}{{ webuser.dir }}/{{ item }}'
+    owner: '{{ webuser.name }}'
+    group: '{{ webuser.group }}'
+    force: true
+    state: link
+  loop:
+    - data
+    - public_html
+  when: not user_dir_stat.stat.exists
+
+## ssh
+
+- name: Make .ssh directory
+  ansible.builtin.file:
+    path: '{{ webuser.chroot_dir }}{{ webuser.dir }}/.ssh'
+    owner: '{{ webuser.name }}'
+    group: '{{ webuser.group }}'
+    mode: '0700'
+    state: directory
+
+- name: Generate ssh key ed25519
+  community.crypto.openssh_keypair:
+    path: '{{ webuser.chroot_dir }}{{ webuser.dir }}/.ssh/id_ed25519'
+    type: ed25519
+    owner: '{{ webuser.name }}'
+    group: '{{ webuser.group }}'
+
+- name: Slurp pub key
+  ansible.builtin.slurp:
+    src: '{{ webuser.chroot_dir }}{{ webuser.dir }}/.ssh/id_ed25519.pub'
+  register: slurp_pub_key
+
+- name: Copy pub authorized_keys
+  ansible.posix.authorized_key:
+    path: '{{ webuser.chroot_dir }}{{ webuser.dir }}/.ssh/authorized_keys'
+    user: '{{ webuser.name }}'
+    key: '{{ slurp_pub_key.content | b64decode }}'

@@ -1,0 +1,22 @@
+---
+- name: Task present webuser in user_present
+  ansible.builtin.import_role:
+    name: user_present
+    tasks_from: webuser_present
+
+- name: Restart app for user
+  ansible.builtin.systemd:
+    name: 'app@{{ webuser.name }}.service'
+    state: restarted
+  when:
+    - webuser.host in group_names
+    - webuser.app_use
+    - not webuser.app_one or groups[webuser.host] | first == inventory_hostname
+
+- name: Restart httpd for user
+  ansible.builtin.systemd:
+    name: 'httpd@{{ webuser.name }}.service'
+    state: restarted
+  when:
+    - webuser.host in group_names
+    - webuser.enabled

@@ -1,0 +1,7 @@
+threshold_disk_size: 0.8
+threshold_memory_nocache_free: 256
+threshold_memory_real_free: 32
+threshold_memory_swap_free: 1024
+threshold_loadavg_1m: 1.5
+threshold_loadavg_5m: 1.0
+threshold_loadavg_15m: 0.8

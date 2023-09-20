@@ -1,0 +1,28 @@
+# 初期セットアップ
+---
+- name: Task dnf
+  ansible.builtin.import_tasks: dnf.yml
+
+- name: Task firewalld
+  ansible.builtin.import_tasks: firewalld.yml
+
+- name: Task locale
+  ansible.builtin.import_tasks: locale.yml
+
+- name: Task timezone
+  ansible.builtin.import_tasks: timezone.yml
+
+- name: Task chrony
+  ansible.builtin.import_tasks: chrony.yml
+
+- name: Task sshd
+  ansible.builtin.import_tasks: sshd.yml
+
+- name: Task user
+  ansible.builtin.import_tasks: user.yml
+
+- name: Task hosts
+  ansible.builtin.import_tasks: hosts.yml
+
+- name: Task logrotate
+  ansible.builtin.import_tasks: logrotate.yml

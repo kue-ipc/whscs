@@ -1,0 +1,25 @@
+# conf web
+---
+- name: Role common tls
+  ansible.builtin.import_role:
+    name: common_tls
+
+- name: Role common fs client
+  ansible.builtin.import_role:
+    name: common_fs_client
+
+- name: Task nginx
+  ansible.builtin.import_tasks: nginx.yml
+
+- name: Task logrotate
+  ansible.builtin.import_tasks: logrotate.yml
+
+- name: Role lvs_dr
+  ansible.builtin.import_role:
+    name: common_lvs_dr
+  when: lvs_dr_addresses is defined
+
+- name: Role vip
+  ansible.builtin.import_role:
+    name: common_vip
+  when: vip_addresses is defined

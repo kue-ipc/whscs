@@ -1,0 +1,17 @@
+# logrotate
+---
+- name: Set seboolean for logrotate
+  ansible.posix.seboolean:
+    name: '{{ item }}'
+    state: true
+    persistent: true
+  loop:
+    - logrotate_use_fusefs
+
+- name: Template nginx_user to logrotate.d
+  ansible.builtin.template:
+    src: logrotate.d/nginx_user.j2
+    dest: '/etc/logrotate.d/nginx_user'
+    owner: root
+    group: root
+    mode: '0644'

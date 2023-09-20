@@ -1,0 +1,20 @@
+---
+- name: Task package
+  ansible.builtin.import_tasks: package.yml
+
+- name: Task firewalld
+  ansible.builtin.import_tasks: firewalld.yml
+
+- name: Task disk
+  ansible.builtin.import_tasks: disk.yml
+
+- name: Task mariadb
+  ansible.builtin.import_tasks: mariadb.yml
+
+- name: Task postgresql main
+  ansible.builtin.include_tasks: postgresql_main.yml
+  when: inventory_hostname == pg_main_server
+
+- name: Task postgresql replica
+  ansible.builtin.include_tasks: postgresql_replica.yml
+  when: inventory_hostname != pg_main_server

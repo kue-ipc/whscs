@@ -1,0 +1,30 @@
+---
+- name: Find /dev/sd*
+  ansible.builtin.find:
+    paths: /dev
+    patterns: 'sd?'
+    file_type: any
+  register: find_dev_sd
+
+- name: Read device information
+  community.general.parted:
+    device: '{{ item }}'
+  register: parted_devices
+  loop: '{{ find_dev_sd.files | map(attribute="path") }}'
+
+- name: Set lvm_devices
+  ansible.builtin.set_fact:
+    lvm_devices: '{{ parted_devices.results | rejectattr("partitions") | map(attribute="item") }}'
+
+- name: Check lmv_devices is not empty
+  ansible.builtin.assert:
+    that: lvm_devices | length > 0
+    msg: No unpartitioned disk
+    quiet: true
+
+- name: Create a volume group
+  community.general.lvg:
+    vg: '{{ lvm_vg }}'
+    pvs: '{{ lvm_devices }}'
+    pesize: '{{ lvm_pesize }}'
+    pvresize: true

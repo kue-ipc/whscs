@@ -1,0 +1,22 @@
+# update and reboot if necessary
+
+- name: Update all packages
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+
+- name: Autoremove unneeded packages
+  ansible.builtin.dnf:
+    autoremove: true
+  when: autoremove | default(False)
+
+- name: Check needs restarting
+  ansible.builtin.command: /usr/bin/dnf needs-restarting -r
+  register: result_needs_restarting
+  changed_when: false
+  failed_when: result_needs_restarting.rc not in [0, 1]
+
+- name: Role reboot
+  ansible.builtin.import_role:
+    name: reboot
+  when: result_needs_restarting.rc != 0

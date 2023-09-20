@@ -1,0 +1,37 @@
+# postgresql config
+---
+- name: Line in postgresql.conf
+  ansible.builtin.lineinfile:
+    path: /var/lib/pgsql/data/postgresql.conf
+    regexp: '^#?{{ item.name }}\s*=.*$'
+    line: '{{ item.name }} = {{ item.value }}'
+  loop:
+    - { name: listen_addresses, value: "'*'" }
+    - { name: password_encryption, value: scram-sha-256 }
+    - { name: primary_conninfo, value: "'host={{ pg_main_server }} user={{ pg_replication_user }}'" }
+
+- name: Add host replication pg_hba
+  community.postgresql.postgresql_pg_hba:
+    dest: /var/lib/pgsql/data/pg_hba.conf
+    contype: host
+    users: '{{ pg_replication_user }}'
+    source: '{{ item }}'
+    databases: replication
+    method: scram-sha-256
+  loop: >-
+    {{ ((groups["db"] | map("extract", hostvars) | map(attribute="ansible_host", default=""))
+      + (groups["db"] | map("extract", hostvars) | map(attribute="inventory_ipv4", default=""))
+      + (groups["db"] | map("extract", hostvars) | map(attribute="inventory_ipv6", default="")))
+      | unique | reject("eq", "")
+    }}
+
+# Set md5 for HAProxy pgsql-check, but use scram-sha-256 for user authentication.
+- name: Line host all all in pg_hba.conf
+  community.postgresql.postgresql_pg_hba:
+    dest: /var/lib/pgsql/data/pg_hba.conf
+    contype: host
+    users: all
+    source: '{{ item }}'
+    databases: all
+    method: md5
+  loop: '{{ web_networks }}'

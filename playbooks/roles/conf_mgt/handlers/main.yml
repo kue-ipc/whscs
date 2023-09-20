@@ -1,0 +1,50 @@
+---
+- name: Reload firewalld
+  ansible.builtin.command: firewall-cmd --reload
+  changed_when: true
+  listen: 'reload firewalld'
+
+- name: Run restorecon
+  ansible.builtin.command:
+    argv:
+      - restorecon
+      - -RFv
+      - /var/usermin
+  listen: 'run restorecon /var/usermin'
+  register: result_command_restorecon
+  changed_when: result_command_restorecon.stdout_lines | length > 0
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  listen: 'reload systemd'
+
+- name: Restart vfstpd
+  ansible.builtin.systemd:
+    name: vsftpd.service
+    state: restarted
+  listen: 'restart vsftpd'
+
+- name: Restart sshd
+  ansible.builtin.systemd:
+    name: sshd.service
+    state: restarted
+  listen: 'restart sshd'
+
+- name: Restart nginx
+  ansible.builtin.systemd:
+    name: nginx.service
+    state: restarted
+  listen: 'restart nginx'
+
+- name: Restart php-fpm
+  ansible.builtin.systemd:
+    name: php-fpm.service
+    state: restarted
+  listen: 'restart php-fpm'
+
+- name: Restart usnermin
+  ansible.builtin.systemd:
+    name: usermin.service
+    state: restarted
+  listen: 'restart usermin'

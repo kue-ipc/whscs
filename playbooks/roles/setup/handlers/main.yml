@@ -1,0 +1,17 @@
+---
+- name: Restart chronyd
+  ansible.builtin.systemd:
+    name: chronyd.service
+    state: restarted
+  listen: 'restart chronyd'
+
+- name: Restart sshd
+  ansible.builtin.systemd:
+    name: sshd.service
+    state: restarted
+  listen: 'restart sshd'
+
+- name: Reload firewalld
+  ansible.builtin.command: firewall-cmd --reload
+  changed_when: true
+  listen: 'reload firewalld'

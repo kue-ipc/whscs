@@ -1,0 +1,17 @@
+# no httpd
+---
+- name: Disable and stop httpd for user
+  ansible.builtin.systemd:
+    name: 'httpd@{{ webuser.name }}.service'
+    enabled: false
+    state: stopped
+
+- name: Remove httpd conf for user
+  ansible.builtin.file:
+    path: '/etc/httpd/conf/{{ webuser.name }}.conf'
+    state: absent
+
+- name: Remove logrotate for httpd
+  ansible.builtin.file:
+    path: '/etc/logrotate.d/httpd@{{ webuser.name }}'
+    state: absent

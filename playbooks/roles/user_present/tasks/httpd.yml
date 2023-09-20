@@ -1,0 +1,35 @@
+# httpd
+---
+- name: Template httpd conf for user
+  ansible.builtin.template:
+    src: httpd/conf/user.conf.j2
+    dest: '/etc/httpd/conf/{{ webuser.name }}.conf'
+    owner: root
+    group: root
+    mode: '0644'
+  register: result_template_httpd
+
+- name: Enable httpd for user
+  ansible.builtin.systemd:
+    name: 'httpd@{{ webuser.name }}.service'
+    enabled: true
+
+- name: Start httpd for user
+  ansible.builtin.systemd:
+    name: 'httpd@{{ webuser.name }}.service'
+    state: started
+  register: result_start_httpd
+
+- name: Restart httpd for user
+  ansible.builtin.systemd:
+    name: 'httpd@{{ webuser.name }}.service'
+    state: restarted
+  when: result_template_httpd.changed and not result_start_httpd.changed
+
+- name: Template logrotate for httpd
+  ansible.builtin.template:
+    src: logrotate.d/httpd.j2
+    dest: '/etc/logrotate.d/httpd@{{ webuser.name }}'
+    owner: root
+    group: root
+    mode: '0644'

@@ -1,0 +1,25 @@
+# load data webuser
+
+- name: Find webuser yml
+  delegate_to: localhost
+  ansible.builtin.find:
+    paths: '{{ data_dir }}/webuser'
+    patterns: '*.yml'
+  register: result_find_webuser
+
+- name: Set webuser_list to an empty list
+  ansible.builtin.set_fact:
+    webuser_list: []
+
+- name: Load webuser_list
+  ansible.builtin.set_fact:
+    webuser_list: '{{ webuser_list + [lookup("file", item) | from_yaml | combine({"path": item})] }}'
+  loop: '{{ result_find_webuser.files | map(attribute="path") }}'
+
+- name: Convert webuser_list to webuser_dict
+  ansible.builtin.set_fact:
+    webuser_dict: '{{ dict(webuser_list | map(attribute="name") | zip(webuser_list)) }}'
+
+# - ansible.builtin.debug:
+#     msg: '{{ webuser_dict }}'
+#   when: ansible_check_mode

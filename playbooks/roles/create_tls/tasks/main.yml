@@ -1,0 +1,84 @@
+# create tls
+---
+- name: Import task webuser_presnt from user_present
+  ansible.builtin.import_role:
+    name: user_present
+    tasks_from: webuser_present
+  when:
+    - site is not defined
+    - user is defined
+
+- name: Set site
+  ansible.builtin.set_fact:
+    site: '{{ webuser.site }}'
+  when:
+    - site is not defined
+    - user is defined
+
+- name: Check site
+  ansible.builtin.assert:
+    that: site is defined
+    msg: 'Require `site` or `user` variable'
+    quiet: true
+
+- name: Set tls info
+  ansible.builtin.set_fact:
+    tls_info:
+      cn: '{{ site }}'
+      cert: '{{ data_tls_certs_dir }}/{{ site }}.cer'
+      csr: '{{ data_tls_csrs_dir }}/{{ site }}.csr'
+      key: '{{ data_tls_private_dir }}/{{ site }}.key'
+
+- name: Set backup_time
+  ansible.builtin.set_fact:
+    backup_time: '{{ "%Y%m%d_%H%M%S" | strftime }}'
+
+- name: Task move file
+  ansible.builtin.include_tasks: move_file.yml
+  loop:
+    - '{{ tls_info.cert }}'
+    - '{{ tls_info.csr }}'
+    - '{{ tls_info.key }}'
+  when: backup | default(False)
+
+- name: Task check no file
+  ansible.builtin.include_tasks: check_no_file.yml
+  loop:
+    - '{{ tls_info.cert }}'
+    - '{{ tls_info.csr }}'
+    - '{{ tls_info.key }}'
+
+- name: Create private key
+  community.crypto.openssl_privatekey:
+    path: '{{ tls_info.key }}'
+    type: '{{ tls_type }}'
+    curve: '{{ tls_curve }}'
+    size: '{{ tls_size }}'
+    mode: '0600'
+    backup: true
+    force: false
+
+- name: Create csr
+  community.crypto.openssl_csr:
+    path: '{{ tls_info.csr }}'
+    privatekey_path: '{{ tls_info.key }}'
+    digest: '{{ tls_digest }}'
+    country_name: '{{ tls_dn.country_name | default(None) }}'
+    state_or_province_name: '{{ tls_dn.state_or_province_name | default(None) }}'
+    locality_name: '{{ tls_dn.locality_name | default(None) }}'
+    organization_name: '{{ tls_dn.organization_name | default(None) }}'
+    common_name: '{{ tls_info.cn }}'
+    email_address: '{{ tls_dn.email_address | default(None) }}'
+    mode: '0644'
+    backup: true
+    force: false
+
+- name: Create selfsigned crt
+  community.crypto.x509_certificate:
+    privatekey_path: '{{ tls_info.key }}'
+    csr_path: '{{ tls_info.csr }}'
+    path: '{{ tls_info.cert }}'
+    provider: selfsigned
+    selfsigned_digest: '{{ tls_digest }}'
+    mode: '0644'
+  when: selfsigned | default(False)

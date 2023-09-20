@@ -1,0 +1,10 @@
+# health check
+---
+- name: Task system
+  ansible.builtin.import_tasks: system.yml
+
+- name: Task disk
+  ansible.builtin.import_tasks: disk.yml
+
+- name: Task service
+  ansible.builtin.import_tasks: service.yml

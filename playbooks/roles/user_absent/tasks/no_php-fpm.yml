@@ -1,0 +1,13 @@
+# no php-fpm
+---
+- name: Remove php-fpm conf for user
+  ansible.builtin.file:
+    path: '/etc/php-fpm.d/{{ webuser.name }}.conf'
+    state: absent
+  register: result_remove_php_fpm_conf
+
+- name: Reload php-fpm
+  ansible.builtin.systemd:
+    name: 'php-fpm.service'
+    state: reloaded
+  when: result_remove_php_fpm_conf.changed

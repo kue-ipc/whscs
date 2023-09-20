@@ -1,0 +1,6 @@
+# no var
+---
+- name: Remove user var
+  ansible.builtin.file:
+    path: '{{ webuser.var_dir }}'
+    state: absent

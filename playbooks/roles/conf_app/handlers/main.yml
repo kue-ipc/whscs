@@ -1,0 +1,44 @@
+---
+- name: Run restorecon
+  ansible.builtin.command:
+    argv:
+      - restorecon
+      - -RFv
+      - '{{ web_var_dir }}'
+  listen: 'run restorecon'
+  register: result_command_restorecon
+  changed_when: result_command_restorecon.stdout_lines | length > 0
+
+- name: Reload firewalld
+  ansible.builtin.command: firewall-cmd --reload
+  changed_when: true
+  listen: 'reload firewalld'
+
+- name: Reload systed
+  ansible.builtin.systemd:
+    daemon_reload: true
+  listen: 'reload systemd'
+
+- name: Restart php-fpm
+  ansible.builtin.systemd:
+    name: php-fpm.service
+    state: restarted
+  when: httpd_php == "php-fpm"
+  listen: 'restart php-fpm'
+
+- name: Restart all httpd
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: restarted
+  loop: >-
+    {{ ansible_facts.services.values()
+      | selectattr("name", "regex", "^httpd@")
+      | selectattr("status", "eq", "active")
+      | map(attribute="name") }}
+  listen: 'restart all httpd'
+
+- name: Restart sshd
+  ansible.builtin.systemd:
+    name: sshd.service
+    state: restarted
+  listen: 'restart sshd'

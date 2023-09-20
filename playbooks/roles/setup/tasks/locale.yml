@@ -1,0 +1,17 @@
+# ロケール設定
+---
+- name: Install Japanese language packages
+  ansible.builtin.dnf:
+    state: present
+    name: langpacks-ja
+
+- name: Check locale
+  ansible.builtin.command: localectl
+  register: result_localectl
+  changed_when: false
+
+- name: Set locale to Japanese
+  ansible.builtin.command: localectl set-locale LANG=ja_JP.UTF-8
+  register: result
+  changed_when: result.rc == 0
+  when: result_localectl.stdout is not search('LANG=ja_JP\.UTF-8')

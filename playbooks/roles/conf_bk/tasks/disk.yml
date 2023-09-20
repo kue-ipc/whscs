@@ -1,0 +1,27 @@
+# disk
+---
+# pesize32(MiB) -> max 2TiB
+- name: Role common lvm
+  ansible.builtin.import_role:
+    name: common_lvm
+  vars:
+    lvm_pesize: 32
+
+- name: Create a bakup data volume
+  community.general.lvol:
+    vg: '{{ lvm_vg }}'
+    lv: '{{ backup_data_name }}'
+    size: +100%FREE
+
+- name: Create a xfs filesystem on bakup data
+  community.general.filesystem:
+    dev: '/dev/{{ lvm_vg }}/{{ backup_data_name }}'
+    fstype: xfs
+    resizefs: true
+
+- name: Mount backup data
+  ansible.posix.mount:
+    path: '{{ backup_data_dir }}'
+    src: '/dev/{{ lvm_vg }}/{{ backup_data_name }}'
+    fstype: xfs
+    state: mounted

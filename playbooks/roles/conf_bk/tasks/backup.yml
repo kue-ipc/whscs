@@ -1,0 +1,17 @@
+---
+- name: Make backup dirs
+  ansible.builtin.file:
+    path: '{{ backup_data_dir }}/{{ item }}'
+    state: directory
+    owner: root
+    group: wheel
+    mode: '0750'
+  loop:
+    - db
+    - pg
+    - web
+
+- name: Install rsync
+  ansible.builtin.dnf:
+    state: present
+    name: rsync

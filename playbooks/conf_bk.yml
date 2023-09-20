@@ -1,0 +1,7 @@
+---
+- name: Conf Bk
+  hosts: bk
+  become: true
+  max_fail_percentage: 0
+  roles:
+    - conf_bk

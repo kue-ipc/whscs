@@ -1,0 +1,30 @@
+# ファイアウォール設定
+---
+- name: Enable and start firewalld
+  ansible.builtin.systemd:
+    name: firewalld.service
+    enabled: true
+    state: started
+
+- name: Add rich rule to firewalld for ssh
+  ansible.posix.firewalld:
+    state: enabled
+    rich_rule: >-
+      rule family="{{ item is ansible.utils.ipv4 | ternary("ipv4", "ipv6") }}"
+      source address="{{ item }}"
+      service name="ssh"
+      accept
+    permanent: true
+  loop: '{{ mgt_networks + web_networks }}'
+  notify: 'reload firewalld'
+
+- name: Rmevoe serivce from firewall
+  ansible.posix.firewalld:
+    state: disabled
+    service: '{{ item }}'
+    permanent: true
+  loop:
+    - cockpit
+    - dhcpv6-client
+    - ssh
+  notify: 'reload firewalld'

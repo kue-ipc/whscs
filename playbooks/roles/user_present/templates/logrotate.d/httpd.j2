@@ -1,0 +1,13 @@
+{{ webuser.chroot_dir }}/var/log/httpd/error_{{ inventory_hostname }}_log
+{{ webuser.chroot_dir }}/var/log/httpd/access_{{ inventory_hostname }}_log
+{{ webuser.chroot_dir }}/var/log/httpd/ssl_request_{{ inventory_hostname }}_log {
+    {{ logrotate_frequency }}
+    rotate {{ logrotate_rotate }}
+    missingok
+    notifempty
+    sharedscripts
+    delaycompress
+    postrotate
+        /bin/systemctl reload httpd@{{ webuser.name }}.service > /dev/null 2>/dev/null || true
+    endscript
+}

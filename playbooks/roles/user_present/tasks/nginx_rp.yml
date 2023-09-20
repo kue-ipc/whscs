@@ -1,0 +1,16 @@
+# nginx rp
+---
+- name: Template nginx conf for user in rp
+  ansible.builtin.template:
+    src: nginx/virtual.d/rp.conf.j2
+    dest: '/etc/nginx/virtual.d/{{ webuser.name }}.conf'
+    owner: root
+    group: root
+    mode: '0644'
+  register: template_nginx_conf
+
+- name: Reload nginx
+  ansible.builtin.systemd:
+    name: 'nginx.service'
+    state: reloaded
+  when: template_nginx_conf.changed

@@ -1,0 +1,5 @@
+---
+- name: Reload firewalld
+  ansible.builtin.command: firewall-cmd --reload
+  changed_when: true
+  listen: 'reload firewalld'

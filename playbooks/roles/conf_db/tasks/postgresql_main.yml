@@ -1,0 +1,41 @@
+# PostgreSQL main
+---
+# for demotion to backup
+- name: Copy .pgpass
+  ansible.builtin.copy:
+    dest: /var/lib/pgsql/.pgpass
+    content: |
+      {{ pg_main_server }}:5432:replication:{{ pg_replication_user }}:{{ pg_replication_password }}
+    owner: postgres
+    group: postgres
+    mode: '0600'
+
+- name: Run postgresql-setup
+  ansible.builtin.command:
+    cmd: /usr/bin/postgresql-setup --initdb
+    creates: /var/lib/pgsql/data/postgresql.conf
+
+- name: Task postgresql config
+  ansible.builtin.include_tasks: postgresql_config.yml
+
+- name: Enable and start postgresql
+  ansible.builtin.systemd:
+    service: postgresql.service
+    enabled: true
+    state: started
+
+- name: Add replaciton user to PostgreSQL
+  become_user: postgres
+  community.postgresql.postgresql_user:
+    name: '{{ pg_replication_user }}'
+    password: '{{ pg_replication_password }}'
+    role_attr_flags: REPLICATION
+
+# Set md5 password for HAProxy
+# https://github.com/haproxy/haproxy/issues/1508
+# EL9 haproxy-2.4.17 is not backported.
+- name: Add haproxy user to PostgreSQL
+  become_user: postgres
+  community.postgresql.postgresql_user:
+    name: '{{ haproxy_check_user }}'
+    password: 'md5{{ "haproxyhaproxy" | md5 }}'

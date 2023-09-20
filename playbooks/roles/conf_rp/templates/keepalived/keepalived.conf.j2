@@ -1,0 +1,41 @@
+! Configuration File for keepalived
+
+global_defs {
+    enable_script_security
+}
+
+vrrp_track_process nginx {
+    process nginx
+    interval 2
+}
+
+{% for address in vip_addresses %}
+vrrp_instance SC{{ loop.index }} {
+    state {{ ((vrrp_index | int - loop.index0) % vrrp_hosts | length == 0) | ternary("MASTER", "BACKUP") }}
+    interface {{ address is ansible.utils.ipv4_address
+      | ternary(ansible_default_ipv4.interface, ansible_default_ipv6.interface) }}
+    virtual_router_id {{ loop.index }}
+    priority {{ ((vrrp_index | int - loop.index0) % vrrp_hosts | length == 0)
+      | ternary("100",  50 - ((vrrp_index | int - loop.index0) % vrrp_hosts | length - 1) * 10) }}
+    advert_int 1
+    unicast_src_ip {{ address is ansible.utils.ipv4_address
+      | ternary(ansible_default_ipv4.address, ansible_default_ipv6.address) }}
+    unicast_peer {
+{% if address is ansible.utils.ipv4_address %}
+{% for peer in vrrp_hosts | map(attribute="ipv4") | reject("in", [ansible_default_ipv4.address, ""]) %}
+        {{ peer }}
+{% endfor %}
+{% else %}
+{% for peer in vrrp_hosts | map(attribute="ipv6") | reject("in", [ansible_default_ipv6.address, ""]) %}
+        {{ peer }}
+{% endfor %}
+{% endif %}
+    }
+    virtual_ipaddress {
+        {{ address }}
+    }
+    track_process {
+        nginx
+    }
+}
+{% endfor %}

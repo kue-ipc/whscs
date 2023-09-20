@@ -1,0 +1,31 @@
+# webuser present
+# 存在するwebuserのデータを取得し、各変数をセットする。
+---
+- name: Require user
+  ansible.builtin.assert:
+    that: user is defined
+    msg: 'Require `user` variable'
+    quiet: true
+
+- name: Check user pattern
+  ansible.builtin.assert:
+    that: user is regex("^\w+$")
+    msg: 'Invalid `user` variable: {{ user }}'
+    quiet: true
+
+- name: Set webuser yml
+  ansible.builtin.set_fact:
+    webuser_yml: '{{ data_webuser_dir }}/{{ user }}.yml'
+
+- name: Check webuser yml present
+  ansible.builtin.assert:
+    that: lookup("first_found", [webuser_yml], errors="ignore") == webuser_yml
+    msg: 'Not found webuser yml: {{ webuser_yml }}'
+    quiet: true
+
+- name: Load webuser yml
+  ansible.builtin.set_fact:
+    webuser: '{{ lookup("file", webuser_yml) | from_yaml }}'
+
+- name: Task merge webuser
+  ansible.builtin.import_tasks: merge_webuser.yml

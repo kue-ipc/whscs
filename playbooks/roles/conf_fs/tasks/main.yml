@@ -1,0 +1,10 @@
+# fs - GlusterFS server
+---
+- name: Task disk
+  ansible.builtin.import_tasks: disk.yml
+
+- name: Task firewalld
+  ansible.builtin.import_tasks: firewalld.yml
+
+- name: Task gluster
+  ansible.builtin.import_tasks: gluster.yml

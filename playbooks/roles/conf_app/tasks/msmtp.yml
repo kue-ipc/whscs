@@ -1,0 +1,17 @@
+# msmtp
+---
+- name: Install epel-release
+  ansible.builtin.dnf:
+    state: present
+    name: epel-release
+
+- name: Install msmtp
+  ansible.builtin.dnf:
+    state: present
+    name: msmtp
+
+- name: Template msmtprc
+  ansible.builtin.template:
+    src: msmtprc.j2
+    dest: /etc/msmtprc
+    mode: '0644'

@@ -1,0 +1,16 @@
+# package
+---
+- name: Install centos-release-gluster9
+  ansible.builtin.dnf:
+    state: present
+    name: centos-release-gluster9
+
+- name: Install glusterfs-server
+  ansible.builtin.dnf:
+    state: present
+    name: glusterfs-server
+
+- name: Install lvms2
+  ansible.builtin.dnf:
+    state: present
+    name: lvm2

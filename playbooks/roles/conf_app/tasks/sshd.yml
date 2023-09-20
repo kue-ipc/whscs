@@ -1,0 +1,22 @@
+# sshd
+---
+- name: Set seboolean use fusefs hom dirs
+  ansible.posix.seboolean:
+    name: use_fusefs_home_dirs
+    state: true
+    persistent: true
+
+- name: Copy users.conf
+  ansible.builtin.copy:
+    src: sshd/users.conf
+    dest: /etc/ssh/sshd_config.d/users.conf
+    mode: '0600'
+  notify: 'restart sshd'
+  when: ansible_distribution_version is version("9", ">=")
+
+- name: Block users in sshd_conf
+  ansible.builtin.blockinfile:
+    path: /etc/ssh/sshd_config
+    content: '{{ lookup("file", "sshd/users.conf") }}'
+  notify: 'restart sshd'
+  when: ansible_distribution_version is version("9", "<")

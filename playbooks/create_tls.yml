@@ -1,0 +1,5 @@
+---
+- name: Creat tls
+  hosts: localhost
+  roles:
+    - create_tls

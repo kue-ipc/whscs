@@ -1,0 +1,121 @@
+# usermin
+---
+- name: Get wbmin setup-repos.sh
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh
+    dest: /root/setup-repos.sh
+    mode: '0644'
+  environment:
+    https_proxy: '{{ proxy_uri | default(omit) }}'
+
+- name: Run webmin setup-repos.sh
+  ansible.builtin.command:
+    cmd: sh /root/setup-repos.sh
+    stdin: "y\n"
+    creates: /etc/yum.repos.d/webmin.repo
+  environment:
+    https_proxy: '{{ proxy_uri | default(omit) }}'
+
+# systemd cannot reead /var/usermin/miniserv.pid with setype var_t
+# https://forum.virtualmin.com/t/selinux-issue-with-miniserv-pid-on-redhat-8/116597
+- name: Set SELinux file context for usermin
+  community.general.sefcontext:
+    target: '{{ item.target }}'
+    ftype: '{{ item.ftype | default("a") }}'
+    selevel: '{{ item.selevel | default("s0") }}'
+    setype: '{{ item.setype }}'
+    seuser: '{{ item.seuser | default("system_u") }}'
+  loop:
+    - { target: '/var/usermin(/.*)?', setype: var_log_t }
+  notify: 'run restorecon /var/usermin'
+
+- name: Install usermin
+  ansible.builtin.dnf:
+    state: present
+    name: usermin
+
+- name: Line in config file
+  ansible.builtin.lineinfile:
+    path: /etc/usermin/config
+    regexp: '^{{ item.key }}='
+    line: '{{ item.key }}={{ item.value }}'
+  notify: 'restart usermin'
+  loop:
+    - {key: webprefix, value: /usermin}
+    - {key: webprefixnoredir, value: 1}
+    - {key: referers, value: '{{ mgt_site }} '}
+    - {key: lang, value: 'ja_JP.UTF-8'}
+
+- name: Line in postgresql/config file
+  ansible.builtin.lineinfile:
+    path: /etc/usermin/postgresql/config
+    regexp: '^{{ item.key }}='
+    line: '{{ item.key }}={{ item.value }}'
+  notify: 'restart usermin'
+  loop:
+    - {key: host, value: pg}
+
+- name: Set usermin module
+  ansible.builtin.set_fact:
+    usermin_modules:
+      # - at
+      - changepass
+      # - chfn
+      # - commands
+      # - cron
+      # - cshrc
+      # - fetchmail
+      # - filemin
+      # - filter
+      # - forward
+      # - gnupg
+      # - htaccess-htpasswd
+      # - htaccess
+      # - language
+      # - mailbox
+      # - mailcap
+      # - man
+      - mysql
+      # - plan
+      - postgresql
+      # - proc
+      # - procmail
+      # - quota
+      # - schedule
+      # - shell
+      # - spam
+      # - ssh
+      # - telnet
+      # - theme
+      # - tunnel
+      # - twofactor
+      # - updown
+      # - usermount
+      # - xterm
+
+- name: Replace in webmin.acl
+  ansible.builtin.replace:
+    path: /etc/usermin/webmin.acl
+    regexp: '^user:.*$'
+    replace: 'user: {{ usermin_modules | join(" ") }}'
+  notify: 'restart usermin'
+
+- name: Enable and start usermin
+  ansible.builtin.systemd:
+    name: usermin.service
+    enabled: true
+    state: started
+
+- name: Set seport for nginx to usermin
+  community.general.seport:
+    ports: 20000
+    proto: tcp
+    setype: http_port_t
+    state: present
+
+- name: Copy nginx conf
+  ansible.builtin.copy:
+    src: nginx/default.d/usermin.conf
+    dest: /etc/nginx/default.d/usermin.conf
+    mode: '0644'
+  notify: 'restart nginx'

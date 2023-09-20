@@ -1,0 +1,5 @@
+/group_vars/*
+!/group_vars/.gitkeep
+/host_vars/*
+!/host_vars/.gitkeep
+test.yml

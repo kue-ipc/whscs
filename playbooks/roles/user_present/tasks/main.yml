@@ -1,0 +1,168 @@
+# user present
+---
+## webuser
+
+- name: Task present webuser
+  ansible.builtin.import_tasks: webuser_present.yml
+
+## userm
+
+- name: Task user
+  ansible.builtin.include_tasks: user.yml
+  when: group_names | intersect(["mgt", "app"]) | length > 0
+
+## chroot dir
+
+- name: Task chroot dir
+  ansible.builtin.include_tasks: chroot_dir.yml
+  when: inventory_hostname == backup_main_server
+
+- name: Task chroot user
+  ansible.builtin.include_tasks: chroot_user.yml
+  when: inventory_hostname == mgt_main_server
+
+## var
+
+- name: Task var
+  ansible.builtin.include_tasks: var.yml
+  when: '"app" in group_names'
+
+## mount
+
+- name: Task mount
+  ansible.builtin.include_tasks: web_mount.yml
+  when: group_names | intersect(["mgt", "app"]) | length > 0
+
+## tls
+
+- name: Task tls
+  ansible.builtin.include_tasks: tls.yml
+  when: group_names | intersect(["web", "app", "rp"]) | length > 0
+
+## app
+
+- name: Task app
+  ansible.builtin.include_tasks: app.yml
+  when:
+    - '"app" in group_names'
+    - webuser.enabled
+    - webuser.host in group_names
+    - webuser.app_use
+    - not webuser.app_one or groups[webuser.host] | first == inventory_hostname
+
+- name: Task php-fpm
+  ansible.builtin.include_tasks: php-fpm.yml
+  when:
+    - httpd_php == "php-fpm"
+    - '"app" in group_names'
+    - webuser.enabled
+    - webuser.host in group_names
+
+- name: Task httpd
+  ansible.builtin.include_tasks: httpd.yml
+  when:
+    - '"app" in group_names'
+    - webuser.enabled
+    - webuser.host in group_names
+
+## web
+
+- name: Task nginx web
+  ansible.builtin.include_tasks: nginx_web.yml
+  when:
+    - '"web" in group_names'
+    - webuser.enabled
+
+## rp
+
+- name: Task nginx rp
+  ansible.builtin.include_tasks: nginx_rp.yml
+  when:
+    - '"rp" in group_names'
+    - webuser.enabled
+    - webuser.public
+
+## no rp
+
+- name: Task no nginx in user_absent for rp
+  ansible.builtin.include_role:
+    name: user_absent
+    tasks_from: no_nginx
+  when:
+    - '"rp" in group_names'
+    - not webuser.enabled or not webuser.public
+
+# no web
+
+- name: Task no nginx in user_absent for web
+  ansible.builtin.include_role:
+    name: user_absent
+    tasks_from: no_nginx
+  when:
+    - '"web" in group_names'
+    - not webuser.enabled
+
+## no app
+
+- name: Task no httpd in user_absent
+  ansible.builtin.include_role:
+    name: user_absent
+    tasks_from: no_httpd
+  when:
+    - '"app" in group_names'
+    - >-
+      not webuser.enabled or
+      webuser.host not in group_names
+
+- name: Task no php-fpm in user_absent
+  ansible.builtin.include_role:
+    name: user_absent
+    tasks_from: no_php-fpm
+  when:
+    - httpd_php == "php-fpm"
+    - '"app" in group_names'
+    - >-
+      not webuser.enabled or
+      webuser.host not in group_names
+
+- name: Task no app in user_absent
+  ansible.builtin.include_role:
+    name: user_absent
+    tasks_from: no_app.yml
+  when:
+    - '"app" in group_names'
+    - >-
+      not webuser.enabled or
+      webuser.host not in group_names or
+      not webuser.app_use or
+      (webuser.app_one and groups[webuser.host] | first != inventory_hostname)
+
+## DB and PG
+
+- name: Task mariadb
+  ansible.builtin.include_tasks: mariadb.yml
+  when:
+    - inventory_hostname == db_main_server
+    - webuser.db_use
+
+- name: Task postgresql
+  ansible.builtin.include_tasks: postgresql.yml
+  when:
+    - inventory_hostname == pg_main_server
+    - webuser.pg_use
+
+- name: Task no mariadb in user_absent
+  ansible.builtin.include_role:
+    name: user_absent
+    tasks_from: no_mariadb
+  when:
+    - inventory_hostname == db_main_server
+    - not webuser.db_use
+
+- name: Task no postgresql in user_absent
+  ansible.builtin.include_role:
+    name: user_absent
+    tasks_from: no_postgresql
+  when:
+    - inventory_hostname == pg_main_server
+    - not webuser.pg_use

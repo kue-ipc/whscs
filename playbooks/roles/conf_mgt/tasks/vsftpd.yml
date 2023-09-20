@@ -1,0 +1,88 @@
+# vsftpd
+---
+- name: Install vsftpd
+  ansible.builtin.dnf:
+    state: present
+    name: vsftpd
+
+- name: Set seboolean for vsftpd
+  ansible.posix.seboolean:
+    name: '{{ item }}'
+    state: true
+    persistent: true
+  loop:
+    - ftpd_use_fusefs
+
+- name: Line in vsftpd.conf
+  ansible.builtin.lineinfile:
+    path: /etc/vsftpd/vsftpd.conf
+    regexp: '^#?{{ item.key }}='
+    line: >-
+      {{ item.key }}={{ item.value is boolean | ternary(
+        item.value | ternary("YES", "NO"),
+        item.value | string) }}
+  loop: '{{ vsftpd_conf | dict2items }}'
+  notify: 'restart vsftpd'
+
+- name: Block ssl in vsftpd
+  ansible.builtin.blockinfile:
+    path: /etc/vsftpd/vsftpd.conf
+    marker: '# {mark} ANSIBLE MANAGED BLOCK ssl'
+    state: '{{ ftp_ssl | ternary("present", "absent") }}'
+    block: |
+      ssl_enable=YES
+      rsa_cert_file={{ mgt_tls_cert }}
+      rsa_private_key_file={{ mgt_tls_key }}
+      {% if ftp_ssl_min is not defined %}
+      {% elif ftp_ssl_min == "SSLv2" %}
+      ssl_sslv2=YES
+      ssl_sslv3=YES
+      ssl_tlsv1=YES
+      ssl_tlsv1_1=YES
+      {% elif ftp_ssl_min == "SSLv3" %}
+      ssl_sslv3=YES
+      ssl_tlsv1=YES
+      ssl_tlsv1_1=YES
+      {% elif ftp_ssl_min == "TLSv1" %}
+      ssl_tlsv1=YES
+      ssl_tlsv1_1=YES
+      {% elif ftp_ssl_min == "TLSv1.1" %}
+      ssl_tlsv1_1=YES
+      {% elif ftp_ssl_min == "TLSv1.2" %}
+      {% elif ftp_ssl_min == "TLSv1.3" %}
+      ssl_tlsv1_2=NO
+      {% endif %}
+      {% if ftp_ssl_mode == "implicit" %}
+      implicit_ssl=YES
+      listen_port=990
+      {% endif %}
+
+- name: Block ssl in vsftpd
+  ansible.builtin.blockinfile:
+    path: /etc/vsftpd/vsftpd.conf
+    marker: '# {mark} ANSIBLE MANAGED BLOCK pasv port'
+    state: '{{ ftp_pasv_port_range is defined | ternary("present", "absent") }}'
+    block: |
+      pasv_min_port={{ (ftp_pasv_port_range | default([0, 0]))[0] }}
+      pasv_max_port={{ (ftp_pasv_port_range | default([0, 0]))[1] }}
+
+- name: Enable and start vsftpd
+  ansible.builtin.systemd:
+    name: vsftpd.service
+    enabled: true
+    state: started
+
+- name: Set ftp service in firewalld
+  ansible.posix.firewalld:
+    state: enabled
+    service: ftp
+    permanent: true
+  notify: 'reload firewalld'
+
+- name: Set ftp pasv port in firewalld
+  ansible.posix.firewalld:
+    state: enabled
+    port: '{{ ftp_pasv_port_range[0] }}-{{ ftp_pasv_port_range[1] }}/tcp'
+    permanent: true
+  when: ftp_pasv_port_range is defined
+  notify: 'reload firewalld'

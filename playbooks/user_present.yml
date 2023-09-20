@@ -1,0 +1,12 @@
+- name: User present
+  hosts:
+    - bk
+    - mgt
+    - web
+    - app
+    - db
+    - rp
+  become: true
+  max_fail_percentage: 0
+  roles:
+    - user_present

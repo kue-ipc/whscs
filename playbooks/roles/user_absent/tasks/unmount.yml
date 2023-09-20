@@ -1,0 +1,6 @@
+# unmount
+---
+- name: Stop web-mount for user
+  ansible.builtin.systemd:
+    name: 'web-mount@{{ webuser.name }}.service'
+    state: stopped

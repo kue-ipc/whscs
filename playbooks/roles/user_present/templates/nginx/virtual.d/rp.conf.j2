@@ -1,0 +1,17 @@
+server {
+{% if webuser.site == default_site %}
+    listen       443 ssl http2 default_server;
+    listen       [::]:443 ssl http2 default_server;
+{% else %}
+    listen       443 ssl http2;
+    listen       [::]:443 ssl http2;
+{% endif %}
+    server_name  {{ webuser.site }};
+
+    ssl_certificate     "{{ webuser.tls_cert }}";
+    ssl_certificate_key "{{ webuser.tls_key }}";
+
+    location / {
+        proxy_pass https://web;
+    }
+}

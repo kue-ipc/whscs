@@ -1,0 +1,4 @@
+# conf lb
+---
+- name: Task keepalived
+  ansible.builtin.import_tasks: keepalived.yml

@@ -1,0 +1,77 @@
+# keepalived
+# LVS DR for http/https
+---
+- name: Install Keepalived
+  ansible.builtin.dnf:
+    state: present
+    name: keepalived
+
+- name: Set vrrp_hosts is emtpy
+  ansible.builtin.set_fact:
+    vrrp_hosts: []
+
+# - name: Set host in vrrp_hosts
+#   ansible.builtin.set_fact:
+#     vrrp_hosts: >-
+#       {{
+#         vrrp_hosts + [{
+#           "hostname": hostvars[item].inventory_hostname_short,
+#           "fqdn": (hostvars[item].inventory_hostname_short == hostvars[item].inventory_hostname)
+#             | ternary(hostvars[item].inventory_hostname ~ "." ~ server_domain, hostvars[item].inventory_hostname),
+#           "ipv4": hostvars[item].ansible_host | default("") is ansible.utils.ipv4_address
+#             | ternary(hostvars[item].ansible_host | default(""), hostvars[item].inventory_ipv4 | default("")),
+#           "ipv6": hostvars[item].ansible_host | default("") is ansible.utils.ipv6_address
+#             | ternary(hostvars[item].ansible_host | default(""), hostvars[item].inventory_ipv6 | default(""))
+#         }]
+#       }}
+#   loop: '{{ groups[vip_group] }}'
+
+- name: Set vrrp_index
+  ansible.builtin.set_fact:
+    vrrp_index: '{{ groups[vip_group] | ansible.utils.index_of("eq", inventory_hostname) }}'
+
+- name: Set vrrp_peers
+  ansible.builtin.set_fact:
+    vrrp_peers: >-
+      {{
+        (
+          groups[vip_group] | map("extract", hostvars) | map(attribute="ansible_host") +
+          groups[vip_group] | map("extract", hostvars) | map(attribute="inventory_ipv4", default=omit) +
+          groups[vip_group] | map("extract", hostvars) | map(attribute="inventory_ipv6", default=omit)
+        ) | ansible.utils.ipaddr | reject("in", [ansible_default_ipv4.address, ansible_default_ipv6.address])
+      }}
+
+- name: Set host in real_servers
+  ansible.builtin.set_fact:
+    real_servers: >-
+      {{
+        (
+          groups[lvs_dr_group] | map("extract", hostvars) | map(attribute="ansible_host") +
+          groups[lvs_dr_group] | map("extract", hostvars) | map(attribute="inventory_ipv4", default=omit) +
+          groups[lvs_dr_group] | map("extract", hostvars) | map(attribute="inventory_ipv6", default=omit)
+        ) | ansible.utils.ipaddr
+      }}
+  loop: '{{ groups[lvs_dr_group] }}'
+
+- name: Template keepalived.cfg
+  ansible.builtin.template:
+    src: keepalived/keepalived.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: 'restart keepalived'
+
+- name: Enable and start keepalived
+  ansible.builtin.systemd:
+    name: keepalived.service
+    enabled: true
+    state: started
+
+- name: Allow web service in firewall
+  ansible.posix.firewalld:
+    state: enabled
+    service: '{{ item }}'
+    permanent: true
+  loop: '{{ web_services | map(attribute="name") }}'
+  notify: 'reload firewalld'

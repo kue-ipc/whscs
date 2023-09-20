@@ -1,0 +1,5 @@
+---
+- name: Health Check
+  hosts: all
+  roles:
+    - health_check

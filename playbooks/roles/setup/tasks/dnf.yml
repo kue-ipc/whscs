@@ -1,0 +1,20 @@
+# dnf設定
+---
+- name: Block in dnf.conf
+  ansible.builtin.blockinfile:
+    path: /etc/dnf/dnf.conf
+    marker: '# {mark} ANSIBLE MANAGED BLOCK proxy'
+    block: |
+      proxy={{ proxy_uri }}
+      timeout=600
+  when: proxy_uri is defined
+
+- name: Install group Minimal Install
+  ansible.builtin.dnf:
+    state: present
+    name: '@Minimal Install'
+
+- name: Install common package
+  ansible.builtin.dnf:
+    state: present
+    name: policycoreutils-python-utils

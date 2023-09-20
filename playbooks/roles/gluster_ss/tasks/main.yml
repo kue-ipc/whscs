@@ -1,0 +1,11 @@
+---
+- name: Create gluster snapshot
+  ansible.builtin.command:
+    argv:
+      - /usr/sbin/gluster
+      - snapshot
+      - create
+      - '{{ gluster_snapshot_name }}'
+      - '{{ gluster_volume }}'
+  changed_when: true
+  when: inventory_hostname == gluster_main_server

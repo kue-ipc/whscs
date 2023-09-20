@@ -1,0 +1,7 @@
+# fs client - GlusterFS client
+---
+- name: Task package
+  ansible.builtin.import_tasks: package.yml
+
+- name: Task web
+  ansible.builtin.import_tasks: web.yml

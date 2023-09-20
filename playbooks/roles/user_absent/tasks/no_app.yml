@@ -1,0 +1,7 @@
+# app
+---
+- name: Disable and stop app for user
+  ansible.builtin.systemd:
+    name: 'app@{{ webuser.name }}.service'
+    enabled: false
+    state: stopped

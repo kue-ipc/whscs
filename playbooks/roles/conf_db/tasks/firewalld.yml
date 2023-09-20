@@ -1,0 +1,42 @@
+# ファイアウォール設定
+---
+- name: Add rich rule to firewalld for mysql
+  ansible.posix.firewalld:
+    state: enabled
+    rich_rule: >-
+      rule family="{{ item is ansible.utils.ipv4 | ternary("ipv4", "ipv6") }}"
+      source address="{{ item }}"
+      service name="mysql"
+      accept
+    immediate: true
+    permanent: true
+  loop: '{{ web_networks }}'
+
+- name: Add rich rule to firewalld for postgresql
+  ansible.posix.firewalld:
+    state: enabled
+    rich_rule: >-
+      rule family="{{ item is ansible.utils.ipv4 | ternary("ipv4", "ipv6") }}"
+      source address="{{ item }}"
+      service name="postgresql"
+      accept
+    immediate: true
+    permanent: true
+  loop: '{{ web_networks }}'
+
+# IPv4 only
+- name: Add rich rule to firewalld for galera only db group
+  ansible.posix.firewalld:
+    state: enabled
+    rich_rule: >-
+      rule family="{{ item is ansible.utils.ipv4 | ternary("ipv4", "ipv6") }}"
+      source address="{{ item }}"
+      service name="galera"
+      accept
+    immediate: true
+    permanent: true
+  loop: >-
+    {{ ((groups["db"] | map("extract", hostvars) | map(attribute="ansible_host", default=""))
+      + (groups["db"] | map("extract", hostvars) | map(attribute="inventory_ipv4", default="")))
+      | unique | reject("eq", "")
+    }}

@@ -1,0 +1,16 @@
+---
+- name: Instnall php
+  ansible.builtin.dnf:
+    state: present
+    name:
+      - php
+      - php-fpm
+      - php-mysqlnd
+      - php-pgsql
+
+- name: Set expose_php php.ini
+  ansible.builtin.replace:
+    path: /etc/php.ini
+    regexp: '^;?expose_php\s*=.*$'
+    replace: 'expose_php = Off'
+  notify: 'restart php-fpm'

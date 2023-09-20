@@ -1,0 +1,31 @@
+# common nginx
+---
+- name: Add nginx group
+  ansible.builtin.group:
+    name: nginx
+    gid: '{{ nginx_gid }}'
+    system: true
+    state: present
+
+- name: Add nginx user
+  ansible.builtin.user:
+    name: nginx
+    uid: '{{ nginx_uid }}'
+    group: nginx
+    comment: Nginx web server
+    home: /var/lib/nginx
+    shell: /sbin/nologin
+    create_home: false
+    system: true
+    state: present
+
+- name: Install nginx
+  ansible.builtin.dnf:
+    state: present
+    name: '@nginx:{{ nginx_version }}'
+  when: nginx_version is defined
+
+- name: Install nginx
+  ansible.builtin.dnf:
+    state: present
+    name: nginx

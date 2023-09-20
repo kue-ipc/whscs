@@ -1,0 +1,71 @@
+! Configuration File for keepalived
+
+global_defs {
+}
+
+{% for address in vip_addresses %}
+vrrp_instance LB_{{ loop.index }} {
+    state {{ ((vrrp_index | int - loop.index0) % groups[vip_group] | length == 0) | ternary("MASTER", "BACKUP") }}
+    interface {{ ansible_facts["default_ipv" ~ (address | ansible.utils.ipaddr("version"))].interface }}
+    virtual_router_id {{ loop.index }}
+    priority {{ ((vrrp_index | int - loop.index0) % groups[vip_group] | length == 0)
+      | ternary(100,  50 - ((vrrp_index | int - loop.index0) % groups[vip_group] | length - 1) * 10) }}
+    advert_int 1
+    unicast_src_ip {{ ansible_facts["default_ipv" ~ (address | ansible.utils.ipaddr("version"))].address }}
+    unicast_peer {
+{% for peer in vrrp_peers | ansible.utils.ipaddr(version=(address | ansible.utils.ipaddr("version"))) %}
+        {{ peer }}
+{% endfor %}
+    }
+    virtual_ipaddress {
+        {{ address }}
+    }
+}
+{% for service in web_services %}
+virtual_server {{ address }} {{ service.port }} {
+    delay_loop 10
+    lb_algo rr
+    lb_kind DR
+    persistence_timeout 9600
+    protocol {{ service.protocol | upper }}
+{% for real_server in real_servers | ansible.utils.ipaddr(version=(address | ansible.utils.ipaddr("version"))) %}
+    real_server {{ real_server }} {{ service.port }} {
+        weight 1
+{% if service.name == "http" %}
+        HTTP_GET {
+            url {
+                path /
+                status_code 200-399 
+            }
+            connect_timeout 3
+            retry 3
+            delay_before_retry 3
+        }
+{% elif service.name == "https" %}
+        SSL_GET {
+            url {
+               path /
+            }
+            connect_timeout 3
+            retry 3
+            delay_before_retry 3
+        }
+{% elif service.name == "http3" %}
+        UDP_CHECK {
+            connect_timeout 3
+            retry 3
+            delay_before_retry 3
+            require_reply
+        }
+{% else %}
+        {{ service.protocol | upper }}_CHECK {
+            connect_timeout 3
+            retry 3
+            delay_before_retry 3
+        }
+{% endif %}
+    }
+{% endfor %}
+}
+{% endfor %}
+{% endfor %}

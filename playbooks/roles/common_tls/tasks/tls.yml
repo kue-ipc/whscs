@@ -1,0 +1,25 @@
+# tls dir
+---
+- name: Make tls dir
+  ansible.builtin.file:
+    path: '{{ web_tls_dir }}'
+    owner: root
+    group: root
+    mode: '0755'
+    state: directory
+
+- name: Make tls certs dir
+  ansible.builtin.file:
+    path: '{{ web_tls_certs_dir }}'
+    owner: root
+    group: root
+    mode: '0755'
+    state: directory
+
+- name: Make tls private dir
+  ansible.builtin.file:
+    path: '{{ web_tls_private_dir }}'
+    owner: root
+    group: root
+    mode: '0700'
+    state: directory

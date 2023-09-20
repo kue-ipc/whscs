@@ -1,0 +1,52 @@
+# nginx
+---
+- name: Import role common nginx
+  ansible.builtin.import_role:
+    name: common_nginx
+
+- name: Set seboolean for nginx
+  ansible.posix.seboolean:
+    name: '{{ item }}'
+    state: true
+    persistent: true
+  loop:
+    - httpd_use_fusefs
+    - httpd_can_network_relay
+
+- name: Set seport for nginx to httpd
+  community.general.seport:
+    ports: '{{ user_uid_range.start + 7000 }}-{{ user_uid_range.stop - 1 + 7000 }}'
+    proto: tcp
+    setype: http_port_t
+    state: present
+
+- name: Template nginx.conf
+  ansible.builtin.template:
+    src: nginx/nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: 'restart nginx'
+
+- name: Make virtual.d dir
+  ansible.builtin.file:
+    path: /etc/nginx/virtual.d
+    owner: root
+    group: root
+    mode: '0755'
+    state: directory
+
+- name: Enable and start nginx
+  ansible.builtin.systemd:
+    name: nginx.service
+    enabled: true
+    state: started
+
+- name: Allow web service in firewall
+  ansible.posix.firewalld:
+    state: enabled
+    service: '{{ item }}'
+    permanent: true
+  loop: '{{ web_services | map(attribute="name") }}'
+  notify: 'reload firewalld'

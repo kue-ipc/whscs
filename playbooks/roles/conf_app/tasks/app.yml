@@ -1,0 +1,10 @@
+# app
+---
+- name: Creaet systemd app@.serivce
+  ansible.builtin.template:
+    src: systemd/app@.service.j2
+    dest: /etc/systemd/system/app@.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: 'reload systemd'

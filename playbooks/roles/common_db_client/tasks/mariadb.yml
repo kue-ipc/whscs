@@ -1,0 +1,12 @@
+# MariaDB
+---
+- name: Line in client conf
+  ansible.builtin.lineinfile:
+    path: "/etc/my.cnf.d/client.cnf"
+    insertafter: '\[client\]'
+    regexp: '^#?{{ item.name }}\s*=.*$'
+    line: '{{ item.name }}={{ item.value }}'
+  loop:
+    - { name: default-character-set, value: '{{ db_character_set }}' }
+    - { name: host, value: db }
+    - { name: port, value: 3306 }

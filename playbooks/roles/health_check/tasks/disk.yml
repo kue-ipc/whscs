@@ -1,0 +1,22 @@
+# disk
+---
+- name: Check disk free space
+  ansible.builtin.assert:
+    that: item.size_available > item.size_total * (1.0 - threshold_disk_size)
+    msg: 'disk used over {{ (threshold_disk_size * 100) }}%'
+    quiet: true
+  loop: >-
+    {{ ansible_mounts
+       | rejectattr("mount", "match", "(/var/lib/snapd)?/snap/")
+       | rejectattr("mount", "match", "/web/[^/]+/")
+       | rejectattr("mount", "match", "/run/gluster/snaps/")
+       | rejectattr("fstype", "in", ["autofs"])
+    }}
+  loop_control:
+    label: >-
+      {{ item.device }}
+      {{ item.size_total | human_readable }}
+      {{ (item.size_total - item.size_available) | human_readable }}
+      {{ item.size_available | human_readable }}
+      {{ ((1.0 - item.size_available / item.size_total) * 100) | int }}%
+      {{ item.mount }}

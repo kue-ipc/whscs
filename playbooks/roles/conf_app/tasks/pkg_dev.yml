@@ -1,0 +1,6 @@
+# Development
+
+- name: Install group Development Tools
+  ansible.builtin.dnf:
+    state: present
+    name: '@Development Tools'

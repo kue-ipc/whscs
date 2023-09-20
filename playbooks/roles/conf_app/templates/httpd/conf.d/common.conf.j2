@@ -1,0 +1,202 @@
+# common httpd conf
+
+#ServerRoot "/etc/httpd"
+#Listen 443
+
+## Modules
+
+#Include conf.modules.d/*.conf
+
+Include conf.modules.d/00-base.conf
+IncludeOptional conf.modules.d/00-brotli.conf
+#Include conf.modules.d/00-dav.conf
+Include conf.modules.d/00-lua.conf
+Include conf.modules.d/00-mpm.conf
+#Include conf.modules.d/00-optional.conf
+Include conf.modules.d/00-proxy.conf
+Include conf.modules.d/00-ssl.conf
+Include conf.modules.d/00-systemd.conf
+Include conf.modules.d/01-cgi.conf
+Include conf.modules.d/01-ldap.conf
+Include conf.modules.d/10-fcgid.conf
+<IfModule !mpm_prefork_module>
+    Include conf.modules.d/10-h2.conf
+</IfModule>
+Include conf.modules.d/10-mod_security.conf
+Include conf.modules.d/10-proxy_h2.conf
+IncludeOptional conf.modules.d/15-php.conf
+IncludeOptional conf.modules.d/20-php.conf
+
+## User/Group
+
+#User apache
+Group apache
+
+## Main
+
+ServerAdmin {{ admin_mail }}
+#ServerName www.example.com:80
+
+## Directory
+
+<Directory "/">
+    AllowOverride none
+    Require all denied
+</Directory>
+
+DocumentRoot "/public_html"
+
+<Directory "/public_html">
+    Options FollowSymLinks ExecCGI IncludesNOEXEC
+    AllowOverride All
+    Require all granted
+</Directory>
+
+DirectoryIndex index.html index.htm
+
+<Files ".ht*">
+    Require all denied
+</Files>
+
+## Log
+
+BufferedLogs On
+
+#ErrorLog "logs/error_log"
+
+LogLevel warn
+
+LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+LogFormat "%h %l %u %t \"%r\" %>s %b" common
+<IfModule logio_module>
+    # You need to enable mod_logio.c to use %I and %O
+    LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %I %O" combinedio
+</IfModule>
+#CustomLog "logs/access_log" common
+#CustomLog "logs/access_log" combined
+
+## Types
+
+TypesConfig "/etc/mime.types"
+
+AddType application/x-compress .Z
+AddType application/x-gzip .gz .tgz
+
+#AddDefaultCharset UTF-8
+
+MIMEMagicFile "conf/magic"
+
+EnableMMAP off
+EnableSendfile on
+
+### CGI
+
+AddHandler cgi-script .cgi
+DirectoryIndex index.cgi
+
+### SSI
+
+AddType text/html .shtml
+AddOutputFilter INCLUDES .shtml
+DirectoryIndex index.shtml
+
+### PHP
+
+<Files ".user.ini">
+    Require all denied
+</Files>
+AddType text/html .php
+DirectoryIndex index.php
+<IfModule !mod_php7.c>
+    <IfModule !mod_php.c>
+        SetEnvIfNoCase ^Authorization$ "(.+)" HTTP_AUTHORIZATION=$1
+        #<FilesMatch \.(php|phar)$>
+        #    SetHandler "proxy:unix:/run/php-fpm/www.sock|fcgi://localhost"
+        #</FilesMatch>
+    </IfModule>
+</IfModule>
+<IfModule mod_php7.c>
+    <FilesMatch \.php$>
+        SetHandler application/x-httpd-php
+    </FilesMatch>
+    php_value session.save_handler "files"
+    #php_value session.save_path   "/var/lib/php/session"
+    #php_value soap.wsdl_cache_dir "/var/lib/php/wsdlcache"
+    #php_value opcache.file_cache  "/var/lib/php/opcache"
+</IfModule>
+<IfModule mod_php.c>
+    <FilesMatch \.php$>
+        SetHandler application/x-httpd-php
+    </FilesMatch>
+    php_value session.save_handler "files"
+    #php_value session.save_path   "/var/lib/php/session"
+    #php_value soap.wsdl_cache_dir "/var/lib/php/wsdlcache"
+    #php_value opcache.file_cache  "/var/lib/php/opcache"
+</IfModule>
+
+### FastCGI
+
+AddHandler fcgid-script fcgi
+DirectoryIndex index.fcgi
+#FcgidIPCDir /run/mod_fcgid
+#FcgidProcessTableFile /run/mod_fcgid/fcgid_shm
+
+## SSL
+
+SSLPassPhraseDialog exec:/usr/libexec/httpd-ssl-pass-dialog
+#SSLSessionCache shmcb:/run/httpd/sslcache(512000)
+SSLSessionCacheTimeout 300
+#SSLCryptoDevice builtin
+SSLCryptoDevice rdrand
+
+SSLEngine on
+#SSLProtocol all -SSLv3
+#SSLProxyProtocol all -SSLv3
+SSLHonorCipherOrder on
+SSLCipherSuite PROFILE=SYSTEM
+SSLProxyCipherSuite PROFILE=SYSTEM
+#SSLCertificateFile /etc/pki/tls/certs/localhost.crt
+#SSLCertificateKeyFile /etc/pki/tls/private/localhost.key
+#SSLCertificateChainFile /etc/pki/tls/certs/server-chain.crt
+#SSLCACertificateFile /etc/pki/tls/certs/ca-bundle.crt
+#SSLVerifyClient require
+#SSLVerifyDepth  10
+#SSLOptions +FakeBasicAuth +ExportCertData +StrictRequire
+<FilesMatch "\.(cgi|shtml|php|fcgi|lua)$">
+    SSLOptions +StdEnvVars
+</FilesMatch>
+
+LogFormat "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b" request
+#CustomLog logs/ssl_request_log request
+
+## Secure Settings
+
+ServerTokens Prod
+TraceEnable off
+ProxyRequests off
+RequestHeader unset Proxy
+Header set X-Frame-Options SAMEORIGIN
+Header set X-Content-Type-Options nosniff
+Header set Strict-Transport-Security "max-age=63072000"
+
+## Environments
+
+# set REMOTE_ADDR from X-Real-Ip
+RemoteIPHeader X-Real-Ip
+{% for proxy in trusted_proxies %}
+RemoteIPInternalProxy {{ proxy }}
+{% endfor %}
+
+# internal and external
+SetEnvIf REMOTE_ADDR ^127\. REMOTE_NETWORK=internal REMOTE_INTERNAL
+SetEnvIf REMOTE_ADDR ^::1$ REMOTE_NETWORK=internal REMOTE_INTERNAL
+SetEnvIf REMOTE_ADDR ^192\.168\. REMOTE_NETWORK=internal REMOTE_INTERNAL
+SetEnvIf REMOTE_ADDR ^172\.(1[6-9]|2[0-9]|3[01])\. REMOTE_NETWORK=internal REMOTE_INTERNAL
+SetEnvIf REMOTE_ADDR ^10\. REMOTE_NETWORK=internal REMOTE_INTERNAL
+SetEnvIf REMOTE_ADDR ^fe80: REMOTE_NETWORK=internal REMOTE_INTERNAL
+SetEnvIf REMOTE_ADDR ^f[cd] REMOTE_NETWORK=internal REMOTE_INTERNAL
+SetEnvIf REMOTE_NETWORK ^$ REMOTE_NETWORK=external REMOTE_EXTERNAL
+
+## LDAP Auth
+
+IncludeOptional conf.d/ldap_auth.conf

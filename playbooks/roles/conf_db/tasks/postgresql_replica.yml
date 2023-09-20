@@ -1,0 +1,25 @@
+# PostgreSQL
+---
+- name: Create .pgpass
+  ansible.builtin.copy:
+    dest: /var/lib/pgsql/.pgpass
+    content: |
+      {{ pg_main_server }}:5432:replication:{{ pg_replication_user }}:{{ pg_replication_password }}
+    owner: postgres
+    group: postgres
+    mode: '0600'
+
+- name: Run pg_basebackup
+  become_user: postgres
+  ansible.builtin.command:
+    cmd: '/usr/bin/pg_basebackup -h {{ pg_main_server }} -U {{ pg_replication_user }} -D /var/lib/pgsql/data -R -w'
+    creates: /var/lib/pgsql/data/postgresql.conf
+
+- name: Task postgresql config
+  ansible.builtin.include_tasks: postgresql_config.yml
+
+- name: Enable and start postgresql
+  ansible.builtin.systemd:
+    service: postgresql.service
+    enabled: true
+    state: started

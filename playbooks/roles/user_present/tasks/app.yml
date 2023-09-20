@@ -1,0 +1,7 @@
+# app
+---
+- name: Enable and start app for user
+  ansible.builtin.systemd:
+    name: 'app@{{ webuser.name }}.service'
+    enabled: true
+    state: started

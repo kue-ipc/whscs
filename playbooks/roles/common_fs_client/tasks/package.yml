@@ -1,0 +1,22 @@
+# package
+---
+- name: Install centos-release-gluster9
+  ansible.builtin.dnf:
+    state: present
+    name: centos-release-gluster9
+
+# centos-release-gluster9はEL8に対して$relserverでは提供していないため、
+# $streamに変更する必要がある。
+- name: Fix Centos-Gluster-9.repo
+  ansible.builtin.replace:
+    path: /etc/yum.repos.d/CentOS-Gluster-9.repo
+    regexp: '\$releasever'
+    replace: '$stream'
+  when: ansible_distribution_version is version("9", "<")
+
+- name: Install glusterfs glusterfs-fuse
+  ansible.builtin.dnf:
+    state: present
+    name:
+      - glusterfs
+      - glusterfs-fuse

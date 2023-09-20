@@ -1,0 +1,19 @@
+# chrony(時刻同期)設定
+---
+- name: Install chrony
+  ansible.builtin.dnf:
+    state: present
+    name: chrony
+
+- name: Enable chronyd
+  ansible.builtin.systemd:
+    name: chronyd.service
+    enabled: true
+
+- name: Set ntp server for chrory
+  ansible.builtin.replace:
+    path: /etc/chrony.conf
+    regexp: '^#?pool .*$'
+    replace: 'pool {{ ntp_server }} iburst'
+  when: ntp_server is defined
+  notify: 'restart chronyd'

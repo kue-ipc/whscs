@@ -1,0 +1,22 @@
+# var
+---
+- name: Make user var dir
+  ansible.builtin.file:
+    path: '{{ webuser.var_dir }}'
+    owner: root
+    group: root
+    mode: '0755'
+    state: directory
+
+- name: Make dirs in user var
+  ansible.builtin.file:
+    path: '{{ webuser.var_dir }}{{ item.path | regex_replace("^/var", "") }}'
+    owner: '{{ item.owner | default("root") }}'
+    group: '{{ item.group | default("root") }}'
+    mode: '{{ item.mode | default("0755") }}'
+    state: directory
+  loop:
+    - { path: /var/lib/php }
+    - { path: /var/lib/php/session, owner: '{{ webuser.name }}', group: apache, mode: '0700' }
+    - { path: /var/lib/php/wsdlcache, owner: '{{ webuser.name }}', group: apache, mode: '0700' }
+    - { path: /var/lib/php/opcache, owner: '{{ webuser.name }}', group: apache, mode: '0700' }

@@ -1,0 +1,168 @@
+# httpd
+---
+- name: Install httpd
+  ansible.builtin.dnf:
+    state: present
+    name:
+      - httpd
+      - mod_ssl
+      - mod_ldap
+      - mod_security
+      - mod_fcgid
+
+- name: Disable and stop httpd
+  ansible.builtin.systemd:
+    name: httpd.service
+    enabled: false
+    state: stopped
+
+- name: Set seboolean for httpd
+  ansible.posix.seboolean:
+    name: '{{ item }}'
+    state: true
+    persistent: true
+  loop:
+    - httpd_can_connect_ldap
+    - httpd_can_network_connect
+    - httpd_can_network_connect_db
+    - httpd_can_network_relay
+    - httpd_can_sendmail
+    - httpd_graceful_shutdown
+    - httpd_use_fusefs
+
+- name: Set SELinux port for httpd
+  community.general.seport:
+    ports:
+      - '{{ user_uid_range.start + 7000 }}-{{ user_uid_range.stop - 1 + 7000 }}'
+      - '{{ user_uid_range.start + 17000 }}-{{ user_uid_range.stop - 1 + 17000 }}'
+    proto: tcp
+    setype: http_port_t
+    state: present
+
+# - name: Set SELinux file context for httpd
+#   community.general.sefcontext:
+#     target: '{{ item.target }}'
+#     ftype: '{{ item.ftype | default("a") }}'
+#     selevel: '{{ item.selevel | default("s0") }}'
+#     setype: '{{ item.setype }}'
+#     seuser: '{{ item.seuser | default("system_u") }}'
+#   loop:
+#     - { target: '{{ web_var_dir }}/\w+/cache/httpd(/.*)?', setype: httpd_cache_t }
+#     - { target: '{{ web_var_dir }}/\w+/lib/httpd(/.*)?', setype: httpd_var_lib_t }
+#     - { target: '{{ web_var_dir }}/\w+/log/httpd(/.*)?', setype: httpd_log_t }
+#     - { target: '{{ web_var_dir }}/\w+/run/httpd.*', setype: httpd_var_run_t }
+#   notify: 'run restorecon'
+
+# audit2allow -m httpd -a
+# checkmodule -m -M -o httpd.mod httpd.te
+# semodule_package -o httpd.pp -m httpd.mod
+# semodule -i httpd.pp
+- name: Check semodule list
+  ansible.builtin.command:
+    cmd: semodule -l
+  register: result_semodule_l
+  changed_when: false
+
+- name: Create temp directory
+  ansible.builtin.tempfile:
+    state: directory
+  register: tempdir
+  when: '"httpd" not in result_semodule_l.stdout_lines | default([])'
+
+- name: Copy semodule httpd
+  ansible.builtin.copy:
+    src: selinux/httpd.te
+    dest: '{{ tempdir.path }}/httpd.te'
+    mode: '0644'
+  when:
+    - '"httpd" not in result_semodule_l.stdout_lines | default([])'
+    - tempdir.path is defined
+
+- name: Check semodule httpd
+  ansible.builtin.command:
+    cmd: checkmodule -m -M -o httpd.mod httpd.te
+    chdir: '{{ tempdir.path }}'
+  changed_when: true
+  when:
+    - '"httpd" not in result_semodule_l.stdout_lines | default([])'
+    - tempdir.path is defined
+
+- name: Package semodule httpd
+  ansible.builtin.command:
+    cmd: semodule_package --outfile httpd.pp --module httpd.mod
+    chdir: '{{ tempdir.path }}'
+  changed_when: true
+  when:
+    - '"httpd" not in result_semodule_l.stdout_lines | default([])'
+    - tempdir.path is defined
+
+- name: Intall semodule httpd
+  ansible.builtin.command:
+    cmd: semodule -i httpd.pp
+    chdir: '{{ tempdir.path }}'
+  changed_when: true
+  when:
+    - '"httpd" not in result_semodule_l.stdout_lines | default([])'
+    - tempdir.path is defined
+
+- name: Remove temp directory
+  ansible.builtin.file:
+    path: '{{ tempdir.path }}'
+    state: absent
+  when:
+    - '"httpd" not in result_semodule_l.stdout_lines | default([])'
+    - tempdir.path is defined
+
+- name: Repalce mpm load module
+  ansible.builtin.replace:
+    path: /etc/httpd/conf.modules.d/00-mpm.conf
+    regexp: '#?(LoadModule\s+mpm_{{ item }}_module\s+modules/mod_mpm_{{ item }}.so)$'
+    replace: '{{ (item == httpd_mpm) | ternary("", "#") }}\1'
+  loop:
+    - prefork
+    - worker
+    - event
+
+- name: Template httpd conf
+  ansible.builtin.template:
+    src: 'httpd/{{ item.path }}.j2'
+    dest: '/etc/httpd/{{ item.path }}'
+    owner: '{{ item.owner | default("root") }}'
+    group: '{{ item.group | default("root") }}'
+    mode: '{{ item.mode | default("0644") }}'
+  loop:
+    - { path: conf.d/common.conf }
+    - { path: conf.d/ldap_auth.conf, mode: '0600' }
+  notify: 'restart all httpd'
+
+- name: Make systemd httpd@.service.d
+  ansible.builtin.file:
+    path: /etc/systemd/system/httpd@.service.d/
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Copy systemd conf httpd@.service.d
+  ansible.builtin.copy:
+    src: 'systemd/{{ item }}'
+    dest: '/etc/systemd/system/httpd@.service.d/{{ item }}'
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - dependencies.conf
+    - restart.conf
+  notify: 'reload systemd'
+
+- name: Allow user https on firewall
+  ansible.posix.firewalld:
+    state: enabled
+    rich_rule: >-
+      rule family="{{ item is ansible.utils.ipv4 | ternary("ipv4", "ipv6") }}"
+      source address="{{ item }}"
+      port port="{{ user_uid_range.start + 7000 }}-{{ user_uid_range.stop - 1 + 7000 }}" protocol=tcp
+      accept
+    permanent: true
+  loop: '{{ mgt_networks + web_networks }}'
+  notify: 'reload firewalld'

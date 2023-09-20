@@ -1,0 +1,21 @@
+---
+- name: Template haproxy.cfg
+  ansible.builtin.template:
+    src: haproxy/haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    owner: root
+    group: root
+    mode: '0644'
+  notify: 'restart haproxy'
+
+- name: Set seboolean for haproxy
+  ansible.posix.seboolean:
+    name: haproxy_connect_any
+    state: true
+    persistent: true
+
+- name: Enable and start haproxy
+  ansible.builtin.systemd:
+    name: haproxy.service
+    enabled: true
+    state: started

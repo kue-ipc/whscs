@@ -1,0 +1,116 @@
+---
+## General
+server_domain: web.internal
+site_domain: site.internal
+# ntp_server: your net server
+# proxy_uri: your proxy uri
+# mgt_networks:
+# web_networks:
+# trusted_proxies:
+# vip_addresses:
+# lvs_dr_addresses:
+# lvs_dr_group:
+web_dir: /web
+web_var_dir: /var/web
+web_tls_dir: /etc/pki/web
+web_services:
+  - {name: http, protocol: tcp, port: 80}
+  - {name: https, protocol: tcp, port: 443}
+  # - {name: http3, protocol: udp, port: 443}
+data_dir: '{{ (playbook_dir ~ "/../data") | normpath }}'
+admin_mail: root@localhost
+# tls options
+# https://docs.ansible.com/ansible/latest/collections/community/crypto/openssl_privatekey_module.html
+# https://docs.ansible.com/ansible/latest/collections/community/crypto/openssl_csr_module.html
+tls_type: ECC
+tls_curve: secp384r1
+tls_size: 4096
+tls_digest: sha384
+tls_dn: {}
+# tls_dn:
+#   country_name:
+#   state_or_province_name:
+#   locality_name:
+#   organization_name:
+#   organizational_unit_name:
+#   email_address:
+tls_im_certs: {}
+haproxy_check_user: haproxy
+mgt_site: localhost
+mgt_tls_cert: /etc/pki/tls/certs/server.cer
+mgt_tls_key: /etc/pki/tls/private/server.key
+mgt_main_server: '{{ groups["mgt"] | first }}'
+default_site: null
+default_host: 'app'
+# additional_hosts:
+## User
+user_uid_range: {start: 1001, stop: 2000}
+# default_user_name:
+# default_user_passwd:
+# default_user_uid:
+default_user_gid: 100
+default_user_gecos: '%u'
+default_user_dir: '/home/%u'
+default_user_shell: /bin/bash
+default_user_group: users
+default_user_groups: []
+## Apache HTTP Server
+httpd_mpm: event
+## vsftpd
+ftp_banner: 'Web Hosting Service'
+ftp_ssl: true
+ftp_ssl_mode: explicit
+ftp_ssl_min: TLSv1.2
+ftp_pasv_port_range: [20100, 20199]
+## LDAP
+ldap_auth_name: LDAP Auth
+# ldap_url: ldaps://ldap/ou=User?uid
+# ldap_bind_dn: cn=bind
+# ldap_bind_password: pass
+## LVM
+# default 4(MiB) -> max 256 GiB
+lvm_pesize: 4
+lvm_vg: vg
+## GlusterFS
+gluster_volume: web
+gluster_snapshot_name: ss
+gluster_main_server: '{{ groups["fs"] | first }}'
+gluster_backup_servers: '{{ groups["fs"][1:] }}'
+gluster_data_dir: /data
+gluster_data_name: data
+gluster_data_size: 128G
+gluster_data_pool_name: pool
+gluster_data_pool_size: 192G
+## MariaDB
+db_data_name: mysql
+db_data_size: 16G
+db_main_server: '{{ groups["db"] | first }}'
+db_backup_servers: '{{ groups["db"][1:] }}'
+db_cluster_name: web_wsrep_cluster
+db_character_set: utf8mb4
+db_collation: utf8mb4_general_ci
+## PostgreSQL
+pg_main_server: '{{ groups["db"] | last }}'
+pg_backup_servers: '{{ groups["db"][:-1] | reverse }}'
+pg_replication_user: replicator
+# pg_replication_password: set password
+pg_data_name: pgsql
+pg_data_size: 16G
+## Backup
+backup_main_server: '{{ groups["bk"] | first }}'
+backup_data_dir: /backup
+backup_data_name: backup
+backup_retention_peroid: '{{ 30 * 24 * 60 * 60 + 12 * 60 * 60 }}'
+app_life_cycle: lts
+app_dev: false
+app_dev_extra: false
+app_util: false
+logrotate_frequency: daily
+logrotate_rotate: 92
+nginx_uid: 980
+nginx_gid: 980
+mail_smtp_host: smtp.example.jp
+mail_smtp_port: 25
+mail_smtp_tls: false
+mail_smtp_starttls: false
+mail_from: no-reply@example.jp

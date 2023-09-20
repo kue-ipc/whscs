@@ -1,0 +1,80 @@
+---
+- name: Create temp directory in db server
+  delegate_to: '{{ db_main_server }}'
+  ansible.builtin.tempfile:
+    state: directory
+  register: db_tempdir
+
+- name: Make backup directory in db server
+  delegate_to: '{{ db_main_server }}'
+  ansible.builtin.file:
+    path: '{{ db_tempdir.path }}/{{ backup_time }}'
+    state: directory
+    mode: '0755'
+  when: db_tempdir.path is defined
+
+- name: Get MariaDB info in db server
+  delegate_to: '{{ db_main_server }}'
+  community.mysql.mysql_info:
+    login_unix_socket: /var/lib/mysql/mysql.sock
+    filter: databases
+  register: result_mysql_info
+
+- name: Backup MariaDB in db server
+  delegate_to: '{{ db_main_server }}'
+  community.mysql.mysql_db:
+    login_unix_socket: /var/lib/mysql/mysql.sock
+    encoding: utf8mb4
+    state: dump
+    name: '{{ item }}'
+    target: '{{ db_tempdir.path }}/{{ backup_time }}/{{ item }}.sql'
+  loop: '{{ result_mysql_info.databases.keys() | difference(["information_schema", "performance_schema"]) }}'
+  when: db_tempdir.path is defined
+
+- name: Archive backup sql in db server
+  delegate_to: '{{ db_main_server }}'
+  community.general.archive:
+    path: '{{ db_tempdir.path }}/{{ backup_time }}'
+    dest: '{{ db_tempdir.path }}/{{ backup_time }}.tar.xz'
+    format: xz
+    mode: '0600'
+  when: db_tempdir.path is defined
+
+- name: Fetch backup db archive
+  delegate_to: '{{ db_main_server }}'
+  ansible.builtin.fetch:
+    src: '{{ db_tempdir.path }}/{{ backup_time }}.tar.xz'
+    dest: '{{ local_tempdir.path }}/db_{{ backup_time }}.tar.xz'
+    flat: true
+  when:
+    - db_tempdir.path is defined
+    - local_tempdir.path is defined
+
+- name: Copy backup db archive
+  ansible.builtin.copy:
+    src: '{{ local_tempdir.path }}/db_{{ backup_time }}.tar.xz'
+    dest: '{{ backup_data_dir }}/db/{{ backup_time }}.tar.xz'
+    mode: '0600'
+  when: local_tempdir.path is defined
+
+- name: Remove temp directory in db server
+  delegate_to: '{{ db_main_server }}'
+  ansible.builtin.file:
+    path: '{{ db_tempdir.path }}'
+    state: absent
+  when: db_tempdir.path is defined
+
+- name: Find db archives
+  ansible.builtin.find:
+    path: '{{ backup_data_dir }}/db'
+    pattern: '^\d{8}_\d{6}\.tar\.xz$'
+    use_regex: true
+  register: find_db_archives
+
+- name: Remove old db archives
+  ansible.builtin.file:
+    path: '{{ backup_data_dir }}/db/{{ item }}'
+    state: absent
+  loop: >-
+    {{ find_db_archives.files | map(attribute="path") | map("basename")
+      | select("lt", backup_retention_time ~ ".tar.xz") }}

@@ -1,0 +1,23 @@
+; user php-fpm
+[{{ webuser.name }}]
+user = {{ webuser.name }}
+group = apache
+listen = /run/php-fpm/{{ webuser.name }}.sock
+listen.owner = {{ webuser.name}}
+listen.group = apache
+listen.mode = 0600
+listen.allowed_clients = 127.0.0.1
+pm = dynamic
+pm.max_children = 50
+pm.start_servers = 5
+pm.min_spare_servers = 5
+pm.max_spare_servers = 35
+pm.max_requests = 1000
+chroot = {{ webuser.chroot_dir }}
+chdir = /public_html
+catch_workers_output = yes
+security.limit_extensions = .php
+php_value[session.save_handler] = files
+php_value[session.save_path]    = {{ webuser.var_dir }}/lib/php/session
+php_value[soap.wsdl_cache_dir]  = {{ webuser.var_dir }}/lib/php/wsdlcache
+php_value[opcache.file_cache]  = {{ webuser.var_dir }}/lib/php/opcache

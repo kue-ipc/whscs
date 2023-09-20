@@ -1,0 +1,44 @@
+# 存在しないwebuserのデータを取得する
+---
+- name: Require user
+  ansible.builtin.assert:
+    that: user is defined
+    msg: 'Require `user` variable'
+    quiet: true
+
+- name: Check user pattern
+  ansible.builtin.assert:
+    that: user is regex("^\w+$")
+    msg: 'Invalid `user` variable: {{ user }}'
+    quiet: true
+
+- name: Set webuser yml
+  ansible.builtin.set_fact:
+    webuser_yml: '{{ data_webuser_dir }}/{{ user }}.yml'
+
+- name: Set backup yml
+  ansible.builtin.set_fact:
+    backup_webuser_yml: '{{ data_backup_dir }}/{{ user }}.yml'
+
+- name: Check webuser yml absent
+  ansible.builtin.assert:
+    that: lookup("first_found", [webuser_yml], errors="ignore") == None
+    msg: 'Found webuser yml, do not run tasks for a present user!'
+    quiet: true
+
+- name: Fetch webuser yml
+  delegate_to: '{{ backup_main_server }}'
+  ansible.builtin.fetch:
+    src: '{{ web_dir }}/{{ user }}/webuser.yml'
+    dest: '{{ backup_webuser_yml }}'
+    flat: true
+  run_once: true
+
+- name: Load webuser yml
+  ansible.builtin.set_fact:
+    webuser: '{{ lookup("file", backup_webuser_yml) | from_yaml }}'
+
+- name: Task merge webuser
+  ansible.builtin.import_role:
+    name: user_present
+    tasks_from: merge_webuser

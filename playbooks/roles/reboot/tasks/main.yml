@@ -1,0 +1,7 @@
+---
+# before gluster
+# systemctl stop glusterd
+# killall glusterfs glusterfsd glusterd
+
+- name: Reboot
+  ansible.builtin.reboot:

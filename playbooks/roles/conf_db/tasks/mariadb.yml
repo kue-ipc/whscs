@@ -1,0 +1,82 @@
+# MariaDB
+---
+- name: Line in client conf
+  ansible.builtin.lineinfile:
+    path: "/etc/my.cnf.d/client.cnf"
+    insertafter: '\[client\]'
+    regexp: '^#?{{ item.name }}\s*=.*$'
+    line: '{{ item.name }}={{ item.value }}'
+  loop:
+    - { name: default-character-set, value: '{{ db_character_set }}' }
+
+- name: Line in server conf
+  ansible.builtin.lineinfile:
+    path: "/etc/my.cnf.d/mariadb-server.cnf"
+    insertafter: '\[server\]'
+    regexp: '^#?{{ item.name }}\s*=.*$'
+    line: '{{ item.name }}={{ item.value }}'
+  loop:
+    - { name: character-set-server, value: '{{ db_character_set }}' }
+    - { name: collation-server, value: '{{ db_collation }}' }
+
+- name: Line in mysqld conf
+  ansible.builtin.lineinfile:
+    path: "/etc/my.cnf.d/mariadb-server.cnf"
+    insertafter: '\[mysqld\]'
+    regexp: '^#?{{ item.name }}\s*=.*$'
+    line: '{{ item.name }}={{ item.value }}'
+  loop:
+    - { name: log-bin, value: mysql-bin }
+    - { name: expire_logs_days, value: 7 }
+    - { name: sync_binlog, value: 0 }
+
+# gcomm default gmcast.listen_addr=tcp://0.0.0.0:4567
+# use only IPv4 (do not set hostname)
+- name: Line in galera conf
+  ansible.builtin.lineinfile:
+    path: /etc/my.cnf.d/galera.cnf
+    regexp: '^#?{{ item.name }}\s*=.*$'
+    line: '{{ item.name }}={{ item.value }}'
+  loop:
+    - { name: bind-address, value: '*'}
+    - { name: wsrep_on, value: 'ON' }
+    - { name: wsrep_cluster_name, value: '"{{ db_cluster_name }}"' }
+    - name: wsrep_cluster_address
+      value: >-
+        "gcomm://{{
+          ((groups["db"] | map("extract", hostvars) | map(attribute="ansible_host", default=""))
+          + (groups["db"] | map("extract", hostvars) | map(attribute="inventory_ipv4", default="")))
+          | unique | reject("eq", "") | join(",")
+        }}"
+
+- name: Set active db servers
+  ansible.builtin.set_fact:
+    mariadb_active_servers: []
+
+- name: Check mariadb
+  ansible.builtin.include_tasks: check_mariadb.yml
+  loop: '{{ groups["db"] }}'
+  loop_control:
+    loop_var: target_host
+  when: inventory_hostname == db_main_server
+
+- name: Start new cluster
+  ansible.builtin.command: galera_new_cluster
+  changed_when: true
+  when:
+    - inventory_hostname == db_main_server
+    - mariadb_active_servers | length == 0
+
+- name: Enable and start mariadb
+  ansible.builtin.systemd:
+    service: mariadb.service
+    enabled: true
+    state: started
+
+- name: Add haproxy user to MariaDB
+  community.mysql.mysql_user:
+    login_unix_socket: /var/lib/mysql/mysql.sock
+    state: present
+    name: '{{ haproxy_check_user }}'
+    host: '%'
+  when: inventory_hostname == db_main_server

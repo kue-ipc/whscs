@@ -1,0 +1,25 @@
+# web dir
+---
+# {{ web_dir is mount }} では確認できないため ansible_mounts を使用する。
+- name: Set web dir mounted
+  ansible.builtin.set_fact:
+    web_dir_mounted: '{{ web_dir in ansible_mounts | map(attribute="mount") }}'
+
+- name: Mount web dir
+  ansible.posix.mount:
+    path: '{{ web_dir }}'
+    src: '{{ gluster_main_server }}:/{{ gluster_volume }}'
+    fstype: glusterfs
+    opts: 'defaults,_netdev,backup-volfile-servers={{ gluster_backup_servers | join(":") }}'
+    state: mounted
+  when: not web_dir_mounted
+
+# effect reboot if changed
+- name: Preset web dir
+  ansible.posix.mount:
+    path: '{{ web_dir }}'
+    src: '{{ gluster_main_server }}:/{{ gluster_volume }}'
+    fstype: glusterfs
+    opts: 'defaults,_netdev,backup-volfile-servers={{ gluster_backup_servers | join(":") }}'
+    state: present
+  when: web_dir_mounted

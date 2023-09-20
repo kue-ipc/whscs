@@ -1,0 +1,9 @@
+# logrotate
+---
+- name: Set seboolean for logrotate
+  ansible.posix.seboolean:
+    name: '{{ item }}'
+    state: true
+    persistent: true
+  loop:
+    - logrotate_use_fusefs

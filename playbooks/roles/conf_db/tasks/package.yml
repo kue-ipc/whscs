@@ -1,0 +1,22 @@
+---
+- name: Install MraiaDB server
+  ansible.builtin.dnf:
+    state: present
+    name: mariadb-server-galera
+
+- name: Install PostgreSQL server
+  ansible.builtin.dnf:
+    state: present
+    name: postgresql-server
+
+- name: Install Python MySQL module
+  ansible.builtin.dnf:
+    state: present
+    name: python3-PyMySQL
+  when: inventory_hostname == db_main_server
+
+- name: Install Python PostgreSQL module
+  ansible.builtin.dnf:
+    state: present
+    name: python3-psycopg2
+  when: inventory_hostname == pg_main_server

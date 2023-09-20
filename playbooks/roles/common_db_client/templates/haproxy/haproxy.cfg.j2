@@ -1,0 +1,44 @@
+# haproxy
+global
+    log         /dev/log local2
+    chroot      /var/lib/haproxy
+    pidfile     /var/run/haproxy.pid
+    maxconn     4000
+    user        haproxy
+    group       haproxy
+    daemon
+    stats socket /var/lib/haproxy/stats
+    ssl-default-bind-ciphers PROFILE=SYSTEM
+    ssl-default-server-ciphers PROFILE=SYSTEM
+
+defaults
+    mode                    tcp
+    log                     global
+    retries                 3
+    timeout queue           1m
+    timeout connect         10s
+    timeout client          1m
+    timeout server          1m
+    timeout check           10s
+    maxconn                 3000
+
+listen mysql
+    bind :3306
+    mode tcp
+    option tcpka
+    option mysql-check user {{ haproxy_check_user }}
+    balance roundrobin
+    server {{ db_main_server }} {{ db_main_server }}:3306 check id 1
+{% for host in db_backup_servers %}
+    server {{ host }} {{ host }}:3306 check id {{ loop.index + 1 }}
+{% endfor %}
+
+listen pgsql
+    bind :5432
+    mode tcp
+    option pgsql-check user {{ haproxy_check_user }}
+    balance first
+    server {{ pg_main_server }} {{ pg_main_server }}:5432 check id 1
+{% for host in pg_backup_servers %}
+    server {{ host }} {{ host }}:5432 check id {{ loop.index + 1 }}
+{% endfor %}

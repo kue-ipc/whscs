@@ -1,0 +1,8 @@
+[Unit]
+Description=Web File Systems
+After=remote-fs.target local-fs.target
+DefaultDependencies=no
+Conflicts=shutdown.target
+
+[Install]
+WantedBy=multi-user.target

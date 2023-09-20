@@ -1,0 +1,26 @@
+---
+web_mount_entries:
+  - {name: /dev, opts: '--bind /dev'}
+  - {name: /dev/pts, opts: '--bind /dev/pts'}
+  - {name: /etc, opts: '--bind --read-only /etc'}
+  - {name: /opt, opts: '--bind --read-only /opt'}
+  - {name: /proc, opts: '--types proc proc'}
+  - {name: /run, opts: '--bind /run'}
+  - {name: /srv, opts: '--bind --read-only /srv'}
+  - {name: /sys, opts: '--bind /sys'}
+  - {name: /tmp, opts: '--types tmpfs --options mode=1777,strictatime,nosuid,nodev,size=1g,nr_inodes=1m tmpfs'}
+  - {name: /usr, opts: '--bind --read-only /usr'}
+vsftpd_conf:
+  xferlog_std_format: true
+  ftpd_banner: '{{ ftp_banner }}'
+  ascii_upload_enable: true
+  ascii_download_enable: true
+  ls_recurse_enable: true
+  use_localtime: true
+  force_dot_files: true
+  deny_file: '{/bin*,/dev*,/etc*,/lib*,/lib64*,/opt*,/proc*,/run*,/sbin*,/srv*,/sys*,/usr*}'
+  hide_file: '{/bin*,/dev*,/etc*,/lib*,/lib64*,/opt*,/proc*,/run*,/sbin*,/srv*,/sys*,/usr*}'
+  # chroot
+  chroot_local_user: true
+  user_sub_token: $USER
+  local_root: '{{ web_dir }}/$USER'

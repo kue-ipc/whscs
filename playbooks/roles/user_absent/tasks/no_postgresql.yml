@@ -1,0 +1,13 @@
+# no posgresql
+---
+- name: Drop user DB in PostgreSQL
+  become_user: postgres
+  community.postgresql.postgresql_db:
+    state: absent
+    name: "{{ webuser.name }}"
+
+- name: Delete user in PostgreSQL
+  become_user: postgres
+  community.postgresql.postgresql_user:
+    state: absent
+    name: "{{ webuser.name }}"

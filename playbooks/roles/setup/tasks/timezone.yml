@@ -1,0 +1,5 @@
+# タイムゾーン設定
+---
+- name: Set timezone
+  community.general.timezone:
+    name: Asia/Tokyo

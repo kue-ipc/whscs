@@ -1,0 +1,12 @@
+---
+web_mount_entries:
+  - {name: /dev, opts: '--bind /dev'}
+  - {name: /etc, opts: '--bind --read-only /etc'}
+  - {name: /opt, opts: '--bind --read-only /opt'}
+  - {name: /proc, opts: '--types proc proc'}
+  - {name: /run, opts: '--bind /run'}
+  - {name: /srv, opts: '--bind --read-only /srv'}
+  - {name: /sys, opts: '--bind /sys'}
+  - {name: /tmp, opts: '--types tmpfs --options mode=1777,strictatime,nosuid,nodev,size=1g,nr_inodes=1m tmpfs'}
+  - {name: /usr, opts: '--bind --read-only /usr'}
+  - {name: '{{ web_var_dir }}/%i', opts: '--bind {{ web_var_dir }}/%i'}

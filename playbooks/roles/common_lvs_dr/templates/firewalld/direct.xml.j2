@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<direct>
+{% for address in lvs_dr_addresses %}
+{% for service in web_services %}
+  <rule ipv="ipv{{ address | ansible.utils.ipaddr("version") }}" table="nat" chain="PREROUTING" priority="0">
+    -d {{ address }} -p {{ service.protocol }} -m {{ service.protocol }} --dport {{ service.port }} -j REDIRECT
+  </rule>
+{% endfor %}
+{% endfor %}
+</direct>

@@ -1,0 +1,15 @@
+# bk
+---
+# - name: Role common db client
+#   ansible.builtin.import_role:
+#     name: common_db_client
+
+- name: Role common fs client
+  ansible.builtin.import_role:
+    name: common_fs_client
+
+- name: Task disk
+  ansible.builtin.import_tasks: disk.yml
+
+- name: Task backup
+  ansible.builtin.import_tasks: backup.yml

@@ -6,19 +6,17 @@
     enabled: true
     state: started
 
-# TODO: 移行まではコメントアウト
+- name: Gluster prove peer
+  gluster.gluster.gluster_peer:
+    state: present
+    nodes: '{{ groups["fs"] }}'
+  when: inventory_hostname == gluster_main_server
 
-# - name: Gluster prove peer
-#   gluster.gluster.gluster_peer:
-#     state: present
-#     nodes: '{{ groups["fs"] }}'
-#   when: inventory_hostname == gluster_main_server
-
-# - name: Gluster create volume
-#   gluster.gluster.gluster_volume:
-#     state: present
-#     name: '{{ gluster_volume }}'
-#     replicas: 3
-#     bricks: '{{ gluster_data_dir }}/{{ gluster_volume }}'
-#     cluster: '{{ groups["fs"] }}'
-#   when: inventory_hostname == gluster_main_server
+- name: Gluster create volume
+  gluster.gluster.gluster_volume:
+    state: present
+    name: '{{ gluster_volume }}'
+    replicas: 3
+    bricks: '{{ gluster_data_dir }}/{{ gluster_volume }}'
+    cluster: '{{ groups["fs"] }}'
+  when: inventory_hostname == gluster_main_server

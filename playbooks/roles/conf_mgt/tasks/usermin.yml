@@ -1,5 +1,10 @@
 # usermin
 ---
+- name: Check /root/setup-repos.sh
+  ansible.builtin.stat:
+    path: /root/setup-repos.sh
+  register: setup_repos_sh
+
 - name: Get wbmin setup-repos.sh
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh
@@ -7,6 +12,7 @@
     mode: '0644'
   environment:
     https_proxy: '{{ proxy_uri | default(omit) }}'
+  when: not setup_repos_sh.stat.exists
 
 - name: Run webmin setup-repos.sh
   ansible.builtin.command:

@@ -6,5 +6,8 @@
 - name: Task disk
   ansible.builtin.import_tasks: disk.yml
 
+# - name: Task mount
+#   ansible.builtin.import_tasks: mount.yml
+
 - name: Task service
   ansible.builtin.import_tasks: service.yml

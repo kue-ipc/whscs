@@ -4,6 +4,8 @@ port {{ mail_smtp_port }}
 tls {{ mail_smtp_tls | ternary("on", "off") }}
 tls_starttls {{ mail_smtp_starttls | ternary("on", "off") }}
 from {{ mail_from }}
+{% if ansible_distribution_version is version("9.0", ">=") %}
 allow_from_override on
+{% endif %}
 set_from_header on
 syslog LOG_MAIL

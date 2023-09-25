@@ -1,8 +1,13 @@
 # mount
 ---
+- name: Run mount -l
+  ansible.builtin.command: mount -l
+  register: mount_l
+  changed_when: false
+
 - name: Set mount_list
   ansible.builtin.set_fact:
-    mount_list: '{{ ansible_mounts | map(attribute="mount") }}'
+    mount_list: '{{ mount_l.stdout_lines | map("split") | map(attribute=2) }}'
 
 - name: Check web dir
   ansible.builtin.assert:
@@ -22,24 +27,26 @@
     - /opt
     - /srv
     - /usr
+    - /dev
+    - /proc
+    - /run
+    - /tmp
+    - /sys
 
-- name: Run mount -l
-  ansible.builtin.command: mount -l
-  register: command_mount
-  changed_when: false
+- name: Check user dir for mgt
+  ansible.builtin.assert:
+    that: mount_list | select("match", "^" ~ web_dir ~ "/\w+" ~ item ~ "$") | count > 0
+    msg: 'user {{ item }} not mounted'
+    quiet: true
+  when: '"mgt" in group_names'
+  loop:
+    - /dev/pts
 
-- name: Set mount list 2
-  ansible.builtin.set_fact:
-    mount_list2: '{{ command_mount.stdout_lines | map("split", " ") | map("third") }}'
-
-- debug:
-    msg: '{{ mount_list2 }}'
-
-    # - '{{ web_var_dir }}/\w+'
-
-    # - /dev
-    # - /dev/pts
-    # - /proc
-    # - /run
-    # - /tmp
-    # - /sys
+- name: Check user dir for app
+  ansible.builtin.assert:
+    that: mount_list | select("match", "^" ~ web_dir ~ "/\w+" ~ item ~ "$") | count > 0
+    msg: 'user {{ item }} not mounted'
+    quiet: true
+  when: '"app" in group_names'
+  loop:
+    - '{{ web_var_dir }}/\w+'

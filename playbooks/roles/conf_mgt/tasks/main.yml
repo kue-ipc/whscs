@@ -4,9 +4,6 @@
   ansible.builtin.import_role:
     name: sv_user_env
 
-- name: Task pkg
-  ansible.builtin.import_tasks: pkg.yml
-
 - name: Role sv fs client
   ansible.builtin.import_role:
     name: sv_fs_client

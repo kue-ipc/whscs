@@ -1,6 +1,6 @@
 # pkg
 ---
-- name: Install editors and others
+- name: Install editors and terminals
   ansible.builtin.dnf:
     state: present
     name:

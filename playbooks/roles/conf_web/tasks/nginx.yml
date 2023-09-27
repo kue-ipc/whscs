@@ -2,7 +2,7 @@
 ---
 - name: Import role common nginx
   ansible.builtin.import_role:
-    name: common_nginx
+    name: sv_nginx
 
 - name: Set seboolean for nginx
   ansible.posix.seboolean:

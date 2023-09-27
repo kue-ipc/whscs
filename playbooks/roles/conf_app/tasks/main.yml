@@ -19,17 +19,17 @@
   ansible.builtin.import_tasks: pkg_util.yml
   when: app_util
 
-- name: Role common tls
+- name: Role sv tls
   ansible.builtin.import_role:
-    name: common_tls
+    name: sv_tls
 
-- name: Role common db client
+- name: Role sv db client
   ansible.builtin.import_role:
-    name: common_db_client
+    name: sv_db_client
 
-- name: Role common fs client
+- name: Role sv fs client
   ansible.builtin.import_role:
-    name: common_fs_client
+    name: sv_fs_client
 
 - name: Task dir
   ansible.builtin.import_tasks: dir.yml

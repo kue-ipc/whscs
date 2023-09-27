@@ -1,7 +1,7 @@
 ---
-- name: Role common lvm
+- name: Role sv lvm
   ansible.builtin.import_role:
-    name: common_lvm
+    name: sv_lvm
 
 # 16GiB
 - name: Create a volume for data

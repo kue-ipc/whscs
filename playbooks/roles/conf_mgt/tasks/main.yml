@@ -1,19 +1,19 @@
 # mgt
 ---
-- name: Role common_vscode
+- name: Role sv vscode
   ansible.builtin.import_role:
-    name: common_vscode
+    name: sv_vscode
 
 - name: Task pkg
   ansible.builtin.import_tasks: pkg.yml
 
-- name: Role common fs client
+- name: Role sv fs client
   ansible.builtin.import_role:
-    name: common_fs_client
+    name: sv_fs_client
 
-- name: Role common db client
+- name: Role sv db client
   ansible.builtin.import_role:
-    name: common_db_client
+    name: sv_db_client
 
 - name: Task dir
   ansible.builtin.import_tasks: dir.yml

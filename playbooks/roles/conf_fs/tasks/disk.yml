@@ -1,7 +1,7 @@
 ---
-- name: Role common lvm
+- name: Role sv lvm
   ansible.builtin.import_role:
-    name: common_lvm
+    name: sv_lvm
 
 # メタデータ用の領域が必要なため、100%にはしないこと
 - name: Create a thin pool for glfs

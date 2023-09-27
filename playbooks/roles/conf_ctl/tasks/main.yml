@@ -1,5 +1,5 @@
 # ctl
 ---
-- name: Role common_vscode
+- name: Role sv vscode
   ansible.builtin.import_role:
-    name: common_vscode
+    name: sv_vscode

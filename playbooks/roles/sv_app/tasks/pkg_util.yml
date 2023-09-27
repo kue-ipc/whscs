@@ -1,4 +1,4 @@
-# pkg
+# pkg util
 ---
 - name: Install editors and terminals
   ansible.builtin.dnf:

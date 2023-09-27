@@ -1,8 +1,9 @@
 # user env
 ---
-
-- name: Task pkg
-  ansible.builtin.import_tasks: pkg.yml
+- name: Task pkg_util from sv_app
+  ansible.builtin.import_role:
+    name: sv_app
+    tasks_from: pkg_util
 
 - name: Task vscode
   ansible.builtin.import_tasks: vscode.yml

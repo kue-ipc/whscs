@@ -4,20 +4,9 @@
   ansible.builtin.service_facts:
   when: ansible_facts.services is not defined
 
-- name: Task pkg app for version and life cypcle
-  ansible.builtin.include_tasks: 'pkg_el{{ ansible_distribution_major_version }}_{{ app_life_cycle }}.yml'
-
-- name: Task pkg dev
-  ansible.builtin.import_tasks: pkg_dev.yml
-  when: app_dev
-
-- name: Task pkg dev extra
-  ansible.builtin.import_tasks: pkg_dev_extra.yml
-  when: app_dev_extra
-
-- name: Task pkg util
-  ansible.builtin.import_tasks: pkg_util.yml
-  when: app_util
+- name: Role sv app
+  ansible.builtin.import_role:
+    name: sv_app
 
 - name: Role sv tls
   ansible.builtin.import_role:

@@ -7,3 +7,6 @@
 
 - name: Task vscode
   ansible.builtin.import_tasks: vscode.yml
+
+- name: Task proxy
+  ansible.builtin.import_tasks: proxy.yml

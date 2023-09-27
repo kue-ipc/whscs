@@ -10,8 +10,7 @@
     url: https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh
     dest: /root/setup-repos.sh
     mode: '0644'
-  environment:
-    https_proxy: '{{ proxy_uri | default(omit) }}'
+  environment: '{{ proxy_env | default(omit) }}'
   when: not setup_repos_sh.stat.exists
 
 - name: Run webmin setup-repos.sh
@@ -19,8 +18,7 @@
     cmd: sh /root/setup-repos.sh
     stdin: "y\n"
     creates: /etc/yum.repos.d/webmin.repo
-  environment:
-    https_proxy: '{{ proxy_uri | default(omit) }}'
+  environment: '{{ proxy_env | default(omit) }}'
 
 # systemd cannot reead /var/usermin/miniserv.pid with setype var_t
 # https://forum.virtualmin.com/t/selinux-issue-with-miniserv-pid-on-redhat-8/116597

@@ -4,6 +4,17 @@ server_domain: web.internal
 site_domain: site.internal
 # ntp_server: your net server
 # proxy_uri: your proxy uri
+proxy_excludes:
+  - localhost
+  - .localdomain
+  - 127.0.0.0/8
+  - 169.254.0.0/16
+  - 10.0.0.0/8
+  - 172.16.0.0/12
+  - 192.168.0.0/16
+  - ::1
+  - fe80::/10
+  - fc00::/7
 # mgt_networks:
 # web_networks:
 # trusted_proxies:

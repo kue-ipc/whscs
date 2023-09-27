@@ -1,0 +1,4 @@
+# proxy env
+{% for item in proxy_env | dict2items %}
+setenv {{ item.key }} "{{ item.value }}"
+{% endfor %}

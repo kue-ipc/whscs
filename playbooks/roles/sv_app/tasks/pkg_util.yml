@@ -1,15 +1,34 @@
 # pkg util
 ---
-- name: Install editors and terminals
+- name: Install editors
   ansible.builtin.dnf:
     state: present
     name:
       - vim-enhanced
       - emacs-nox
+      - nano
       - pinentry
-      - tmux
 
-- name: Install rsync
+- name: Install terminals
   ansible.builtin.dnf:
     state: present
-    name: rsync
+    name:
+      - tmux
+
+- name: Install shell
+  ansible.builtin.dnf:
+    state: present
+    name:
+      - bash
+      - tcsh
+      - zsh
+
+- name: Install others
+  ansible.builtin.dnf:
+    state: present
+    name:
+      - git
+      - rsync
+      - curl
+      - lynx
+      - wget

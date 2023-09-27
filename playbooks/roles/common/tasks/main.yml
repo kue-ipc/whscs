@@ -20,3 +20,12 @@
     httpd_php: >-
       {{ (httpd_mpm == "prefork" and ansible_distribution_version is version("9", "<"))
         | ternary("mod_php", "php-fpm") }}
+
+- name: Set proxy_env
+  ansible.builtin.set_fact:
+    proxy_env:
+      http_proxy: '{{ proxy_uri }}'
+      https_proxy: '{{ proxy_uri }}'
+      ftp_proxy: '{{ proxy_uri }}'
+      no_proxy: '{{ proxy_excludes | join(",") }}'
+  when: proxy_uri is defined

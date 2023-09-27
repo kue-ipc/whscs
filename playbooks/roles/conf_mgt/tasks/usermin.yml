@@ -50,6 +50,28 @@
     - {key: referers, value: '{{ mgt_site }} '}
     - {key: lang, value: 'ja_JP.UTF-8'}
 
+- name: Line in filemin/config file
+  ansible.builtin.lineinfile:
+    path: /etc/usermin/filemin/config
+    regexp: '^{{ item.key }}='
+    line: '{{ item.key }}={{ item.value }}'
+  notify: 'restart usermin'
+  loop:
+    - {key: allowed_paths, value: "/web/$USER\t$HOME"}
+
+- name: Line in chfn/config file
+  ansible.builtin.lineinfile:
+    path: /etc/usermin/chfn/config
+    regexp: '^{{ item.key }}='
+    line: '{{ item.key }}={{ item.value }}'
+  notify: 'restart usermin'
+  loop:
+    - {key: change_hphone, value: 0}
+    - {key: change_ophone, value: 0}
+    - {key: change_shell, value: 1}
+    - {key: change_real, value: 0}
+    - {key: change_office, value: 0}
+
 - name: Line in postgresql/config file
   ansible.builtin.lineinfile:
     path: /etc/usermin/postgresql/config
@@ -64,18 +86,18 @@
     usermin_modules:
       # - at
       - changepass
-      # - chfn
+      - chfn
       # - commands
       # - cron
       # - cshrc
       # - fetchmail
-      # - filemin
+      - filemin
       # - filter
       # - forward
       # - gnupg
       # - htaccess-htpasswd
       # - htaccess
-      # - language
+      - language
       # - mailbox
       # - mailcap
       # - man

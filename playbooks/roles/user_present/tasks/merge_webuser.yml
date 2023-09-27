@@ -55,7 +55,7 @@
         "app_path": "/",
         "app_one": false,
       } | combine(webuser) }}
-    when: webuser.app_use
+  when: webuser.app_use
 
 - name: Set webuser ovrewrite variable
   ansible.builtin.set_fact:

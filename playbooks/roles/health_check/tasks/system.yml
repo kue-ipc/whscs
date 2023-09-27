@@ -1,37 +1,37 @@
 # system
 ---
-- name: Set threshold_loadavgs
+- name: Set health_check_threshold_loadavgs
   ansible.builtin.set_fact:
-    threshold_loadavg: >-
+    health_check_threshold_loadavg: >-
       {{ {
-        "1m": threshold_loadavg_1m | default(1.0) | float,
-        "5m": threshold_loadavg_5m | default(1.0) | float,
-        "15m": threshold_loadavg_15m | default(1.0) | float,
+        "1m": health_check_threshold_loadavg_1m | default(1.0) | float,
+        "5m": health_check_threshold_loadavg_5m | default(1.0) | float,
+        "15m": health_check_threshold_loadavg_15m | default(1.0) | float,
       } }}
 
 - name: Check load average
   ansible.builtin.assert:
-    that: item.value < threshold_loadavg[item.key] * ansible_processor_vcpus
-    msg: 'load average over {{ threshold_loadavg[item.key] }} * {{ ansible_processor_vcpus }} vcpus'
+    that: item.value < health_check_threshold_loadavg[item.key] * ansible_processor_vcpus
+    msg: 'load average over {{ health_check_threshold_loadavg[item.key] }} * {{ ansible_processor_vcpus }} vcpus'
     quiet: true
   loop: '{{ ansible_loadavg | dict2items }}'
   loop_control:
     label: '{{ item.key }} {{ item.value }}'
 
 
-- name: Set threshold_loadavgs
+- name: Set health_check_threshold_memory_freee
   ansible.builtin.set_fact:
-    threshold_memory_free: >-
+    health_check_threshold_memory_free: >-
       {{ {
-        "nocache": threshold_memory_nocache_free | default(0) | int,
-        "real": threshold_memory_real_free | default(0) | int,
-        "swap": threshold_memory_swap_free | default(0) | int,
+        "nocache": health_check_threshold_memory_nocache_free | default(0) | int,
+        "real": health_check_threshold_memory_real_free | default(0) | int,
+        "swap": health_check_threshold_memory_swap_free | default(0) | int,
       } }}
 
 - name: Check free memory
   ansible.builtin.assert:
-    that: item.value.free >= threshold_memory_free[item.key]
-    msg: 'free memory less than {{ threshold_memory_free[item.key] }} MiB'
+    that: item.value.free >= health_check_threshold_memory_free[item.key]
+    msg: 'free memory less than {{ health_check_threshold_memory_free[item.key] }} MiB'
     quiet: true
   loop: '{{ ansible_memory_mb | dict2items }}'
   loop_control:

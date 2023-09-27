@@ -1,6 +1,7 @@
 # posgresql
 ---
 - name: Add user in PostgreSQL
+  become: true
   become_user: postgres
   community.postgresql.postgresql_user:
     state: present
@@ -8,6 +9,7 @@
     password: "{{ webuser.pg_pass }}"
 
 - name: Create user DB in PostgreSQL
+  become: true
   become_user: postgres
   community.postgresql.postgresql_db:
     state: present
@@ -15,6 +17,7 @@
     owner: "{{ webuser.name }}"
 
 - name: Create user schema in PostgreSQL
+  become: true
   become_user: postgres
   community.postgresql.postgresql_schema:
     state: present
@@ -26,6 +29,7 @@
 # Not need for PostgreSQL 15
 # REVOKE CREATE ON SCHEMA public FROM PUBLIC;
 - name: Revoke create on scheam public from public
+  become: true
   become_user: postgres
   community.postgresql.postgresql_privs:
     db: "{{ webuser.name }}"

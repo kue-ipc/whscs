@@ -2,8 +2,8 @@
 ---
 - name: Check disk free space
   ansible.builtin.assert:
-    that: item.size_available > item.size_total * (1.0 - threshold_disk_size)
-    msg: 'disk used over {{ (threshold_disk_size * 100) }}%'
+    that: item.size_available > item.size_total * (1.0 - health_check_threshold_disk_size)
+    msg: 'disk used over {{ (health_check_threshold_disk_size * 100) }}%'
     quiet: true
   loop: >-
     {{ ansible_mounts

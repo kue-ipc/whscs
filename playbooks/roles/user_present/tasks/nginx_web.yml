@@ -9,7 +9,7 @@
     mode: '0644'
   register: template_nginx_conf
 
-- name: Reload nginx
+- name: Reload nginx immediately
   ansible.builtin.systemd:
     name: 'nginx.service'
     state: reloaded

@@ -21,8 +21,21 @@
       {{ item.key }}={{ item.value is boolean | ternary(
         item.value | ternary("YES", "NO"),
         item.value | string) }}
-  loop: '{{ vsftpd_conf | dict2items }}'
   notify: 'restart vsftpd'
+  with_dict:
+    xferlog_std_format: true
+    ftpd_banner: '{{ ftp_banner }}'
+    ascii_upload_enable: true
+    ascii_download_enable: true
+    ls_recurse_enable: true
+    use_localtime: true
+    force_dot_files: true
+    deny_file: '{/bin*,/dev*,/etc*,/lib*,/lib64*,/opt*,/proc*,/run*,/sbin*,/srv*,/sys*,/usr*}'
+    hide_file: '{/bin*,/dev*,/etc*,/lib*,/lib64*,/opt*,/proc*,/run*,/sbin*,/srv*,/sys*,/usr*}'
+    # chroot
+    chroot_local_user: true
+    user_sub_token: $USER
+    local_root: '{{ web_dir }}/$USER'
 
 - name: Block ssl in vsftpd
   ansible.builtin.blockinfile:

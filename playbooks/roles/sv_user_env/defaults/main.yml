@@ -2,4 +2,4 @@
 # 最大は524288で540MiB
 # デフォルトは27618
 # 131072で135MiB
-sysctl_max_user_watches: 131072
+sv_user_env_sysctl_max_user_watches: 131072

@@ -4,6 +4,11 @@
   ansible.builtin.import_role:
     name: sv_user_env
 
+- name: Role sv app
+  ansible.builtin.import_role:
+    name: sv_app
+  when: mgt_app
+
 - name: Role sv fs client
   ansible.builtin.import_role:
     name: sv_fs_client

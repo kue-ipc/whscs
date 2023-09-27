@@ -40,6 +40,7 @@ mgt_site: localhost
 mgt_tls_cert: /etc/pki/tls/certs/server.cer
 mgt_tls_key: /etc/pki/tls/private/server.key
 mgt_main_server: '{{ groups["mgt"] | first }}'
+mgt_app: false
 default_site: null
 default_host: 'app'
 # additional_hosts:

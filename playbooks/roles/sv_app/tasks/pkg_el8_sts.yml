@@ -11,8 +11,8 @@
 # - name: Install perl latest app stream
 #   ansible.builtin.dnf:
 #     state: present
-#     name: '@perl:{{ latest.el8.perl }}/common'
-#   when: latest.el8.perl is defined
+#     name: '@perl:{{ sv_app_latest.el8.perl }}/common'
+#   when: sv_app_latest.el8.perl is defined
 
 - name: Install perl
   ansible.builtin.dnf:
@@ -28,8 +28,8 @@
 - name: Install php latest app stream
   ansible.builtin.dnf:
     state: present
-    name: '@php:{{ latest.el8.php }}/common'
-  when: latest.el8.php is defined
+    name: '@php:{{ sv_app_latest.el8.php }}/common'
+  when: sv_app_latest.el8.php is defined
 
 - name: Install php
   ansible.builtin.dnf:
@@ -48,8 +48,8 @@
 - name: Install ruby latest app stream
   ansible.builtin.dnf:
     state: present
-    name: '@ruby:{{ latest.el8.ruby }}/common'
-  when: latest.el8.ruby is defined
+    name: '@ruby:{{ sv_app_latest.el8.ruby }}/common'
+  when: sv_app_latest.el8.ruby is defined
 
 - name: Install ruby
   ansible.builtin.dnf:
@@ -69,8 +69,8 @@
 - name: Install nodejs latest app stream
   ansible.builtin.dnf:
     state: present
-    name: '@nodejs:{{ latest.el8.nodejs }}/common'
-  when: latest.el8.nodejs is defined
+    name: '@nodejs:{{ sv_app_latest.el8.nodejs }}/common'
+  when: sv_app_latest.el8.nodejs is defined
 
 - name: Install nodejs
   ansible.builtin.dnf:

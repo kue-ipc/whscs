@@ -1,11 +1,8 @@
 # disk
 ---
-# pesize32(MiB) -> max 2TiB
 - name: Role sv lvm
   ansible.builtin.import_role:
     name: sv_lvm
-  vars:
-    lvm_pesize: 32
 
 - name: Create a bakup data volume
   community.general.lvol:

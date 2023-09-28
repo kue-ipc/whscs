@@ -1,0 +1,16 @@
+# latest versions of app streams
+# https://access.redhat.com/support/policy/updates/rhel-app-streams-life-cycle
+---
+sv_app_latest:
+  el8:
+    php: '8.0'
+    ruby: '3.1'
+    nodejs: '18'
+    perl: '5.32'
+    pyoth: '3.11'
+  el9:
+    php: '8.1'
+    ruby: '3.1'
+    nodejs: '18'
+    # perl: ''
+    python: '3.11'

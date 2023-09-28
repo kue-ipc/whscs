@@ -125,3 +125,4 @@
     state: present
     name:
       - gcc-toolset-12
+  when: app_dev

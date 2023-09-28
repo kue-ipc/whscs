@@ -20,9 +20,3 @@
     state: present
     name:
       - golang
-
-- name: Install git
-  ansible.builtin.dnf:
-    state: present
-    name:
-      - git

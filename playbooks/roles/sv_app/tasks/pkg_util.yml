@@ -30,5 +30,11 @@
       - git
       - rsync
       - curl
-      - lynx
       - wget
+
+- name: Install others for el9
+  ansible.builtin.dnf:
+    state: present
+    name:
+      - lynx
+  when: ansible_distribution_version is version("9", ">=")

@@ -1,0 +1,24 @@
+# lvm pool
+---
+- name: Get lvs
+  become: true
+  ansible.builtin.command: lvs -a --reportformat json
+  register: lvs_a
+  changed_when: false
+
+- name: Set lvs_data
+  ansible.builtin.set_fact:
+    lvs_pool: >-
+      {{ (lvs_a.stdout | from_json)["report"][0]["lv"] | selectattr("lv_name", "==", gluster_data_pool_name) | first }}
+
+- name: Check data size
+  ansible.builtin.assert:
+    that: lvs_pool.data_percent | float < 100 * health_check_threshold_lvm_pool_data_size
+    msg: 'lvs pool data over {{ lvs_pool.data_percent }}%'
+    quiet: true
+
+- name: Check metadata size
+  ansible.builtin.assert:
+    that: lvs_pool.metadata_percent | float < 100 * health_check_threshold_lvm_pool_metadata_size
+    msg: 'lvs pool metadata over {{ lvs_pool.data_percent }}%'
+    quiet: true

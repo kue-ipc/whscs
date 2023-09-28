@@ -12,3 +12,7 @@
 
 - name: Task service
   ansible.builtin.import_tasks: service.yml
+
+- name: Task lvm pool
+  ansible.builtin.import_tasks: lvm_pool.yml
+  when: '"fs" in group_names'

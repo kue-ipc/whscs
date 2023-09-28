@@ -10,6 +10,7 @@
     mode: '0600'
 
 - name: Run pg_basebackup
+  become: true
   become_user: postgres
   ansible.builtin.command:
     cmd: '/usr/bin/pg_basebackup -h {{ pg_main_server }} -U {{ pg_replication_user }} -D /var/lib/pgsql/data -R -w'

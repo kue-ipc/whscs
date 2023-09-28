@@ -25,6 +25,7 @@
     state: started
 
 - name: Add replaciton user to PostgreSQL
+  become: true
   become_user: postgres
   community.postgresql.postgresql_user:
     name: '{{ pg_replication_user }}'
@@ -35,6 +36,7 @@
 # https://github.com/haproxy/haproxy/issues/1508
 # EL9 haproxy-2.4.17 is not backported.
 - name: Add haproxy user to PostgreSQL
+  become: true
   become_user: postgres
   community.postgresql.postgresql_user:
     name: '{{ haproxy_check_user }}'

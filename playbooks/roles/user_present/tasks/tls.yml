@@ -11,7 +11,7 @@
   ansible.builtin.set_fact:
     tls_info: >-
       {{ tls_info | combine({"issuer": (lookup("file", tls_info.cert)
-         | community.crypto.x509_certificate_info).issuer.commonName}) }}
+        | community.crypto.x509_certificate_info).issuer.commonName}) }}
 
 - name: Copy cert (self sigend)
   ansible.builtin.copy:

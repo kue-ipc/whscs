@@ -11,9 +11,9 @@
     quiet: true
   loop: >-
     {{ ansible_facts.services.values()
-       | selectattr("status", "in", ["enabled", "active"])
-       | selectattr("name", "search", "\.service$")
-       | rejectattr("name", "search", "@\.service$")
+      | selectattr("status", "in", ["enabled", "active"])
+      | selectattr("name", "search", "\.service$")
+      | rejectattr("name", "search", "@\.service$")
     }}
   loop_control:
     label: "{{ item.name }} {{ item.state }}"

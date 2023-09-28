@@ -38,5 +38,4 @@
   loop: >-
     {{ ((groups["db"] | map("extract", hostvars) | map(attribute="ansible_host", default=""))
       + (groups["db"] | map("extract", hostvars) | map(attribute="inventory_ipv4", default="")))
-      | unique | reject("eq", "")
-    }}
+      | unique | reject("eq", "") }}

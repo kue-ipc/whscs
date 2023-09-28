@@ -1,5 +1,16 @@
 # MariaDB
 ---
+- name: Install MraiaDB server
+  ansible.builtin.dnf:
+    state: present
+    name: mariadb-server-galera
+
+- name: Install Python MySQL module
+  ansible.builtin.dnf:
+    state: present
+    name: python3-PyMySQL
+  when: inventory_hostname == db_main_server
+
 - name: Line in client conf
   ansible.builtin.lineinfile:
     path: "/etc/my.cnf.d/client.cnf"

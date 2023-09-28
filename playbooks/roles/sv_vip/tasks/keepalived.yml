@@ -12,13 +12,11 @@
 - name: Set vrrp_peers
   ansible.builtin.set_fact:
     vrrp_peers: >-
-      {{
-        (
-          groups[vip_group] | map("extract", hostvars) | map(attribute="ansible_host") +
-          groups[vip_group] | map("extract", hostvars) | map(attribute="inventory_ipv4", default=omit) +
-          groups[vip_group] | map("extract", hostvars) | map(attribute="inventory_ipv6", default=omit)
-        ) | ansible.utils.ipaddr | reject("in", [ansible_default_ipv4.address, ansible_default_ipv6.address])
-      }}
+      {{ (groups[vip_group] | map("extract", hostvars) | map(attribute="ansible_host")
+          + groups[vip_group] | map("extract", hostvars) | map(attribute="inventory_ipv4", default=omit)
+          + groups[vip_group] | map("extract", hostvars) | map(attribute="inventory_ipv6", default=omit))
+        | ansible.utils.ipaddr | unique
+        | reject("in", [ansible_default_ipv4.address, ansible_default_ipv6.address]) }}
 
 - name: Template keepalived.cfg
   ansible.builtin.template:

@@ -1,0 +1,20 @@
+# PostgreSQL
+---
+- name: Install PostgreSQL server
+  ansible.builtin.dnf:
+    state: present
+    name: postgresql-server
+
+- name: Install Python PostgreSQL module
+  ansible.builtin.dnf:
+    state: present
+    name: python3-psycopg2
+  when: inventory_hostname == pg_main_server
+
+- name: Task postgresql main
+  ansible.builtin.include_tasks: postgresql_main.yml
+  when: inventory_hostname == pg_main_server
+
+- name: Task postgresql replica
+  ansible.builtin.include_tasks: postgresql_replica.yml
+  when: inventory_hostname != pg_main_server

@@ -22,8 +22,7 @@
     {{ ((groups["db"] | map("extract", hostvars) | map(attribute="ansible_host", default=""))
       + (groups["db"] | map("extract", hostvars) | map(attribute="inventory_ipv4", default=""))
       + (groups["db"] | map("extract", hostvars) | map(attribute="inventory_ipv6", default="")))
-      | unique | reject("eq", "")
-    }}
+      | unique | reject("eq", "") }}
 
 # Set md5 for HAProxy pgsql-check, but use scram-sha-256 for user authentication.
 - name: Line host all all in pg_hba.conf

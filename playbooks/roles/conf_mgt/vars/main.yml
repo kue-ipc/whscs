@@ -1,5 +1,5 @@
 ---
-web_mount_entries:
+conf_mgt_web_mount_entries:
   - {name: /dev, opts: '--bind /dev'}
   - {name: /dev/pts, opts: '--bind /dev/pts'}
   - {name: /etc, opts: '--bind --read-only /etc'}

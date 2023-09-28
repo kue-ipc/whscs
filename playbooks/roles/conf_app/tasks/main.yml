@@ -23,6 +23,12 @@
 - name: Task dir
   ansible.builtin.import_tasks: dir.yml
 
+- name: Role sv web mount
+  ansible.builtin.import_role:
+    name: sv_web_mount
+  vars:
+    sv_web_mount_entries: '{{ conf_app_web_mount_entries }}'
+
 - name: Task msmtp
   ansible.builtin.import_tasks: msmtp.yml
 

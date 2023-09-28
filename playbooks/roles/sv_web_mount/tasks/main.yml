@@ -1,4 +1,4 @@
-# dir
+# web mount
 ---
 - name: Set SELinux file context for dir
   community.general.sefcontext:
@@ -25,9 +25,15 @@
     state: started
     daemon_reload: true
 
+- name: Check sv_web_mount_entries
+  ansible.builtin.assert:
+    that: sv_web_mount_entries is defined
+    msg: sv_web_mount_entries is undefined
+    quiet: true
+
 - name: Creaet systemd web-mount@.service
   ansible.builtin.template:
-    src: systemd/web-mount@.service.j2
+    src: web-mount@.service.j2
     dest: /etc/systemd/system/web-mount@.service
     owner: root
     group: root

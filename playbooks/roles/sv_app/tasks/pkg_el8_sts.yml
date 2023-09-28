@@ -4,9 +4,12 @@
 # TODO: 下記のコンフリクトでうまくいかない
 # perl:5.32/common Problems in request:
 # Modular dependency problems with Defaults:
-#  Problem: module perl:5.26:8050020211109115414:b4937e53.x86_64 conflicts with module(perl:5.32) provided by perl:5.32:8080020230127034234:af169298.x86_64
-#   - module perl:5.32:8080020230127034234:af169298.x86_64 conflicts with module(perl:5.26) provided by perl:5.26:8050020211109115414:b4937e53.x86_64
-#   - module freeradius:3.0:8080020230114090022:89170a74.x86_64 requires module(perl:5.26), but none of the providers can be installed
+#  Problem: module perl:5.26:8050020211109115414:b4937e53.x86_64 conflicts with mo
+# dule(perl:5.32) provided by perl:5.32:8080020230127034234:af169298.x86_64
+#   - module perl:5.32:8080020230127034234:af169298.x86_64 conflicts with module(p
+# erl:5.26) provided by perl:5.26:8050020211109115414:b4937e53.x86_64
+#   - module freeradius:3.0:8080020230114090022:89170a74.x86_64 requires module(pe
+# rl:5.26), but none of the providers can be installed
 #   - conflicting requests"
 # - name: Install perl latest app stream
 #   ansible.builtin.dnf:

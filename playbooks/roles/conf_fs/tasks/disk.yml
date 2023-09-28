@@ -10,7 +10,6 @@
     thinpool: '{{ gluster_data_pool_name }}'
     size: '{{ gluster_data_pool_size }}'
 
-# 128GiB
 - name: Create a thin volume for glfs
   community.general.lvol:
     vg: '{{ lvm_vg }}'

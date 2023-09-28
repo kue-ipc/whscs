@@ -1,13 +1,14 @@
 # db client
 ---
-- name: Task package
-  ansible.builtin.import_tasks: package.yml
 
 - name: Task hosts
   ansible.builtin.import_tasks: hosts.yml
 
 - name: Task mariadb
   ansible.builtin.import_tasks: mariadb.yml
+
+- name: Task postgresql
+  ansible.builtin.import_tasks: postgresql.yml
 
 - name: Task haproxy
   ansible.builtin.import_tasks: haproxy.yml

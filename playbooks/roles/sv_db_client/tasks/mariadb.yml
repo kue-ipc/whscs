@@ -1,5 +1,10 @@
 # MariaDB
 ---
+- name: Install MariaDB client
+  ansible.builtin.dnf:
+    state: present
+    name: mariadb
+
 - name: Line in client conf
   ansible.builtin.lineinfile:
     path: "/etc/my.cnf.d/client.cnf"

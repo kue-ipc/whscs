@@ -1,4 +1,10 @@
+# HAProxy
 ---
+- name: Install HAProxy
+  ansible.builtin.dnf:
+    state: present
+    name: haproxy
+
 - name: Template haproxy.cfg
   ansible.builtin.template:
     src: haproxy/haproxy.cfg.j2

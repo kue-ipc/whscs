@@ -1,5 +1,5 @@
 {{ web_dir }}/*/var/log/nginx/access_{{ inventory_hostname }}.log {
-    create 0640 nginx root
+    create 0644 nginx root
     {{ logrotate_frequency }}
     rotate {{ logrotate_rotate }}
     missingok

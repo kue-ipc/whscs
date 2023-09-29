@@ -24,6 +24,8 @@
       - perl
       - perl-devel
       - perl-CPAN
+      - perl-CGI
+      - perl-FCGI
       - perl-DBD-MySQL
       - perl-DBD-Pg
       - perl-DBD-SQLite

@@ -1,0 +1,22 @@
+# enable repository
+---
+- name: Intall epel-relese
+  ansible.builtin.dnf:
+    state: present
+    name: epel-release
+  when: item == 'epel'
+
+- name: Get repo list
+  ansible.builtin.command:
+    cmd: 'dnf repolist --enabled {{ item }}'
+  register: dnf_repolist_enabled
+  changed_when: false
+  when: item != 'epel'
+
+- name: Enable dnf repository
+  ansible.builtin.command:
+    cmd: 'dnf config-manager --set-enabled {{ item }}'
+  changed_when: true
+  when:
+    - item != 'epel'
+    - dnf_repolist_enabled.stdout == ""

@@ -4,3 +4,51 @@
   ansible.builtin.dnf:
     state: present
     name: '@Development Tools'
+
+# EL9からgdbmはCRBに移動
+- name: Include task enable repo crb for gdbm-devel
+  ansible.builtin.include_tasks: enable_repo.yml
+  vars:
+    item: crb
+  when:
+    - ansible_distribution_version is version("9", ">=")
+    - '"ruby" in app_list'
+
+# EL8ではlibyaml-develがPowerTools(CoreReadyにある
+- name: Include task enable repo powertools for libyaml-devel
+  ansible.builtin.include_tasks: enable_repo.yml
+  vars:
+    item: powertools
+  when:
+    - ansible_distribution_version is version("9", "<")
+    - '"ruby" in app_list'
+
+# https://github.com/rbenv/ruby-build/wiki#rhelcentos
+- name: Intall development packages for rbenv-build
+  ansible.builtin.dnf:
+    state: present
+    name:
+      - openssl-devel
+      - libyaml-devel
+      - libffi-devel
+      - readline-devel
+      - zlib-devel
+      - gdbm-devel
+      - ncurses-devel
+      - rust
+  when: '"ruby" in app_list'
+
+# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
+- name: Install development packages for pyenv
+  ansible.builtin.dnf:
+    state: present
+    name:
+      - zlib-devel
+      - bzip2-devel
+      - readline-devel
+      - sqlite-devel
+      - openssl-devel
+      - tk-devel
+      - libffi-devel
+      - xz-devel
+  when: '"python" in app_list'

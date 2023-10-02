@@ -1,9 +1,16 @@
 # msmtp
 ---
-- name: Install epel-release
-  ansible.builtin.dnf:
-    state: present
-    name: epel-release
+# - name: Install epel-release
+#   ansible.builtin.dnf:
+#     state: present
+#     name: epel-release
+
+- name: Include task enable repo from sv_app
+  ansible.builtin.include_role:
+    name: sv_app
+    tasks_from: enable_repo
+  vars:
+    item: 'epel'
 
 - name: Install msmtp
   ansible.builtin.dnf:

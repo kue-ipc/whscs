@@ -113,6 +113,11 @@ backup_main_server: '{{ groups["bk"] | first }}'
 backup_data_dir: /backup
 backup_data_name: backup
 backup_retention_peroid: '{{ 30 * 24 * 60 * 60 + 12 * 60 * 60 }}'
+app_list:
+  - perl
+  - python
+  - php
+  - ruby
 app_life_cycle: lts
 app_dev: false
 app_dev_extra: false

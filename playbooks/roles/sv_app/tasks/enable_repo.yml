@@ -4,19 +4,19 @@
   ansible.builtin.dnf:
     state: present
     name: epel-release
-  when: item == 'epel'
+  when: sv_app_repo == 'epel'
 
 - name: Get repo list
   ansible.builtin.command:
-    cmd: 'dnf repolist --enabled {{ item }}'
+    cmd: 'dnf repolist --enabled {{ sv_app_repo }}'
   register: dnf_repolist_enabled
   changed_when: false
-  when: item != 'epel'
+  when: sv_app_repo != 'epel'
 
 - name: Enable dnf repository
   ansible.builtin.command:
-    cmd: 'dnf config-manager --set-enabled {{ item }}'
+    cmd: 'dnf config-manager --set-enabled {{ sv_app_repo }}'
   changed_when: true
   when:
-    - item != 'epel'
+    - sv_app_repo != 'epel'
     - dnf_repolist_enabled.stdout == ""

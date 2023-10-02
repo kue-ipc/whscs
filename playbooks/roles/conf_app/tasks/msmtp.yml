@@ -10,7 +10,7 @@
     name: sv_app
     tasks_from: enable_repo
   vars:
-    item: 'epel'
+    sv_app_repo: 'epel'
 
 - name: Install msmtp
   ansible.builtin.dnf:

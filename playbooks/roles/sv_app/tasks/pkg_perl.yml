@@ -1,0 +1,27 @@
+# Perl
+---
+- name: Install perl latest app stream
+  ansible.builtin.dnf:
+    state: present
+    name: '@perl:{{ sv_app_versions.perl }}/common'
+  when: sv_app_versions.perl is defined
+
+- name: Install perl and extensions
+  ansible.builtin.dnf:
+    state: present
+    name:
+      - perl
+      - perl-devel
+      - perl-CPAN
+      - perl-CGI
+      - perl-FCGI
+      - perl-DBD-MySQL
+      - perl-DBD-Pg
+      - perl-DBD-SQLite
+
+- name: Intall perl other extensions for EL9
+  ansible.builtin.dnf:
+    state: present
+    name:
+      - perl-DBD-MariaDB
+  when: ansible_distribution_major_version is version("9")

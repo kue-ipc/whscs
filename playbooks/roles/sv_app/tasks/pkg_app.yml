@@ -1,0 +1,6 @@
+# pkg app
+---
+- name: Task pkg item
+  ansible.builtin.include_tasks:
+    file: 'pkg_{{ item }}.yml'
+  when: item in app_list

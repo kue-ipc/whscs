@@ -7,10 +7,31 @@ sv_app_latest:
     ruby: '3.1'
     nodejs: '18'
     perl: '5.32'
-    pyoth: '3.11'
+    python: '3.11'
   el9:
     php: '8.1'
     ruby: '3.1'
     nodejs: '18'
     # perl: ''
     python: '3.11'
+sv_app_default_versions:
+  el8:
+    lts:
+      perl: '5.26'
+      python: '3.6'
+      php: '7.4'
+      ruby: '2.5'
+    sts:
+      perl: '5.32'
+      python: '3.11'
+      php: '8.0'
+      ruby: '3.1'
+      nodejs: '18'
+  el9:
+    lts: {}
+    sts:
+      # perl: ''
+      python: '3.11'
+      php: '8.1'
+      ruby: '3.1'
+      nodejs: '18'

@@ -9,7 +9,7 @@
 - name: Include task enable repo crb for gdbm-devel
   ansible.builtin.include_tasks: enable_repo.yml
   vars:
-    item: crb
+    sp_app_repo: crb
   when:
     - ansible_distribution_version is version("9", ">=")
     - '"ruby" in app_list'
@@ -18,7 +18,7 @@
 - name: Include task enable repo powertools for libyaml-devel
   ansible.builtin.include_tasks: enable_repo.yml
   vars:
-    item: powertools
+    sp_app_repo: powertools
   when:
     - ansible_distribution_version is version("9", "<")
     - '"ruby" in app_list'

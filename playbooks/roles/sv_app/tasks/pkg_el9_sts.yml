@@ -1,25 +1,25 @@
 # RHEL 9 Application Steraems
 # https://access.redhat.com/support/policy/updates/rhel-app-streams-life-cycle#rhel9_application_streams
 ---
-- name: Install perl latest app stream
-  ansible.builtin.dnf:
-    state: present
-    name: '@perl:{{ sv_app_latest.el9.perl }}/common'
-  when: sv_app_latest.el9.perl is defined
+# - name: Install perl latest app stream
+#   ansible.builtin.dnf:
+#     state: present
+#     name: '@perl:{{ sv_app_latest.el9.perl }}/common'
+#   when: sv_app_latest.el9.perl is defined
 
-- name: Install perl
-  ansible.builtin.dnf:
-    state: present
-    name:
-      - perl
-      - perl-devel
-      - perl-CPAN
-      - perl-CGI
-      - perl-FCGI
-      - perl-DBD-MariaDB
-      - perl-DBD-MySQL
-      - perl-DBD-Pg
-      - perl-DBD-SQLite
+# - name: Install perl
+#   ansible.builtin.dnf:
+#     state: present
+#     name:
+#       - perl
+#       - perl-devel
+#       - perl-CPAN
+#       - perl-CGI
+#       - perl-FCGI
+#       - perl-DBD-MariaDB
+#       - perl-DBD-MySQL
+#       - perl-DBD-Pg
+#       - perl-DBD-SQLite
 
 - name: Install php latest app stream
   ansible.builtin.dnf:

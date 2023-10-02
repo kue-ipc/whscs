@@ -17,24 +17,24 @@
 #     name: '@perl:{{ sv_app_latest.el8.perl }}/common'
 #   when: sv_app_latest.el8.perl is defined
 
-- name: Install perl
-  ansible.builtin.dnf:
-    state: present
-    name:
-      - perl
-      - perl-devel
-      - perl-CPAN
-      - perl-CGI
-      - perl-FCGI
-      - perl-DBD-MySQL
-      - perl-DBD-Pg
-      - perl-DBD-SQLite
+# - name: Install perl
+#   ansible.builtin.dnf:
+#     state: present
+#     name:
+#       - perl
+#       - perl-devel
+#       - perl-CPAN
+#       - perl-CGI
+#       - perl-FCGI
+#       - perl-DBD-MySQL
+#       - perl-DBD-Pg
+#       - perl-DBD-SQLite
 
-- name: Install php latest app stream
-  ansible.builtin.dnf:
-    state: present
-    name: '@php:{{ sv_app_latest.el8.php }}/common'
-  when: sv_app_latest.el8.php is defined
+# - name: Install php latest app stream
+#   ansible.builtin.dnf:
+#     state: present
+#     name: '@php:{{ sv_app_latest.el8.php }}/common'
+#   when: sv_app_latest.el8.php is defined
 
 - name: Install php
   ansible.builtin.dnf:
@@ -50,26 +50,26 @@
       - php-pgsql
       - php-soap
 
-- name: Install ruby latest app stream
-  ansible.builtin.dnf:
-    state: present
-    name: '@ruby:{{ sv_app_latest.el8.ruby }}/common'
-  when: sv_app_latest.el8.ruby is defined
+# - name: Install ruby latest app stream
+#   ansible.builtin.dnf:
+#     state: present
+#     name: '@ruby:{{ sv_app_latest.el8.ruby }}/common'
+#   when: sv_app_latest.el8.ruby is defined
 
-- name: Install ruby
-  ansible.builtin.dnf:
-    state: present
-    name:
-      - ruby
-      - ruby-devel
-      - ruby-irb
-      - rubygems-devel
-      - rubygem-minitest
-      - rubygem-power_assert
-      - rubygem-rake
-      - rubygem-test-unit
-      - rubygem-mysql2
-      - rubygem-pg
+# - name: Install ruby
+#   ansible.builtin.dnf:
+#     state: present
+#     name:
+#       - ruby
+#       - ruby-devel
+#       - ruby-irb
+#       - rubygems-devel
+#       - rubygem-minitest
+#       - rubygem-power_assert
+#       - rubygem-rake
+#       - rubygem-test-unit
+#       - rubygem-mysql2
+#       - rubygem-pg
 
 - name: Install nodejs latest app stream
   ansible.builtin.dnf:

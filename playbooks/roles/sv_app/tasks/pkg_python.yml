@@ -1,0 +1,22 @@
+# python
+---
+- name: Set python name
+  ansible.builtin.set_fact:
+    sv_app_python_name: >-
+      {% if sv_app_versions.python is not defined %}
+      python3
+      {% elif sv_app_versions.python is version("3.10", "<") %}
+      python{{ sv_app_versions.python | regex_replace("\.", "") }}
+      {% else %}
+      python{{ sv_app_versions.python }}
+      {% endif %}
+
+- name: Install python
+  ansible.builtin.dnf:
+    state: present
+    name:
+      - '{{ sv_app_python_name }}'
+      - '{{ sv_app_python_name }}-devel'
+      - '{{ sv_app_python_name }}-pip'
+      - '{{ sv_app_python_name }}-PyMySQL'
+      - '{{ sv_app_python_name }}-psycopg2'

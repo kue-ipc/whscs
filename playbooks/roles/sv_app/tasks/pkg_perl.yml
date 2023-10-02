@@ -1,6 +1,6 @@
 # Perl
 ---
-- name: Install perl latest app stream
+- name: Install perl app stream
   ansible.builtin.dnf:
     state: present
     name: '@perl:{{ sv_app_versions.perl }}/common'

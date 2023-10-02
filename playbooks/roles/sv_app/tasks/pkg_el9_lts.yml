@@ -1,33 +1,33 @@
 # RHEL 9 Full Life Application Steraems
 # https://access.redhat.com/support/policy/updates/rhel-app-streams-life-cycle#rhel9_full_life_application_streams
 ---
-- name: Install perl
-  ansible.builtin.dnf:
-    state: present
-    name:
-      - perl
-      - perl-devel
-      - perl-CPAN
-      - perl-CGI
-      - perl-FCGI
-      - perl-DBD-MariaDB
-      - perl-DBD-MySQL
-      - perl-DBD-Pg
-      - perl-DBD-SQLite
+# - name: Install perl
+#   ansible.builtin.dnf:
+#     state: present
+#     name:
+#       - perl
+#       - perl-devel
+#       - perl-CPAN
+#       - perl-CGI
+#       - perl-FCGI
+#       - perl-DBD-MariaDB
+#       - perl-DBD-MySQL
+#       - perl-DBD-Pg
+#       - perl-DBD-SQLite
 
-- name: Install php
-  ansible.builtin.dnf:
-    state: present
-    name:
-      - php
-      - php-devel
-      - php-gd
-      - php-intl
-      - php-ldap
-      - php-mysqlnd
-      - php-pecl-apcu
-      - php-pgsql
-      - php-soap
+# - name: Install php
+#   ansible.builtin.dnf:
+#     state: present
+#     name:
+#       - php
+#       - php-devel
+#       - php-gd
+#       - php-intl
+#       - php-ldap
+#       - php-mysqlnd
+#       - php-pecl-apcu
+#       - php-pgsql
+#       - php-soap
 
 - name: Install python
   ansible.builtin.dnf:
@@ -39,22 +39,22 @@
       - python3-PyMySQL
       - python3-psycopg2
 
-- name: Install ruby
-  ansible.builtin.dnf:
-    state: present
-    name:
-      - ruby
-      - ruby-devel
-      - rubygems-devel
-      - ruby-default-gems
-      - rubygem-irb
-      - rubygem-minitest
-      - rubygem-power_assert
-      - rubygem-rake
-      - rubygem-test-unit
-      - rubygem-rexml
-      - rubygem-rss
-      - rubygem-typeprof
-      - rubygem-rbs
-      - rubygem-mysql2
-      - rubygem-pg
+# - name: Install ruby
+#   ansible.builtin.dnf:
+#     state: present
+#     name:
+#       - ruby
+#       - ruby-devel
+#       - rubygems-devel
+#       - ruby-default-gems
+#       - rubygem-irb
+#       - rubygem-minitest
+#       - rubygem-power_assert
+#       - rubygem-rake
+#       - rubygem-test-unit
+#       - rubygem-rexml
+#       - rubygem-rss
+#       - rubygem-typeprof
+#       - rubygem-rbs
+#       - rubygem-mysql2
+#       - rubygem-pg

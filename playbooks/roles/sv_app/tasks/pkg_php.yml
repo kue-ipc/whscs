@@ -1,0 +1,21 @@
+# php
+---
+- name: Install php app stream
+  ansible.builtin.dnf:
+    state: present
+    name: '@php:{{ sv_app_versions.php }}/common'
+  when: sv_app_versions.php is defined
+
+- name: Install php and extensions
+  ansible.builtin.dnf:
+    state: present
+    name:
+      - php
+      - php-devel
+      - php-gd
+      - php-intl
+      - php-ldap
+      - php-mysqlnd
+      - php-pecl-apcu
+      - php-pgsql
+      - php-soap

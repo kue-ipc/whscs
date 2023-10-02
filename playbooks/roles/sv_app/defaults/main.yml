@@ -18,7 +18,7 @@ sv_app_default_versions:
   el8:
     lts:
       perl: '5.26'
-      python: '3.6'
+      # python: '3.6'
       php: '7.4'
       ruby: '2.5'
     sts:

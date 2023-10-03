@@ -8,45 +8,45 @@
   ansible.builtin.import_role:
     name: sv_app
 
-# - name: Role sv tls
-#   ansible.builtin.import_role:
-#     name: sv_tls
+- name: Role sv tls
+  ansible.builtin.import_role:
+    name: sv_tls
 
-# - name: Role sv db client
-#   ansible.builtin.import_role:
-#     name: sv_db_client
+- name: Role sv db client
+  ansible.builtin.import_role:
+    name: sv_db_client
 
-# - name: Role sv fs client
-#   ansible.builtin.import_role:
-#     name: sv_fs_client
+- name: Role sv fs client
+  ansible.builtin.import_role:
+    name: sv_fs_client
 
-# - name: Task dir
-#   ansible.builtin.import_tasks: dir.yml
+- name: Task dir
+  ansible.builtin.import_tasks: dir.yml
 
-# - name: Role sv web mount
-#   ansible.builtin.import_role:
-#     name: sv_web_mount
-#   vars:
-#     sv_web_mount_entries: '{{ conf_app_web_mount_entries }}'
+- name: Role sv web mount
+  ansible.builtin.import_role:
+    name: sv_web_mount
+  vars:
+    sv_web_mount_entries: '{{ conf_app_web_mount_entries }}'
 
-# - name: Task msmtp
-#   ansible.builtin.import_tasks: msmtp.yml
+- name: Task msmtp
+  ansible.builtin.import_tasks: msmtp.yml
 
-# - name: Task httpd
-#   ansible.builtin.import_tasks: httpd.yml
+- name: Task httpd
+  ansible.builtin.import_tasks: httpd.yml
 
-# - name: Task php
-#   ansible.builtin.import_tasks: php.yml
+- name: Task php
+  ansible.builtin.import_tasks: php.yml
 
-# - name: Task php-fpm
-#   ansible.builtin.import_tasks: php-fpm.yml
-#   when: httpd_php == "php-fpm"
+- name: Task php-fpm
+  ansible.builtin.import_tasks: php-fpm.yml
+  when: httpd_php == "php-fpm"
 
-# - name: Task logrotate
-#   ansible.builtin.import_tasks: logrotate.yml
+- name: Task logrotate
+  ansible.builtin.import_tasks: logrotate.yml
 
-# - name: Task app
-#   ansible.builtin.import_tasks: app.yml
+- name: Task app
+  ansible.builtin.import_tasks: app.yml
 
-# - name: Task sshd
-#   ansible.builtin.import_tasks: sshd.yml
+- name: Task sshd
+  ansible.builtin.import_tasks: sshd.yml

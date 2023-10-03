@@ -9,17 +9,17 @@
       - 'java-{{ item }}-openjdk-devel'
   loop: '{{ sv_app_versions.java | default(["latest"]) }}'
 
-# FIXME: うまくいかない
-# - name: Select java
-#   community.general.alternatives:
-#     name: '{{ item }}'
-#     path: '@java-{{ sv_app_versions.java | default(["latest"]) | first }}-openjdk.x86_64'
-#   loop:
-#     - java
-#     - jre_openjdk
-#     - javac
-#     - java_sdk_openjdk
+- name: Get file stat alternative
+  ansible.builtin.stat:
+    path: '/etc/alternatives/java_sdk_{{ sv_app_versions.java | default(["latest"]) | first }}_openjdk'
+  register: sv_app_java_sdk_openjdk
 
-# alternatives --set java /usr/lib/jvm/java-17-openjdk-17.0.8.0.7-2.el9.x86_64/bin/java
-
-# /usr/lib/jvm/java-11-openjdk-11.0.20.0.8-3.el9.x86_64
+- name: Select java
+  community.general.alternatives:
+    name: '{{ item.name }}'
+    path: '{{ sv_app_java_sdk_openjdk.stat.lnk_source }}{{ item.path | default("") }}'
+  loop:
+    - {name: java, path: /bin/java}
+    - {name: jre_openjdk}
+    - {name: javac, path: /bin/javac}
+    - {name: java_sdk_openjdk}

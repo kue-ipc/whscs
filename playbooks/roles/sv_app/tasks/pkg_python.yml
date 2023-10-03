@@ -1,15 +1,17 @@
 # python
+# EL9ではpythonやpython3を3.11に向けることはできない
+# https://access.redhat.com/documentation/ja-jp/red_hat_enterprise_linux/9/html-single/installing_and_using_dynamic_programming_languages/index#proc_installing-python-3_assembly_installing-and-using-python
 ---
+- name: Set python version
+  ansible.builtin.set_fact:
+    sv_app_python_version: '{{ sv_app_versions.python | default("3") }}'
+
 - name: Set python name
   ansible.builtin.set_fact:
     sv_app_python_name: >-
-      {% if sv_app_versions.python is not defined %}
-      python3
-      {% elif sv_app_versions.python is version("3.10", "<") %}
-      python{{ sv_app_versions.python | regex_replace("\.", "") }}
-      {% else %}
-      python{{ sv_app_versions.python }}
-      {% endif %}
+      python{{
+        sv_app_python_version is version("3.10", "<")
+        | ternary(sv_app_python_version | regex_replace("\.", ""), sv_app_python_version) }}
 
 - name: Install python
   ansible.builtin.dnf:
@@ -20,3 +22,18 @@
       - '{{ sv_app_python_name }}-pip'
       - '{{ sv_app_python_name }}-PyMySQL'
       - '{{ sv_app_python_name }}-psycopg2'
+
+- name: Select python for EL8
+  community.general.alternatives:
+    name: python
+    path: '/usr/bin/python{{ sv_app_python_version[0] }}'
+  when: ansible_distribution_major_version == '8'
+
+- name: Select python3 for EL8
+  community.general.alternatives:
+    name: python3
+    path: '/usr/bin/python{{ sv_app_versions.python }}'
+  when:
+    - ansible_distribution_major_version == '8'
+    - sv_app_versions.python is defined
+    - sv_app_versions.python is version("3", ">=")

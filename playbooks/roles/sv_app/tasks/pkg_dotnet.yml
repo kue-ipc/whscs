@@ -1,0 +1,7 @@
+# .NET
+---
+- name: Install dotnet
+  ansible.builtin.dnf:
+    state: present
+    name: 'dotnet-sdk-{{ item }}'
+  loop: '{{ sv_app_versions.dotnet | default([]) }}'

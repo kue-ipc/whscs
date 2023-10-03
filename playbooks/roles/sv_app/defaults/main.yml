@@ -1,19 +1,6 @@
 # latest versions of app streams
 # https://access.redhat.com/support/policy/updates/rhel-app-streams-life-cycle
 ---
-sv_app_latest:
-  el8:
-    php: '8.0'
-    ruby: '3.1'
-    nodejs: '18'
-    perl: '5.32'
-    python: '3.11'
-  el9:
-    php: '8.1'
-    ruby: '3.1'
-    nodejs: '18'
-    # perl: ''
-    python: '3.11'
 sv_app_default_versions:
   el8:
     lts:
@@ -21,17 +8,46 @@ sv_app_default_versions:
       # python: '3.6'
       php: '7.4'
       ruby: '2.5'
+      # 以下は短い
+      nodejs: '18' # 2025-04
+      java:
+        - '17' # 2027-12
+      dotnet:
+        - '6.0' # 2024-11
     sts:
-      perl: '5.32'
-      python: '3.11'
-      php: '8.0'
-      ruby: '3.1'
-      nodejs: '18'
+      perl: '5.32' # 2025-04
+      python: '3.11' # 2026-05
+      php: '8.0' # 2024-11
+      ruby: '3.1' # 2025-03
+      nodejs: '18' # 2025-04
+      java:
+        - '17' # 2027-12
+        - '11' # 2024-10
+        - '1.8.0' # 2026-05
+      dotnet:
+        - '7.0' # 2024-05
+        - '6.0' # 2024-11
+      gcc:
+        - '12' # 2024-11
   el9:
-    lts: {}
+    lts:
+      # TODO: 以下は短い
+      nodejs: '18' # 2025-04
+      java:
+        - '17' # 2027-12
+      dotnet:
+        - '6.0' # 2024-11
     sts:
       # perl: ''
-      python: '3.11'
-      php: '8.1'
-      ruby: '3.1'
-      nodejs: '18'
+      python: '3.11' # 2026-05
+      php: '8.1' # 2025-05
+      ruby: '3.1' # 2025-03
+      nodejs: '18' # 2025-04
+      java:
+        - '17' # 2027-12
+        - '11' # 2024-10
+        - '1.8.0' # 2026-05
+      dotnet:
+        - '7.0' # 2024-05
+        - '6.0' # 2024-11
+      gcc: '12' # 2024-11

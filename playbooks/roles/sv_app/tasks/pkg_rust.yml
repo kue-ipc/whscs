@@ -1,0 +1,8 @@
+# Rust
+---
+- name: Install rust
+  ansible.builtin.dnf:
+    state: present
+    name:
+      - rust
+      - cargo

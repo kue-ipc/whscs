@@ -6,24 +6,26 @@
       {{ sv_app_default_versions["el" ~ ansible_distribution_major_version][app_life_cycle]
         | combine(app_versions | default({})) }}
 
-- name: Task pkg app
-  ansible.builtin.include_tasks: pkg_app.yml
+- name: Task app
+  ansible.builtin.include_tasks: app.yml
   loop:
     - perl
     - python
     - php
     - ruby
-
-- name: Task pkg app for version and life cypcle
-  ansible.builtin.include_tasks: 'pkg_el{{ ansible_distribution_major_version }}_{{ app_life_cycle }}.yml'
+    - nodejs
+    - java
+    - dotnet
+    - gcc
+    - clang
+    - rust
+    - golang
+  loop_control:
+    loop_var: sv_app_app
 
 - name: Task pkg dev
   ansible.builtin.import_tasks: pkg_dev.yml
   when: app_dev
-
-- name: Task pkg dev extra
-  ansible.builtin.import_tasks: pkg_dev_extra.yml
-  when: app_dev_extra
 
 - name: Task pkg util
   ansible.builtin.import_tasks: pkg_util.yml

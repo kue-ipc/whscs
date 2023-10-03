@@ -1,0 +1,7 @@
+# GCC Toolset
+---
+- name: Install gcc-toolset
+  ansible.builtin.dnf:
+    state: present
+    name: 'gcc-toolset-{{ item }}'
+  loop: '{{ sv_app_versions.gcc | deafult([]) }}'

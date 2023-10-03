@@ -1,0 +1,6 @@
+# Clang
+---
+- name: Install clang
+  ansible.builtin.dnf:
+    state: present
+    name: clang

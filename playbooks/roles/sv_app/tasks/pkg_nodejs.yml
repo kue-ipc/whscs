@@ -1,0 +1,13 @@
+# Node.js
+---
+- name: Install nodejs app stream
+  ansible.builtin.dnf:
+    state: present
+    name: '@nodejs:{{ sv_app_versions.nodejs }}/common'
+  when: sv_app_versions.nodejs is defined
+
+- name: Install nodejs
+  ansible.builtin.dnf:
+    state: present
+    name:
+      - nodejs

@@ -1,10 +1,11 @@
 ---
-- name: Conf Web and App
+- name: Restar Web
   hosts:
     - web
     - app
+    - rp
   become: true
   serial: 1
   max_fail_percentage: 0
   roles:
-    - restart_web_app
+    - restart_web

@@ -1,4 +1,4 @@
-# restnart web
+# restart web
 ---
 - name: Restart php-fpm
   ansible.builtin.systemd:
@@ -12,4 +12,4 @@
   ansible.builtin.systemd:
     name: 'nginx.service'
     state: restarted
-  when: '"web" in group_names'
+  when: '"web" in group_names or "rp" in group_names'

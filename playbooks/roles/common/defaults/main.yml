@@ -75,7 +75,9 @@ ftp_ssl_mode: explicit
 ftp_ssl_min: TLSv1.2
 ftp_pasv_port_range: [20100, 20199]
 ## LDAP
-ldap_auth_name: LDAP Auth
+# member or posix (default member)
+ldap_group: member
+# ldap_auth_name: LDAP Auth
 # ldap_url: ldaps://ldap/ou=User?uid
 # ldap_bind_dn: cn=bind
 # ldap_bind_password: pass

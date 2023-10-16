@@ -10,4 +10,9 @@
 {% if ldap_bind_password is defined %}
     AuthLDAPBindPassword "{{ ldap_bind_password }}"
 {% endif %}
+{% if ldap_group == "posix" %}
+    AuthLDAPGroupAttribute memberUid
+    AuthLDAPGroupAttributeIsDN off
+    AuthLDAPMaxSubGroupDepth 0
+{% endif %}
 </Directory>

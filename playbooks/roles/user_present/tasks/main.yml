@@ -5,7 +5,7 @@
 - name: Task present webuser
   ansible.builtin.import_tasks: webuser_present.yml
 
-## userm
+## user
 
 - name: Task user
   ansible.builtin.include_tasks: user.yml
@@ -41,12 +41,17 @@
 
 ## app
 
+- name: Set app_host
+  ansible.builtin.set_fact:
+    user_present_app_host: >-
+      {{ webuser.enabled and "app" in group_names and (
+        webuser.host in group_names or "test" in group_names
+      ) }}
+
 - name: Task app
   ansible.builtin.include_tasks: app.yml
   when:
-    - '"app" in group_names'
-    - webuser.enabled
-    - webuser.host in group_names
+    - user_present_app_host
     - webuser.app_use
     - not webuser.app_one or groups[webuser.host] | first == inventory_hostname
 
@@ -54,16 +59,12 @@
   ansible.builtin.include_tasks: php-fpm.yml
   when:
     - httpd_php == "php-fpm"
-    - '"app" in group_names'
-    - webuser.enabled
-    - webuser.host in group_names
+    - user_present_app_host
 
 - name: Task httpd
   ansible.builtin.include_tasks: httpd.yml
   when:
-    - '"app" in group_names'
-    - webuser.enabled
-    - webuser.host in group_names
+    - user_present_app_host
 
 ## web
 
@@ -110,9 +111,7 @@
     tasks_from: no_httpd
   when:
     - '"app" in group_names'
-    - >-
-      not webuser.enabled or
-      webuser.host not in group_names
+    - not user_present_app_host
 
 - name: Task no php-fpm in user_absent
   ansible.builtin.include_role:
@@ -121,9 +120,7 @@
   when:
     - httpd_php == "php-fpm"
     - '"app" in group_names'
-    - >-
-      not webuser.enabled or
-      webuser.host not in group_names
+    - not user_present_app_host
 
 - name: Task no app in user_absent
   ansible.builtin.include_role:
@@ -132,8 +129,7 @@
   when:
     - '"app" in group_names'
     - >-
-      not webuser.enabled or
-      webuser.host not in group_names or
+      not user_present_app_host or
       not webuser.app_use or
       (webuser.app_one and groups[webuser.host] | first != inventory_hostname)
 

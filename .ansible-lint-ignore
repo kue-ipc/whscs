@@ -9,3 +9,4 @@ playbooks/roles/conf_mgt/tasks/usermin.yml no-tabs
 playbooks/roles/user_present/tasks/nginx_web.yml no-handler
 playbooks/roles/user_present/tasks/nginx_rp.yml no-handler
 playbooks/roles/common/defaults/main.yml var-naming[no-role-prefix]
+playbooks/roles/user_present/tasks/app.yml ignore-errors

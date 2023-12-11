@@ -5,3 +5,4 @@
     name: 'app@{{ webuser.name }}.service'
     enabled: true
     state: started
+  ignore_errors: true

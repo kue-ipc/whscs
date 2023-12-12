@@ -1,6 +1,8 @@
 ---
 - name: Conf App
-  hosts: app
+  hosts:
+    - app
+    - test
   become: true
   max_fail_percentage: 0
   roles:

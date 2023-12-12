@@ -1,13 +1,16 @@
 upstream {{ webuser.name }} {
+{% if "test" in group_names %}
+    server localhost:{{ webuser.httpd_port }};
+{% else %}
     ip_hash;
 {% for host in groups[webuser.host] %}
-    server {{ host}}:{{ webuser.httpd_port }};
+    server {{ host }}:{{ webuser.httpd_port }};
 {% endfor %}
+{% endif %}
 }
 
 {% if webuser.app_use and webuser.app_one %}
 upstream {{ webuser.name }}-app {
-    ip_hash;
     server {{ groups[webuser.host] | first }}:{{ webuser.httpd_port }};
 }
 {% endif %}

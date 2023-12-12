@@ -1,6 +1,8 @@
 ---
 - name: Conf Web
-  hosts: web
+  hosts:
+    - web
+    - test
   become: true
   max_fail_percentage: 0
   roles:

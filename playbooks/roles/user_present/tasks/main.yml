@@ -9,7 +9,7 @@
 
 - name: Task user
   ansible.builtin.include_tasks: user.yml
-  when: group_names | intersect(["mgt", "app"]) | length > 0
+  when: group_names | intersect(["mgt", "app", "test"]) | length > 0
 
 ## chroot dir
 
@@ -25,27 +25,28 @@
 
 - name: Task var
   ansible.builtin.include_tasks: var.yml
-  when: '"app" in group_names'
+  when: group_names | intersect(["app", "test"]) | length > 0
 
 ## mount
 
 - name: Task mount
   ansible.builtin.include_tasks: web_mount.yml
-  when: group_names | intersect(["mgt", "app"]) | length > 0
+  when: group_names | intersect(["mgt", "app", "test"]) | length > 0
 
 ## tls
 
 - name: Task tls
   ansible.builtin.include_tasks: tls.yml
-  when: group_names | intersect(["web", "app", "rp"]) | length > 0
+  when: group_names | intersect(["web", "app", "rp", "test"]) | length > 0
 
 ## app
 
 - name: Set app_host
   ansible.builtin.set_fact:
     user_present_app_host: >-
-      {{ webuser.enabled and "app" in group_names and (
-        webuser.host in group_names or "test" in group_names
+      {{ webuser.enabled and (
+          ("app" in group_names and webuser.host in group_names) or
+          "test" in group_names
       ) }}
 
 - name: Task app
@@ -71,7 +72,7 @@
 - name: Task nginx web
   ansible.builtin.include_tasks: nginx_web.yml
   when:
-    - '"web" in group_names'
+    - group_names | intersect(["web", "test"]) | length > 0
     - webuser.enabled
 
 ## rp
@@ -100,7 +101,7 @@
     name: user_absent
     tasks_from: no_nginx
   when:
-    - '"web" in group_names'
+    - group_names | intersect(["web", "test"]) | length > 0
     - not webuser.enabled
 
 ## no app
@@ -110,7 +111,7 @@
     name: user_absent
     tasks_from: no_httpd
   when:
-    - '"app" in group_names'
+    - group_names | intersect(["app", "test"]) | length > 0
     - not user_present_app_host
 
 - name: Task no php-fpm in user_absent
@@ -119,7 +120,7 @@
     tasks_from: no_php-fpm
   when:
     - httpd_php == "php-fpm"
-    - '"app" in group_names'
+    - group_names | intersect(["app", "test"]) | length > 0
     - not user_present_app_host
 
 - name: Task no app in user_absent
@@ -127,7 +128,7 @@
     name: user_absent
     tasks_from: no_app.yml
   when:
-    - '"app" in group_names'
+    - group_names | intersect(["app", "test"]) | length > 0
     - >-
       not user_present_app_host or
       not webuser.app_use or

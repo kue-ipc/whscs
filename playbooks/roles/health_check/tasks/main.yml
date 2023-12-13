@@ -8,7 +8,7 @@
 
 - name: Task mount
   ansible.builtin.import_tasks: mount.yml
-  when: group_names | intersect(["mgt", "bk", "app", "web"]) | length > 0
+  when: group_names | intersect(["mgt", "bk", "app", "web", "test"]) | length > 0
 
 - name: Task service
   ansible.builtin.import_tasks: service.yml

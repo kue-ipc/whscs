@@ -1,27 +1,43 @@
 # mount
 ---
-- name: Run mount -l
-  ansible.builtin.command: mount -l
-  register: mount_l
-  changed_when: false
+- name: Find webuser yml
+  delegate_to: localhost
+  ansible.builtin.find:
+    paths: '{{ data_dir }}/webuser'
+    patterns: '*.yml'
+  register: result_find_webuser
+
+- name: Set webuser_list
+  ansible.builtin.set_fact:
+    webuser_list: >-
+      {{ result_find_webuser.files | map(attribute="path") | map("basename") | map("splitext") | map("first") }}
+
+- name: Set webuser_count
+  ansible.builtin.set_fact:
+    webuser_count: '{{ webuser_list | count }}'
+
+- name: Slurp cat /proc/mounts
+  ansible.builtin.slurp:
+    src: /proc/mounts
+  register: mounts
 
 - name: Set mount_list
   ansible.builtin.set_fact:
-    mount_list: '{{ mount_l.stdout_lines | map("split") | map(attribute=2) }}'
+    mount_list: '{{ (mounts["content"] | b64decode).splitlines() | map("split") | map(attribute=1) | unique }}'
 
 - name: Check web dir
   ansible.builtin.assert:
     that: web_dir in mount_list
     msg: '{{ web_dir }} not mounted'
     quiet: true
-  when: group_names | intersect(["mgt", "bk", "app", "web"]) | length > 0
+  when: group_names | intersect(["mgt", "bk", "app", "web", "test"]) | length > 0
 
 - name: Check user dir
   ansible.builtin.assert:
-    that: mount_list | select("match", "^" ~ web_dir ~ "/\w+" ~ item ~ "$") | count > 0
+    that: mount_list | select("match", "^" ~ web_dir ~ "/\w+" ~ item ~ "$") | count == webuser_count | int
     msg: 'user {{ item }} not mounted'
     quiet: true
-  when: group_names | intersect(["mgt", "app"]) | length > 0
+  when: group_names | intersect(["mgt", "app", "test"]) | length > 0
   loop:
     - /etc
     - /opt
@@ -35,7 +51,7 @@
 
 - name: Check user dir for mgt
   ansible.builtin.assert:
-    that: mount_list | select("match", "^" ~ web_dir ~ "/\w+" ~ item ~ "$") | count > 0
+    that: mount_list | select("match", "^" ~ web_dir ~ "/\w+" ~ item ~ "$") | count  == webuser_count | int
     msg: 'user {{ item }} not mounted'
     quiet: true
   when: '"mgt" in group_names'
@@ -44,9 +60,9 @@
 
 - name: Check user dir for app
   ansible.builtin.assert:
-    that: mount_list | select("match", "^" ~ web_dir ~ "/\w+" ~ item ~ "$") | count > 0
+    that: mount_list | select("match", "^" ~ web_dir ~ "/\w+" ~ item ~ "$") | count  == webuser_count | int
     msg: 'user {{ item }} not mounted'
     quiet: true
-  when: '"app" in group_names'
+  when: group_names | intersect(["app", "test"]) | length > 0
   loop:
     - '{{ web_var_dir }}/\w+'

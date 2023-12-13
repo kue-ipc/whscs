@@ -1,5 +1,10 @@
 # user
 ---
+- name: Get passwd entries
+  ansible.builtin.getent:
+    database: passwd
+  when: ansible_facts.getent_passwd is not defined
+
 - name: Add user
   ansible.builtin.user:
     name: '{{ webuser.name }}'
@@ -11,6 +16,7 @@
     comment: '{{ webuser.gecos }}'
     createhome: false
     state: present
+  when: ansible_facts.getent_passwd[webuser.name] is not defined
 
 - name: Make symlink user home dir
   ansible.builtin.file:

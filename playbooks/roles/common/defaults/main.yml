@@ -122,7 +122,6 @@ app_list:
   - ruby
 app_life_cycle: lts
 app_dev: false
-app_dev_extra: false
 app_util: false
 app_versions: {}
 logrotate_frequency: daily

@@ -23,10 +23,10 @@
   loop_control:
     loop_var: sv_app_app
 
-# - name: Task pkg dev
-#   ansible.builtin.import_tasks: pkg_dev.yml
-#   when: app_dev
+- name: Task pkg dev
+  ansible.builtin.import_tasks: pkg_dev.yml
+  when: app_dev
 
-# - name: Task pkg util
-#   ansible.builtin.import_tasks: pkg_util.yml
-#   when: app_util
+- name: Task pkg util
+  ansible.builtin.import_tasks: pkg_util.yml
+  when: app_util

@@ -6,14 +6,18 @@
 
 - name: Check service
   ansible.builtin.assert:
-    that: item.state in ["running", "active", "inactive", "stopped"]
-    msg: 'service failed or unknown state'
+    that: false
+    msg: 'service failed'
     quiet: true
   loop: >-
     {{ ansible_facts.services.values()
-      | selectattr("status", "in", ["enabled", "active"])
       | selectattr("name", "search", "\.service$")
       | rejectattr("name", "search", "@\.service$")
+      | rejectattr("status", "in", [
+        "active", "enabled", "enabled-runtime", "static",
+        "inactive","disabled",
+        "indirect", "alias", "not-found", "masked",
+      ])
     }}
   loop_control:
-    label: "{{ item.name }} {{ item.state }}"
+    label: "{{ item.name }} {{ item.status }}"

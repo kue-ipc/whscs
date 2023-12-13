@@ -8,6 +8,9 @@ ExecStartPre=/usr/bin/test -d {{ web_dir }}/%i
 {% for entry in sv_web_mount_entries %}
 ExecStart=/usr/bin/bash -c '/usr/bin/grep {{ web_dir }}/%i{{ entry.name }} /proc/mounts > /dev/null || /usr/bin/mount {{ entry.opts }} {{ web_dir }}/%i{{ entry.name }}'
 {% endfor %}
+{% for entry in sv_web_mount_entries %}
+ExecReload=/usr/bin/bash -c '/usr/bin/grep {{ web_dir }}/%i{{ entry.name }} /proc/mounts > /dev/null || /usr/bin/mount {{ entry.opts }} {{ web_dir }}/%i{{ entry.name }}'
+{% endfor %}
 {% for entry in sv_web_mount_entries | reverse %}
 ExecStop=/usr/bin/umount --lazy {{ web_dir }}/%i{{ entry.name }}
 {% endfor %}

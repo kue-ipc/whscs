@@ -1,5 +1,5 @@
 # Node.js
-# TODO: EL9のNode.js16のようなmodule listに内容なバージョンが、
+# TODO: EL9のNode.js16のようなmodule listに無いバージョンが、
 #       EOLを迎えた場合どうなるのか不明。
 ---
 - name: Install nodejs app stream

@@ -12,3 +12,10 @@
     dest: /etc/ssh/sshd_config.d/users.conf
     mode: '0600'
   notify: 'restart sshd'
+
+- name: Set ssh service in firewalld
+  ansible.posix.firewalld:
+    state: enabled
+    service: ssh
+    permanent: true
+  notify: 'reload firewalld'

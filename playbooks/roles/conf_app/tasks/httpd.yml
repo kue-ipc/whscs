@@ -39,20 +39,6 @@
     setype: http_port_t
     state: present
 
-# - name: Set SELinux file context for httpd
-#   community.general.sefcontext:
-#     target: '{{ item.target }}'
-#     ftype: '{{ item.ftype | default("a") }}'
-#     selevel: '{{ item.selevel | default("s0") }}'
-#     setype: '{{ item.setype }}'
-#     seuser: '{{ item.seuser | default("system_u") }}'
-#   loop:
-#     - { target: '{{ web_var_dir }}/\w+/cache/httpd(/.*)?', setype: httpd_cache_t }
-#     - { target: '{{ web_var_dir }}/\w+/lib/httpd(/.*)?', setype: httpd_var_lib_t }
-#     - { target: '{{ web_var_dir }}/\w+/log/httpd(/.*)?', setype: httpd_log_t }
-#     - { target: '{{ web_var_dir }}/\w+/run/httpd.*', setype: httpd_var_run_t }
-#   notify: 'run restorecon'
-
 # audit2allow -m httpd -a
 # checkmodule -m -M -o httpd.mod httpd.te
 # semodule_package -o httpd.pp -m httpd.mod

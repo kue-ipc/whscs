@@ -26,5 +26,12 @@
   loop:
     - cockpit
     - dhcpv6-client
-    - ssh
   notify: 'reload firewalld'
+
+- name: Rmevoe ssh serivce from firewall
+  ansible.posix.firewalld:
+    state: disabled
+    service: ssh
+    permanent: true
+  notify: 'reload firewalld'
+  when: '"mgt" not in group_names'

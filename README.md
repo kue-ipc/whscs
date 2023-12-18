@@ -4,19 +4,48 @@ Webホスティングサービス構築システム
 
 ## 利用方法
 
-1. setup.yml
-2. update_reboot.yml -e autoremove=1
-3. conf_all.yml
-4. user_sync.yml
+ホストファイル、group_varsやhost_varsを適当に設定しておく。各変数は palybooks/roles/common/default/main.yml を参考にする。
+
+ctlのセットアップを行った後に、アップデート、セットアップ、全体設定、ユーザー同期を行う。
+
+1. `ansible-playbook -l ctl setup.yml`
+2. `ansible-playbook update_reboot.yml -e autoremove=1`
+3. `ansible-playbook setup.yml`
+4. `ansible-playbook conf_all.yml`
+5. `ansible-playbook user_sync.yml`
 
 ## 登録
 
-- create_webuser.yml
-- create_tls.yml
+ユーザーの登録とTLSの作成後にユーザー同期を行う。ユーザー名には `/^[a-z][a-z0-9_]*$/` で、ユーザー名の"_"はサイト名(FQDN)では"-"に変換される。
+
+1. `ansible-playbook create_webuser.yml -e user={ユーザー名}`
+2. `ansible-playbook create_tls.yml -e user={ユーザー名}`
+3. `vim ../data/webuser/{ユーザー名}.yml`
+4. `ansible-playbook user_sync.yml -e user={ユーザー名}`
 
 ## スナップショットについて
 
-ファイルサーバーでスナップショットを取る際に、下記のことに注意する。
+下記コマンドでファイルサーバーのスナップショットを取得できる。
+
+```
+ansible-playbook gluster_ss.yml
+```
+
+下記のことにも注意する。
+
+### スナップショット数
+
+snapshotの保持数は次のコマンドで調整する。(デフォルトはhard256のsoft90%)
+
+```
+gluster snapshot config web snap-max-hard-limit 100
+```
+
+### スナップショット頻度
+
+起動後に取得されたスナップショットが多いと再起動時にタイムアウトが発生する場合がある。毎日スナップショットを取る場合は、週一回の再起動を推奨する。
+
+### メタデータ容量
 
 スナップショットが多くなるとメタデータの容量が圧迫される。`lvs -a` で容量を確認すること。メタデータの領域が少なくなっている場合は
 
@@ -26,13 +55,9 @@ sudo lvextend --poolmetadatasize 1G vg/pool
 
 等を実行する。(1Gはサイズに応じて要調整)
 
-snapshotの保持数は次のコマンドで調整する。(デフォルトはhard256のsoft90%)
+### スナップショットタイミング
 
-```
-gluster snapshot config web snap-max-hard-limit 100
-```
-
-起動後に取得されたスナップショットが多いと再起動時にタイムアウトが発生する場合がある。毎日スナップショットを取る場合は、週一回の再起動を推奨する。
+ログローテートの時刻(デフォルトは午前0時)と被る場合は、ログローテートの実行時刻をずらす。group_varsやhost_varsで`logrotate_time`変数を設定しsetup.ymlを適用することで、実行時刻を調整できる。
 
 ## 新サーバーの追加
 

@@ -126,6 +126,7 @@ app_util: false
 app_versions: {}
 logrotate_frequency: daily
 logrotate_rotate: 92
+logrotate_time: 00:00:00
 nginx_uid: 980
 nginx_gid: 980
 mail_smtp_host: smtp.example.jp

@@ -1,4 +1,9 @@
 ---
+- name: Reload systed
+  ansible.builtin.systemd:
+    daemon_reload: true
+  listen: 'reload systemd'
+
 - name: Restart chronyd
   ansible.builtin.systemd:
     name: chronyd.service

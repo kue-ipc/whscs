@@ -16,3 +16,35 @@
     path: /etc/logrotate.conf
     regexp: '^#?compress$'
     replace: 'compress'
+
+- name: Check logrotate_time varibale format
+  ansible.builtin.assert:
+    that: logrotate_time | default('00:00:00') is match("^\d{2}:\d{2}:\d{2}$")
+    fail_msg: 'invalid logrotate_time {{ logrotate_time }}'
+    quiet: true
+
+- name: Make systemd logrotate.timer.d
+  ansible.builtin.file:
+    path: /etc/systemd/system/logrotate.timer.d/
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  when: logrotate_time | default('00:00:00') != '00:00:00'
+
+- name: Copy on_calendar.conf template to logrotate.timer.d
+  ansible.builtin.template:
+    src: 'systemd/on_calendar.conf.j2'
+    dest: '/etc/systemd/system/logrotate.timer.d/on_calendar.conf'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: 'reload systemd'
+  when: logrotate_time | default('00:00:00') != '00:00:00'
+
+- name: Delete on_calendar.conf in logrotate.timer.d
+  ansible.builtin.file:
+    path: '/etc/systemd/system/logrotate.timer.d/on_calendar.conf'
+    state: absent
+  notify: 'reload systemd'
+  when: logrotate_time | default('00:00:00') == '00:00:00'

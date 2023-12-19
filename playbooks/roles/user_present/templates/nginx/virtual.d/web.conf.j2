@@ -43,6 +43,10 @@ server {
     deny all;
 {% endif %}
 
+{% if nginx_client_max_body_size | default("1M") != "1M" %}
+    client_max_body_size {{ nginx_client_max_body_size }};
+{% endif %}
+
     location @backend {
         proxy_pass https://{{ webuser.name }};
     }
@@ -66,12 +70,18 @@ server {
     # normal files
     location / {
         error_page 403 404 = @backend;
+        if ($request_method != GET) {
+            proxy_pass https://{{ webuser.name }};
+        }
     }
 
 {% if webuser.app_use and webuser.app_one %}
     # app
     location ^~ {{ webuser.app_path }} {
         error_page 403 404 = @backend-app;
+        if ($request_method != GET) {
+            proxy_pass https://{{ webuser.name }}-app;
+        }
     }
 {% endif %}
 }

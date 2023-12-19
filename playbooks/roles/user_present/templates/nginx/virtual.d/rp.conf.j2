@@ -11,6 +11,10 @@ server {
     ssl_certificate     "{{ webuser.tls_cert }}";
     ssl_certificate_key "{{ webuser.tls_key }}";
 
+{% if nginx_client_max_body_size | default("1M") != "1M" %}
+    client_max_body_size {{ nginx_client_max_body_size }};
+{% endif %}
+
     location / {
         proxy_pass https://web;
     }

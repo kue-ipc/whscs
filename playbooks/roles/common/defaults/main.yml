@@ -129,6 +129,7 @@ logrotate_rotate: 92
 logrotate_time: 00:00:00
 nginx_uid: 980
 nginx_gid: 980
+nginx_client_max_body_size: 1M
 mail_smtp_host: smtp.example.jp
 mail_smtp_port: 25
 mail_smtp_tls: false

@@ -1,0 +1,10 @@
+[Unit]
+Description=Web User Mount Check
+After=web-fs.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/check-web-mount %i
+
+[Install]
+WantedBy=multi-user.target

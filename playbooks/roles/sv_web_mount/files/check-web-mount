@@ -1,0 +1,68 @@
+#!/usr/libexec/platform-python
+
+# check-web-mount
+
+import sys
+import re
+import pyinotify
+import subprocess
+import time
+
+MOUNT_POINTS = ["/web/{0}/proc", "/web/{0}/tmp"]
+
+def get_mounts(name):
+    return [point.format(name) for point in MOUNT_POINTS]
+
+def get_service(name):
+    return f"web-mount@{name}.service"
+
+def check_mount(path):
+    space_path = f" {path} "
+    with open("/proc/mounts") as f:
+        for line in f:
+            if space_path in line:
+                return True
+    return False
+
+class MountEventHandler(pyinotify.ProcessEvent):
+    def my_init(self, *, wm, mask, service):
+        self.wm = wm
+        self.mask = mask
+        self.service = service
+
+    def process_IN_UNMOUNT(self, event):
+        path = event.path
+        print(f"inotify unmount: {path}")
+        while not check_mount(path):
+            time.sleep(10)
+            print(f"reload service: {self.service}")
+            subprocess.run(["/usr/bin/systemctl", "reload", self.service])
+            time.sleep(10)
+
+        print(f"rewatch: {path}")
+        # rewatch path
+        self.wm.del_watch(self.wm.get_wd(path))
+        self.wm.add_watch(path, self.mask)
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("no arg", file=sys.stderr)
+        sys.exit(1)
+
+    name = sys.argv[1]
+    if not re.match(r'^[\w-]+$', name):
+        print(f"invalid arg: {name}", file=sys.stderr)
+        sys.exit(2)
+
+    mounts = get_mounts(name)
+    service = get_service(name)
+
+    wm = pyinotify.WatchManager()
+    mask = pyinotify.IN_UNMOUNT 
+    handler = MountEventHandler(wm=wm, mask=mask, service=service)
+    notifier = pyinotify.Notifier(wm, handler, read_freq=10)
+
+    for point in mounts:
+        wm.add_watch(point, mask)
+
+    notifier.loop()

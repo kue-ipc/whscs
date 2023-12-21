@@ -39,3 +39,25 @@
     group: root
     mode: '0644'
   notify: 'reload systemd'
+
+- name: Intall python3-inotify
+  ansible.builtin.dnf:
+    state: present
+    name: python3-inotify
+
+- name: Copy check-web-mount to libexec
+  ansible.builtin.copy:
+    src: check-web-mount
+    dest: /usr/local/sbin/check-web-mount
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Creaet systemd check-web-mount@.service
+  ansible.builtin.copy:
+    src: check-web-mount@.service
+    dest: /etc/systemd/system/check-web-mount@.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: 'reload systemd'

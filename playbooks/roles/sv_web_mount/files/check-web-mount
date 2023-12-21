@@ -34,10 +34,11 @@ class MountEventHandler(pyinotify.ProcessEvent):
         path = event.path
         print(f"inotify unmount: {path}")
         while not check_mount(path):
-            time.sleep(10)
+            print(f"not mount: {point}")
+            time.sleep(60)
             print(f"reload service: {self.service}")
             subprocess.run(["/usr/bin/systemctl", "reload", self.service])
-            time.sleep(10)
+            time.sleep(60)
 
         print(f"rewatch: {path}")
         # rewatch path
@@ -60,9 +61,13 @@ if __name__ == "__main__":
     wm = pyinotify.WatchManager()
     mask = pyinotify.IN_UNMOUNT 
     handler = MountEventHandler(wm=wm, mask=mask, service=service)
-    notifier = pyinotify.Notifier(wm, handler, read_freq=10)
+    notifier = pyinotify.Notifier(wm, handler, read_freq=60)
 
     for point in mounts:
+        while not check_mount(point):
+            print(f"wait mount: {point}")
+            time.sleep(60)
+
         wm.add_watch(point, mask)
 
     notifier.loop()

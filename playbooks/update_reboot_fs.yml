@@ -1,0 +1,11 @@
+- name: Update and reboot fs
+  hosts:
+    - fs
+  become: true
+  serial: 1
+  max_fail_percentage: 0
+  vars:
+    reboot: true
+  roles:
+    - role: update_reboot
+      when: id is not defined or inventory_hostname_short[-1:] == id

@@ -19,4 +19,4 @@
 - name: Role reboot
   ansible.builtin.import_role:
     name: reboot
-  when: result_needs_restarting.rc != 0 or "fs" in group_names
+  when: result_needs_restarting.rc != 0 or reboot | default(False)

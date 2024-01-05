@@ -1,0 +1,50 @@
+# glusnter main
+---
+- name: Gluster prove peer
+  gluster.gluster.gluster_peer:
+    state: present
+    nodes: '{{ groups["fs"] }}'
+
+- name: Gluster create volume
+  gluster.gluster.gluster_volume:
+    state: present
+    name: '{{ gluster_volume }}'
+    replicas: 3
+    bricks: '{{ gluster_data_dir }}/{{ gluster_volume }}'
+    cluster: '{{ groups["fs"] }}'
+
+- name: Get gluster snapshot config
+  ansible.builtin.command:
+    argv:
+      - /usr/sbin/gluster
+      - snapshot
+      - config
+      - '{{ gluster_volume }}'
+  changed_when: false
+  register: gluster_snapshot_config
+
+- name: Set fact gluster_sanpshot_config_hard
+  ansible.builtin.set_fact:
+    gluster_snapshot_config_hard: >-
+      {{ gluster_snapshot_config.stdout_lines
+        | select("match", "Effective snap-max-hard-limit : \d+")
+        | first
+        | split
+        | last
+      }}
+  when: gluster_snapshot_config.stdout_lines | length > 0
+
+- name: Set gluster snapshot config snap-max-hard-limit
+  ansible.builtin.command:
+    argv:
+      - /usr/sbin/gluster
+      - snapshot
+      - config
+      - '{{ gluster_volume }}'
+      - snap-max-hard-limit
+      - '{{ gluster_snapshot_hard }}'
+    stdin: 'y'
+  changed_when: true
+  when:
+    - gluster_snapshot_config_hard is defined
+    - gluster_snapshot_config_hard | int != gluster_snapshot_hard

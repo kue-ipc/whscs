@@ -88,6 +88,8 @@ lvm_vg: vg
 ## GlusterFS
 gluster_volume: web
 gluster_snapshot_name: ss
+# default snapshot soft limit 90%
+gluster_snapshot_hard: 100
 gluster_main_server: '{{ groups["fs"] | first }}'
 gluster_backup_servers: '{{ groups["fs"][1:] }}'
 gluster_data_dir: /data
@@ -95,6 +97,7 @@ gluster_data_name: data
 gluster_data_size: 128G
 gluster_data_pool_name: pool
 gluster_data_pool_size: 192G
+gluster_device_timeout: 5min
 ## MariaDB
 db_data_name: mysql
 db_data_size: 16G

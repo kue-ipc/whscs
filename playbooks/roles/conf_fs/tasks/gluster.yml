@@ -16,17 +16,6 @@
     enabled: true
     state: started
 
-- name: Gluster prove peer
-  gluster.gluster.gluster_peer:
-    state: present
-    nodes: '{{ groups["fs"] }}'
-  when: inventory_hostname == gluster_main_server
-
-- name: Gluster create volume
-  gluster.gluster.gluster_volume:
-    state: present
-    name: '{{ gluster_volume }}'
-    replicas: 3
-    bricks: '{{ gluster_data_dir }}/{{ gluster_volume }}'
-    cluster: '{{ groups["fs"] }}'
+- name: Task gluster main
+  ansible.builtin.import_tasks: gluster_main.yml
   when: inventory_hostname == gluster_main_server

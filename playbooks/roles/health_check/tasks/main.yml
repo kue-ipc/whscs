@@ -16,3 +16,7 @@
 - name: Task lvm pool
   ansible.builtin.import_tasks: lvm_pool.yml
   when: '"fs" in group_names'
+
+- name: Task gluster
+  ansible.builtin.import_tasks: gluster.yml
+  when: inventory_hostname == gluster_main_server

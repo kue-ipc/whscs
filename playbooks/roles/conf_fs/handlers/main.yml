@@ -3,3 +3,8 @@
   ansible.builtin.command: firewall-cmd --reload
   changed_when: true
   listen: 'reload firewalld'
+
+- name: Reload systed
+  ansible.builtin.systemd:
+    daemon_reload: true
+  listen: 'reload systemd'

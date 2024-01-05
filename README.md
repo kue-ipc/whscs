@@ -35,7 +35,7 @@ ansible-playbook gluster_ss.yml
 
 ### スナップショット数
 
-snapshotの保持数は次のコマンドで調整する。(デフォルトはhard256のsoft90%)
+snapshotの保持数は`gluster_snapshot_hard`で調整する。(デフォルトは256)
 
 ```
 gluster snapshot config web snap-max-hard-limit 100
@@ -43,7 +43,7 @@ gluster snapshot config web snap-max-hard-limit 100
 
 ### スナップショット頻度
 
-起動後に取得されたスナップショットが多いと再起動時にタイムアウトが発生する場合がある。毎日スナップショットを取る場合は、週一回の再起動を推奨する。
+起動後に取得されたスナップショットが多いと再起動時にタイムアウトが発生する場合がある。タイムアウトが頻発する場合は、`gluster_device_timeout` でタイムアウト時間を調整すること。
 
 ### メタデータ容量
 

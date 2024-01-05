@@ -28,3 +28,11 @@
     src: '/dev/{{ lvm_vg }}/{{ gluster_data_name }}'
     fstype: xfs
     state: mounted
+
+- name: Set DefaultDeviceTimeoutSec 90s
+  ansible.builtin.replace:
+    path: /etc/systemd/system.conf
+    regexp: '^#?DefaultDeviceTimeoutSec=.*$'
+    replace: 'DefaultDeviceTimeoutSec={{ gluster_device_timeout }}'
+  notify: 'reload systemd'
+  when: gluster_device_timeout | default("90s") != "90s"

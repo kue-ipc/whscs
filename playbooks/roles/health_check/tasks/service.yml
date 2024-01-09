@@ -13,6 +13,7 @@
     {{ ansible_facts.services.values()
       | selectattr("name", "search", "\.service$")
       | rejectattr("name", "search", "@\.service$")
+      | rejectattr("name", "in", health_check_service_ignore_list)
       | rejectattr("status", "in", [
         "active", "enabled", "enabled-runtime", "static",
         "inactive","disabled",

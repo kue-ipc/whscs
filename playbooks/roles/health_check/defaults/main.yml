@@ -7,3 +7,8 @@ health_check_threshold_memory_swap_free: 1024
 health_check_threshold_loadavg_1m: 2.0
 health_check_threshold_loadavg_5m: 1.5
 health_check_threshold_loadavg_15m: 1.0
+
+# TODO: エラーになることがあるので、ひとまず無視するリスト
+health_check_service_ignore_list:
+  - dnf-makecache.service
+  - logrotate.service

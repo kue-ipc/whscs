@@ -7,16 +7,16 @@
   ansible.builtin.import_tasks: disk.yml
 
 - name: Task mount
-  ansible.builtin.import_tasks: mount.yml
+  ansible.builtin.include_tasks: mount.yml
   when: group_names | intersect(["mgt", "bk", "app", "web", "test"]) | length > 0
 
 - name: Task service
   ansible.builtin.import_tasks: service.yml
 
 - name: Task lvm pool
-  ansible.builtin.import_tasks: lvm_pool.yml
+  ansible.builtin.include_tasks: lvm_pool.yml
   when: '"fs" in group_names'
 
 - name: Task gluster
-  ansible.builtin.import_tasks: gluster.yml
+  ansible.builtin.include_tasks: gluster.yml
   when: inventory_hostname == gluster_main_server

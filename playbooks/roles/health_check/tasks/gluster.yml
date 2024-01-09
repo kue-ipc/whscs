@@ -30,6 +30,7 @@
     msg: 'gluster dose not connetct to {{ item }}'
     quiet: true
   loop: '{{ groups["fs"] | reject("eq", inventory_hostname) + ["localhost"] }}'
+  when: not ansible_check_mode
 
 - name: Check gluster volume status brick
   ansible.builtin.assert:
@@ -39,6 +40,7 @@
     msg: 'gluster no brick {{ item }}'
     quiet: true
   loop: '{{ groups["fs"] }}'
+  when: not ansible_check_mode
 
 - name: Check gluster volume status snapshot and self-heal
   ansible.builtin.assert:
@@ -48,9 +50,11 @@
     msg: 'gluster no brick {{ item }}'
     quiet: true
   loop: '{{ groups["fs"] | reject("eq", inventory_hostname) + ["localhost"] }}'
+  when: not ansible_check_mode
 
 - name: Check gluster self heal
   ansible.builtin.assert:
     that: gluster_self_heal_status.glusterfs.heal_info | selectattr("no_of_entries", "ne", "0") | length == 0
     msg: 'heal entries exists'
     quiet: true
+  when: not ansible_check_mode

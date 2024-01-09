@@ -1,0 +1,18 @@
+# update
+---
+- name: Update all packages
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+    update_only: '{{ update_only }}'
+    autoremove: '{{ update_autoremove }}'
+
+- name: Check needs restarting
+  ansible.builtin.command: /usr/bin/dnf needs-restarting -r
+  register: result_dnf_needs_restarting
+  changed_when: false
+  failed_when: result_dnf_needs_restarting.rc not in [0, 1]
+
+- name: Set needs restarting
+  ansible.builtin.set_fact:
+    update_reboot_requierd: '{{ result_dnf_needs_restarting.rc != 0 }}'

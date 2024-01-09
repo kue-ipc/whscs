@@ -4,8 +4,6 @@
   become: true
   serial: 1
   max_fail_percentage: 0
-  vars:
-    reboot: true
   roles:
-    - role: update_reboot
+    - role: update_reboot_fs
       when: id is not defined or inventory_hostname_short[-1:] == id

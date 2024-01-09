@@ -1,5 +1,4 @@
 # This file contains ignores rule violations for ansible-lint
-playbooks/roles/update_reboot/tasks/main.yml package-latest
 playbooks/roles/user_absent/tasks/no_nginx.yml no-handler
 playbooks/roles/user_absent/tasks/no_php-fpm.yml no-handler
 playbooks/roles/user_present/tasks/nginx.yml no-handler

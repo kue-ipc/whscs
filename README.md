@@ -9,7 +9,7 @@ Webホスティングサービス構築システム
 ctlのセットアップを行った後に、アップデート、セットアップ、全体設定、ユーザー同期を行う。
 
 1. `ansible-playbook -l ctl setup.yml`
-2. `ansible-playbook update_reboot.yml -e autoremove=1`
+2. `ansible-playbook update_reboot.yml -e update_autoremove=yes`
 3. `ansible-playbook setup.yml`
 4. `ansible-playbook conf_all.yml`
 5. `ansible-playbook user_sync.yml`

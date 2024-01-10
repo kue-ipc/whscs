@@ -25,9 +25,9 @@
   ansible.builtin.wait_for:
     port: 24007
 
-- name: Wait 60 seconds
+- name: Wait 300 seconds
   ansible.builtin.wait_for:
-    timeout: 60
+    timeout: 300
 
 # check after update and reboot
 - name: Role health_check gluster

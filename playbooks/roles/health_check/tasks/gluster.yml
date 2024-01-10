@@ -47,7 +47,7 @@
     that: >-
       gluster_volume_status.stdout_lines | select("match",
         "^(Snapshot|Self-heal) Daemon on " ~ item ~ "\s+(\d+|N/A)\s+(\d+|N/A)\s+Y\s+\d+\s*$") | length == 2
-    msg: 'gluster no brick {{ item }}'
+    msg: 'gluster no snapshot or self-heal {{ item }}'
     quiet: true
   loop: '{{ groups["fs"] | reject("eq", inventory_hostname) + ["localhost"] }}'
   when: not ansible_check_mode

@@ -1,0 +1,13 @@
+# restart app
+---
+- name: Populate serivce facts
+  ansible.builtin.service_facts:
+  when: ansible_facts.services is not defined
+
+- name: Task all
+  ansible.builtin.import_tasks: all.yml
+  when: user is not defined
+
+- name: Task user
+  ansible.builtin.import_tasks: user.yml
+  when: user is defined

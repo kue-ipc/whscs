@@ -1,0 +1,27 @@
+# restart app all
+---
+- name: Restart php-fpm
+  ansible.builtin.systemd:
+    name: php-fpm.service
+    state: restarted
+  when: httpd_php == "php-fpm"
+
+- name: Restart all httpd
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: restarted
+  loop: >-
+    {{ ansible_facts.services.values()
+      | selectattr("name", "regex", "^httpd@")
+      | selectattr("status", "eq", "active")
+      | map(attribute="name") }}
+
+- name: Restart all app
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: restarted
+  loop: >-
+    {{ ansible_facts.services.values()
+      | selectattr("name", "regex", "^app@")
+      | selectattr("status", "eq", "active")
+      | map(attribute="name") }}

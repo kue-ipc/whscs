@@ -1,11 +1,10 @@
 ---
-- name: Restart Web with RP
+- name: Restart App
   hosts:
-    - web
-    - rp
+    - app
     - test
   become: true
   serial: 1
   max_fail_percentage: 0
   roles:
-    - restart_web
+    - restart_app

@@ -1,15 +1,6 @@
 # restart web
 ---
-- name: Restart php-fpm
-  ansible.builtin.systemd:
-    name: 'php-fpm.service'
-    state: restarted
-  when:
-    - '"app" in group_names'
-    - httpd_php == "php-fpm"
-
 - name: Restart nginx
   ansible.builtin.systemd:
     name: 'nginx.service'
     state: restarted
-  when: '"web" in group_names or "rp" in group_names'

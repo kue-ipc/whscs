@@ -1,0 +1,5 @@
+---
+- name: Health Check only test servers
+  hosts: test
+  roles:
+    - health_check

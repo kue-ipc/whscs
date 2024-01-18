@@ -1,5 +1,7 @@
 ---
 - name: Health Check
-  hosts: all
+  hosts:
+    - all
+    - '!test'
   roles:
     - health_check

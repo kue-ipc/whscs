@@ -69,8 +69,12 @@
       implicit_ssl=YES
       listen_port=990
       {% endif %}
+      strict_ssl_read_eof=NO
+      force_local_data_ssl=NO
+      force_local_logins_ssl=NO
+  notify: 'restart vsftpd'
 
-- name: Block ssl in vsftpd
+- name: Block pasv port in vsftpd
   ansible.builtin.blockinfile:
     path: /etc/vsftpd/vsftpd.conf
     marker: '# {mark} ANSIBLE MANAGED BLOCK pasv port'
@@ -78,6 +82,7 @@
     block: |
       pasv_min_port={{ (ftp_pasv_port_range | default([0, 0]))[0] }}
       pasv_max_port={{ (ftp_pasv_port_range | default([0, 0]))[1] }}
+  notify: 'restart vsftpd'
 
 - name: Enable and start vsftpd
   ansible.builtin.systemd:

@@ -6,11 +6,11 @@ Webホスティングサービス構築システム
 
 ホストファイル、group_varsやhost_varsを適当に設定しておく。各変数は palybooks/roles/common/default/main.yml を参考にする。
 
-ctlのセットアップを行った後に、アップデート、セットアップ、全体設定、ユーザー同期を行う。
+ctlのセットアップを行った後に、セットアップ、アップデート、全体設定、ユーザー同期を行う。
 
 1. `ansible-playbook -l ctl setup.yml`
-2. `ansible-playbook update_reboot.yml -e update_autoremove=yes`
-3. `ansible-playbook setup.yml`
+2. `ansible-playbook setup.yml`
+3. `ansible-playbook update_reboot.yml -e update_autoremove=yes`
 4. `ansible-playbook conf_all.yml`
 5. `ansible-playbook user_sync.yml`
 
@@ -63,7 +63,7 @@ sudo lvextend --poolmetadatasize 1G vg/pool
 
 1. ansibleが見に行くhostsファイルに新サーバーを追加する。
 2. コントロールサーバーから新サーバーにSSH接続をする。`ssh-copy-id`で鍵ファイルをコピーしておく。
-3. 新サーバーに対して、setup.yml、conf_all.yml、update_reboot.yml、user_sync.ymlを実行する。
+3. 新サーバーに対して、setup.yml、update_reboot.yml、conf_all.yml、user_sync.ymlを実行する。
 4. 全体に対して、上記を実行する。
 
 ## オプション

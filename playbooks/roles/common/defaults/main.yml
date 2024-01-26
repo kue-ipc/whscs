@@ -71,6 +71,7 @@ httpd_mpm: event
 ## vsftpd
 ftp_banner: 'Web Hosting Service'
 ftp_ssl: true
+ftp_ssl_only: true
 ftp_ssl_mode: explicit
 ftp_ssl_min: TLSv1.2
 ftp_pasv_port_range: [20100, 20199]

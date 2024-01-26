@@ -69,9 +69,11 @@
       implicit_ssl=YES
       listen_port=990
       {% endif %}
-      strict_ssl_read_eof=NO
+      {% if not ftp_ssl_only %}
       force_local_data_ssl=NO
       force_local_logins_ssl=NO
+      {% endif %}
+      strict_ssl_read_eof=NO
   notify: 'restart vsftpd'
 
 - name: Block pasv port in vsftpd

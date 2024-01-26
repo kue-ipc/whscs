@@ -6,17 +6,24 @@
     state: true
     persistent: true
 
+- name: Check sshd_config.d
+  ansible.builtin.find:
+    path: /etc/ssh
+    file_type: directory
+    pattern: sshd_config.d
+  register: find_ssh_config_d
+
 - name: Copy users.conf
   ansible.builtin.copy:
     src: sshd/users.conf
     dest: /etc/ssh/sshd_config.d/users.conf
     mode: '0600'
   notify: 'restart sshd'
-  when: ansible_distribution_version is version("9", ">=")
+  when: find_ssh_config_d.matched > 0
 
 - name: Block users in sshd_conf
   ansible.builtin.blockinfile:
     path: /etc/ssh/sshd_config
     content: '{{ lookup("file", "sshd/users.conf") }}'
   notify: 'restart sshd'
-  when: ansible_distribution_version is version("9", "<")
+  when: find_ssh_config_d.matched == 0

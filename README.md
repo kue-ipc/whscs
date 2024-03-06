@@ -27,7 +27,7 @@ ctlのセットアップを行った後に、セットアップ、アップデ�
 
 下記コマンドでファイルサーバーのスナップショットを取得できる。
 
-```
+```shell
 ansible-playbook gluster_ss.yml
 ```
 
@@ -37,7 +37,7 @@ ansible-playbook gluster_ss.yml
 
 snapshotの保持数は`gluster_snapshot_hard`で調整する。(デフォルトは256)
 
-```
+```shell
 gluster snapshot config web snap-max-hard-limit 100
 ```
 
@@ -49,7 +49,7 @@ gluster snapshot config web snap-max-hard-limit 100
 
 スナップショットが多くなるとメタデータの容量が圧迫される。`lvs -a` で容量を確認すること。メタデータの領域が少なくなっている場合は
 
-```
+```shell
 sudo lvextend --poolmetadatasize 1G vg/pool
 ```
 
@@ -82,3 +82,11 @@ sudo lvextend --poolmetadatasize 1G vg/pool
 ### create_tls.yml
 
 see playbooks/roles/creat_tls/REDME.md
+
+## 注意事項
+
+### vsftpのTLSv1.3は無効
+
+ホームページビルダー22等の一部のFTPクライアントでTLSv1.3ではデータ転送が正常に行えない不具合が発生することがあるため、デフォルトではTLSv1.3は無効にし、TLSv1.2のみ有効としている。
+
+<https://access.redhat.com/solutions/7042423>

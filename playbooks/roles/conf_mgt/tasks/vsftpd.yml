@@ -46,25 +46,26 @@
       ssl_enable=YES
       rsa_cert_file={{ mgt_tls_cert }}
       rsa_private_key_file={{ mgt_tls_key }}
-      {% if ftp_ssl_min is not defined %}
-      {% elif ftp_ssl_min == "SSLv2" %}
+      {% if ftp_ssl_versions is defined %}
+      {% if "SSLv2" in ftp_ssl_versions %}
       ssl_sslv2=YES
+      {% endif%}
+      {% if "SSLv3" in ftp_ssl_versions %}
       ssl_sslv3=YES
+      {% endif%}
+      {% if "TLSv1" in ftp_ssl_versions %}
       ssl_tlsv1=YES
+      {% endif%}
+      {% if "TLSv1.1" in ftp_ssl_versions %}
       ssl_tlsv1_1=YES
-      {% elif ftp_ssl_min == "SSLv3" %}
-      ssl_sslv3=YES
-      ssl_tlsv1=YES
-      ssl_tlsv1_1=YES
-      {% elif ftp_ssl_min == "TLSv1" %}
-      ssl_tlsv1=YES
-      ssl_tlsv1_1=YES
-      {% elif ftp_ssl_min == "TLSv1.1" %}
-      ssl_tlsv1_1=YES
-      {% elif ftp_ssl_min == "TLSv1.2" %}
-      {% elif ftp_ssl_min == "TLSv1.3" %}
+      {% endif%}
+      {% if "TLSv1.2" not in ftp_ssl_versions %}
       ssl_tlsv1_2=NO
-      {% endif %}
+      {% endif%}
+      {% if "TLSv1.3" not in ftp_ssl_versions %}
+      ssl_tlsv1_3=NO
+      {% endif%}
+      {% endif%}
       {% if ftp_ssl_mode == "implicit" %}
       implicit_ssl=YES
       listen_port=990

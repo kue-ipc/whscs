@@ -41,3 +41,14 @@
   notify:
     - 'restart php-fpm'
     - 'restart all httpd'
+
+- name: Add line 10-opcache.inn
+  ansible.builtin.lineinfile:
+    path: /etc/php.d/10-opcache.ini
+    regexp: '^;?{{ item.name }}\s*=.*$'
+    line: '{{ item.name }}={{ item.value }}'
+  loop:
+    - {name: "opcache.validate_root", value: "1"}
+  notify:
+    - 'restart php-fpm'
+    - 'restart all httpd'

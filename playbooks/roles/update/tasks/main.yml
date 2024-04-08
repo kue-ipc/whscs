@@ -5,7 +5,11 @@
     name: "*"
     state: latest
     update_only: '{{ update_only }}'
-    autoremove: '{{ update_autoremove }}'
+
+- name: Autoremove
+  ansible.builtin.dnf:
+    autoremove: true
+  when: update_autoremove
 
 - name: Check needs restarting
   ansible.builtin.command: /usr/bin/dnf needs-restarting -r

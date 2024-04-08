@@ -4,23 +4,6 @@
   ansible.builtin.service_facts:
   when: ansible_facts.services is not defined
 
-- name: Stop glusterd
-  ansible.builtin.service:
-    name: glusterd
-    state: stopped
-  when: '"glusterd" in ansible_facts.services'
-
-- name: Stop glustereventsd
-  ansible.builtin.service:
-    name: glustereventsd
-    state: stopped
-  when: '"glustereventsd" in ansible_facts.services'
-
-# NOTE: probably not necessary
-# - name: Kill all gluster
-#   ansible.builtin.command: killall glusterfs glusterfsd glusterd
-#   when: '"glusterd" in ansible_facts.services'
-
 - name: Reboot
   ansible.builtin.reboot:
     reboot_timeout: '{{ reboot_timeout | default(omit) }}'

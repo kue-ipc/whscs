@@ -1,0 +1,24 @@
+# gluster update for server
+---
+- name: Check gluster_old_version
+  ansible.builtin.assert:
+    that: gluster_old_version is defined
+    msg: 'Require `gluster_old_version` variable'
+    quiet: true
+
+- name: Check gluster_new_version
+  ansible.builtin.assert:
+    that: gluster_new_version is defined
+    msg: 'Require `gluster_new_version` variable'
+    quiet: true
+
+- name: Check old centos-release-gluster
+  ansible.builtin.dnf:
+    state: installed
+    name: 'centos-release-gluster{{ gluster_old_version }}'
+  check_mode: true
+  register: old_gluster_installed
+
+- name: Task udpate
+  ansible.builtin.import_tasks: update.yml
+  when: not old_gluster_installed.changed

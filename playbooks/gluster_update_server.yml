@@ -1,0 +1,11 @@
+- name: Update gluster for server
+  hosts:
+    - fs
+  become: true
+  serial: 1
+  max_fail_percentage: 0
+  vars:
+    gluster_old_version: "9"
+    gluster_new_version: "10"
+  roles:
+    - gluster_update_server

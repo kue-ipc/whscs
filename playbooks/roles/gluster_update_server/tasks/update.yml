@@ -1,0 +1,53 @@
+- name: Task gluster from health_check
+  ansible.builtin.import_role:
+    name: health_check
+    tasks_from: gluster
+
+- name: Fact serivce
+  ansible.builtin.service_facts:
+  when: ansible_facts.services is not defined
+
+- name: Stop glusterd
+  ansible.builtin.systemd:
+    name: glusterd.service
+    state: stopped
+
+- name: Stop glustereventsd
+  ansible.builtin.systemd:
+    name: glustereventsd.service
+    state: stopped
+  when: ansible_facts.services["glustereventsd.service"] is defined
+
+- name: Kill all gluster
+  ansible.builtin.command: killall glusterfs glusterfsd glusterd
+  changed_when: true
+  failed_when: false
+
+- name: Install now centos-release-gluster
+  ansible.builtin.dnf:
+    state: present
+    name: 'centos-release-gluster{{ gluster_new_version }}'
+
+- name: Role update
+  ansible.builtin.import_role:
+    name: update
+  vars:
+    update_autoremove: true
+
+- name: Uninstall old centos-release-gluster
+  ansible.builtin.dnf:
+    state: absent
+    name: 'centos-release-gluster{{ gluster_old_version }}'
+
+- name: Start glusterd
+  ansible.builtin.systemd:
+    name: glusterd.service
+    state: started
+    enabled: true
+
+- name: Start glustereventsd
+  ansible.builtin.systemd:
+    name: glustereventsd.service
+    state: started
+    enabled: true
+  when: ansible_facts.services["glustereventsd.service"] is defined

@@ -88,6 +88,7 @@ ldap_group: member
 lvm_pesize: 4
 lvm_vg: vg
 ## GlusterFS
+gluster_version: "10"
 gluster_volume: web
 gluster_snapshot_name: ss
 # default snapshot soft limit 90%

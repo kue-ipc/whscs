@@ -1,9 +1,5 @@
 # reboot
 ---
-- name: Fact serivce
-  ansible.builtin.service_facts:
-  when: ansible_facts.services is not defined
-
 - name: Reboot
   ansible.builtin.reboot:
     reboot_timeout: '{{ reboot_timeout | default(omit) }}'

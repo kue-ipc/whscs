@@ -1,0 +1,64 @@
+- name: Fact serivce
+  ansible.builtin.service_facts:
+  when: ansible_facts.services is not defined
+
+- name: Stop nginx
+  ansible.builtin.systemd:
+    name: nginx.service
+    state: stopped
+  when: ansible_facts.services["nginx.service"] is defined
+
+- name: Stop all httpd
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: stopped
+  loop: >-
+    {{ ansible_facts.services.values()
+      | selectattr("name", "regex", "^httpd@")
+      | selectattr("status", "eq", "active")
+      | map(attribute="name") }}
+
+- name: Stop php-fpm
+  ansible.builtin.systemd:
+    name: php-fpm.service
+    state: stopped
+  when: ansible_facts.services["php-fpm.service"] is defined
+
+- name: Stop vsftpd
+  ansible.builtin.systemd:
+    name: vsftpd.service
+    state: stopped
+  when: ansible_facts.services["vsftpd.service"] is defined
+
+# FIXME: sshdはansibleから利用するため停止できない。
+#   ユーザーのログインだけ防ぐ方法がいる？
+
+- name: Install now centos-release-gluster
+  ansible.builtin.dnf:
+    state: present
+    name: 'centos-release-gluster{{ gluster_new_version }}'
+
+# centos-release-gluster9はEL8に対して$relserverでは提供していないため、
+# $streamに変更する必要がある。
+# centos-relesae-gluster10では修正されている模様
+- name: Fix Centos-Gluster-9.repo for EL8
+  ansible.builtin.replace:
+    path: /etc/yum.repos.d/CentOS-Gluster-9.repo
+    regexp: '\$releasever'
+    replace: '$stream'
+  when:
+    - gluster_new_version is version("9")
+    - ansible_distribution_version is version("9", "<")
+
+- name: Role update
+  ansible.builtin.import_role:
+    name: update
+
+- name: Uninstall old centos-release-gluster
+  ansible.builtin.dnf:
+    state: absent
+    name: 'centos-release-gluster{{ gluster_old_version }}'
+
+- name: Role Reboot
+  ansible.builtin.import_role:
+    name: reboot

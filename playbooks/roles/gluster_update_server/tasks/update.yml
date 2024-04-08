@@ -31,8 +31,6 @@
 - name: Role update
   ansible.builtin.import_role:
     name: update
-  vars:
-    update_autoremove: true
 
 - name: Uninstall old centos-release-gluster
   ansible.builtin.dnf:

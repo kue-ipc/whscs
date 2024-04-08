@@ -7,7 +7,8 @@
 
 # centos-release-gluster9はEL8に対して$relserverでは提供していないため、
 # $streamに変更する必要がある。
-- name: Fix Centos-Gluster-9.repo
+# centos-relesae-gluster10では修正されている模様
+- name: Fix Centos-Gluster-9.repo for EL8
   ansible.builtin.replace:
     path: /etc/yum.repos.d/CentOS-Gluster-9.repo
     regexp: '\$releasever'

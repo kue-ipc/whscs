@@ -1,6 +1,10 @@
 - name: Update gluster for server
   hosts:
-    - fs
+    - bk
+    - mgt
+    - app
+    - web
+    - test
   become: true
   serial: 1
   max_fail_percentage: 0
@@ -8,5 +12,5 @@
     gluster_old_version: "9"
     gluster_new_version: "10"
   roles:
-    - role: gluster_update_server
+    - role: gluster_update_client
       when: id is not defined or inventory_hostname_short[-1:] == id

@@ -10,9 +10,9 @@
 
 ## web
 
-- name: Task no ngixn
+- name: Task no nginx
   ansible.builtin.include_tasks: no_nginx.yml
-  when: group_names | intersect(["web", "rp"]) | length > 0
+  when: group_names | intersect(["web", "rp", "test"]) | length > 0
 
 ## app
 
@@ -34,25 +34,25 @@
 
 - name: Task no tls
   ansible.builtin.include_tasks: no_tls.yml
-  when: group_names | intersect(["web", "app", "rp"]) | length > 0
+  when: group_names | intersect(["web", "app", "rp", "test"]) | length > 0
 
 ## mount
 
 - name: Task no web mount
   ansible.builtin.include_tasks: no_web_mount.yml
-  when: group_names | intersect(["mgt", "app"]) | length > 0
+  when: group_names | intersect(["mgt", "app", "test"]) | length > 0
 
 ## user
 
 - name: Task no user
   ansible.builtin.include_tasks: no_user.yml
-  when: group_names | intersect(["mgt", "app"]) | length > 0
+  when: group_names | intersect(["mgt", "app", "test"]) | length > 0
 
 ## unmount
 
 - name: Task unmount
   ansible.builtin.include_tasks: unmount.yml
-  when: group_names | intersect(["mgt", "app"]) | length > 0
+  when: group_names | intersect(["mgt", "app", "test"]) | length > 0
 
 ## DB and PG
 

@@ -7,4 +7,5 @@
   serial: 1
   max_fail_percentage: 0
   roles:
-    - reboot
+    - role: reboot
+      when: id is not defined or inventory_hostname_short[-1:] == id

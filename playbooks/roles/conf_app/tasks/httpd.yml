@@ -131,7 +131,7 @@
 
 - name: Copy systemd conf httpd@.service.d
   ansible.builtin.copy:
-    src: 'systemd/{{ item }}'
+    src: 'httpd/systemd/{{ item }}'
     dest: '/etc/systemd/system/httpd@.service.d/{{ item }}'
     owner: root
     group: root

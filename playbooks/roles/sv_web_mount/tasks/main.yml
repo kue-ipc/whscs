@@ -12,7 +12,7 @@
 
 - name: Creaet systemd web-fs.target
   ansible.builtin.copy:
-    src: systemd/web-fs.target
+    src: web-fs.target
     dest: /etc/systemd/system/web-fs.target
     owner: root
     group: root

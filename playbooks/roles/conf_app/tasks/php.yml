@@ -42,7 +42,7 @@
     - 'restart php-fpm'
     - 'restart all httpd'
 
-- name: Add line 10-opcache.inn
+- name: Set 10-opcache.ini
   ansible.builtin.lineinfile:
     path: /etc/php.d/10-opcache.ini
     regexp: '^;?{{ item.name }}\s*=.*$'

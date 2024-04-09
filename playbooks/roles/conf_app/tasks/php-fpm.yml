@@ -15,7 +15,7 @@
 
 - name: Copy systemd conf php-fpm.service.d
   ansible.builtin.copy:
-    src: 'systemd/{{ item }}'
+    src: 'php-fpm/systemd/{{ item }}'
     dest: '/etc/systemd/system/php-fpm.service.d/{{ item }}'
     owner: root
     group: root

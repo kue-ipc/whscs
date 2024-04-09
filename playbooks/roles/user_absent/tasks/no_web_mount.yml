@@ -1,5 +1,10 @@
 # web mount
 ---
+- name: Disable check-web-mount for user
+  ansible.builtin.systemd:
+    name: 'check-web-mount@{{ webuser.name }}.service'
+    enabled: false
+
 - name: Disable web-mount for user
   ansible.builtin.systemd:
     name: 'web-mount@{{ webuser.name }}.service'

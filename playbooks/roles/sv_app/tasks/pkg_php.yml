@@ -17,5 +17,6 @@
       - php-ldap
       - php-mysqlnd
       - php-pecl-apcu
+      - php-pecl-zip
       - php-pgsql
       - php-soap

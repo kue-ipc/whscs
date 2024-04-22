@@ -1,0 +1,54 @@
+# ftp server
+---
+- name: Set seboolean for ftp server
+  ansible.posix.seboolean:
+    name: '{{ item }}'
+    state: true
+    persistent: true
+  loop:
+    - ftpd_use_fusefs
+
+- name: Set ftp service in firewalld
+  ansible.posix.firewalld:
+    state: enabled
+    service: ftp
+    permanent: true
+  notify: 'reload firewalld'
+
+- name: Set ftp pasv port in firewalld
+  ansible.posix.firewalld:
+    state: enabled
+    port: '{{ ftp_pasv_port_range[0] }}-{{ ftp_pasv_port_range[1] }}/tcp'
+    permanent: true
+  when: ftp_pasv_port_range is defined
+  notify: 'reload firewalld'
+
+- name: Fact serivce
+  ansible.builtin.service_facts:
+  when: ansible_facts.services is not defined
+
+- name: Disable and stop vsftpd
+  ansible.builtin.systemd:
+    name: vsftpd.service
+    enabled: false
+    state: stopped
+  when:
+    - ansible_facts.services["vsftpd.service"] is defined
+    - ftp_server != "vsftpd"
+
+- name: Disable and stop proftpd
+  ansible.builtin.systemd:
+    name: proftpd.service
+    enabled: false
+    state: stopped
+  when:
+    - ansible_facts.services["proftpd.service"] is defined
+    - ftp_server != "proftpd"
+
+- name: Task vsftpd
+  ansible.builtin.import_tasks: vsftpd.yml
+  when: ftp_server == "vsftpd"
+
+- name: Task proftpd
+  ansible.builtin.import_tasks: proftpd.yml
+  when: ftp_server == "proftpd"

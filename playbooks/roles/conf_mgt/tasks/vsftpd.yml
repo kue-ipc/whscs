@@ -5,14 +5,6 @@
     state: present
     name: vsftpd
 
-- name: Set seboolean for vsftpd
-  ansible.posix.seboolean:
-    name: '{{ item }}'
-    state: true
-    persistent: true
-  loop:
-    - ftpd_use_fusefs
-
 - name: Line in vsftpd.conf
   ansible.builtin.lineinfile:
     path: /etc/vsftpd/vsftpd.conf
@@ -92,18 +84,3 @@
     name: vsftpd.service
     enabled: true
     state: started
-
-- name: Set ftp service in firewalld
-  ansible.posix.firewalld:
-    state: enabled
-    service: ftp
-    permanent: true
-  notify: 'reload firewalld'
-
-- name: Set ftp pasv port in firewalld
-  ansible.posix.firewalld:
-    state: enabled
-    port: '{{ ftp_pasv_port_range[0] }}-{{ ftp_pasv_port_range[1] }}/tcp'
-    permanent: true
-  when: ftp_pasv_port_range is defined
-  notify: 'reload firewalld'

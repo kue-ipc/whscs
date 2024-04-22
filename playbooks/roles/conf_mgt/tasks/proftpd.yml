@@ -1,0 +1,69 @@
+# ProFTPD
+---
+- name: Include task enable repo from sv_app
+  ansible.builtin.include_role:
+    name: sv_app
+    tasks_from: enable_repo
+  vars:
+    sv_app_repo: 'epel'
+
+- name: Install proftpd
+  ansible.builtin.dnf:
+    state: present
+    name: proftpd
+
+- name: Line in sysconfig proftpd
+  ansible.builtin.lineinfile:
+    path: /etc/sysconfig/proftpd
+    regexp: '^PROFTPD_OPTIONS='
+    line: 'PROFTPD_OPTIONS="{{ ftp_ssl | ternary("-DTLS", "") }}"'
+  notify: 'restart proftpd'
+
+- name: Repalce DfeaultRoot in proftpd.conf
+  ansible.builtin.replace:
+    path: /etc/proftpd.conf
+    regexp: '^(DefaultRoot[ \t]+)\S.*$'
+    replace: '\1~/../..'
+  notify: 'restart proftpd'
+
+- name: Copy proFTPD conf file
+  ansible.builtin.copy:
+    src: proftpd/hide.conf
+    dest: /etc/proftpd/conf.d/hide.conf
+    mode: '0644'
+  notify: 'restart proftpd'
+
+- name: Template proFTPD conf file
+  ansible.builtin.template:
+    src: proftpd/passive_ports.conf
+    dest: /etc/proftpd/conf.d/passive_ports.conf
+    mode: '0644'
+  notify: 'restart proftpd'
+
+- name: Line absent TLSCertificateChainFile mod_tls.conf
+  ansible.builtin.lineinfile:
+    path: /etc/proftpd/mod_tls.conf
+    regexp: '^\s*TLSCertificateChainFile\s+\S'
+    state: absent
+  notify: 'restart proftpd'
+
+- name: Line in mod_tls.conf
+  ansible.builtin.lineinfile:
+    path: /etc/proftpd/mod_tls.conf
+    regexp: '^(\s*{{ item.key }}\s+)\S'
+    line: '  {{ item.key }} {{ item.value }}'
+    insertbefore: '^</IfModule>'
+  notify: 'restart proftpd'
+  with_dict:
+    TLSRequired: '{{ ftp_ssl_only | ternary("on", "off") }}'
+    TLSRSACertificateFile: /etc/pki/tls/certs/server.cer
+    TLSRSACertificateKeyFile: /etc/pki/tls/private/server.key
+    TLSProtocol: '{{ ftp_ssl_versions | join(" ") }}'
+
+# TODO: implicit対応UseImplicitSSLを
+
+- name: Enable and start proftpd
+  ansible.builtin.systemd:
+    name: proftpd.service
+    enabled: true
+    state: started

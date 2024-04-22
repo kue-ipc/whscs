@@ -68,7 +68,9 @@ default_user_group: users
 default_user_groups: []
 ## Apache HTTP Server
 httpd_mpm: event
-## vsftpd
+## ftp
+# vsftpd or proftpd
+ftp_server: vsftpd
 ftp_banner: 'Web Hosting Service'
 ftp_ssl: true
 ftp_ssl_only: true

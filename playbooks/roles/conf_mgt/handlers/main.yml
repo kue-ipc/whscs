@@ -48,3 +48,10 @@
     name: usermin.service
     state: restarted
   listen: 'restart usermin'
+
+- name: Restart proftpd
+  ansible.builtin.systemd:
+    name: proftpd.service
+    state: restarted
+  listen: 'restart proftpd'
+

@@ -28,6 +28,8 @@
     chroot_local_user: true
     user_sub_token: $USER
     local_root: '{{ web_dir }}/$USER'
+    # for HPB
+    data_connection_timeout: 10
 
 - name: Block ssl in vsftpd
   ansible.builtin.blockinfile:

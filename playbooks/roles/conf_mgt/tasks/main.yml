@@ -1,42 +1,42 @@
 # mgt
 ---
-# - name: Role sv user env
-#   ansible.builtin.import_role:
-#     name: sv_user_env
+- name: Role sv user env
+  ansible.builtin.import_role:
+    name: sv_user_env
 
-# - name: Role sv app
-#   ansible.builtin.import_role:
-#     name: sv_app
-#   when: mgt_app
+- name: Role sv app
+  ansible.builtin.import_role:
+    name: sv_app
+  when: mgt_app
 
-# - name: Role sv fs client
-#   ansible.builtin.import_role:
-#     name: sv_fs_client
+- name: Role sv fs client
+  ansible.builtin.import_role:
+    name: sv_fs_client
 
-# - name: Role sv db client
-#   ansible.builtin.import_role:
-#     name: sv_db_client
+- name: Role sv db client
+  ansible.builtin.import_role:
+    name: sv_db_client
 
-# - name: Role sv web mount
-#   ansible.builtin.import_role:
-#     name: sv_web_mount
-#   vars:
-#     sv_web_mount_entries: '{{ conf_mgt_web_mount_entries }}'
+- name: Role sv web mount
+  ansible.builtin.import_role:
+    name: sv_web_mount
+  vars:
+    sv_web_mount_entries: '{{ conf_mgt_web_mount_entries }}'
 
-# - name: Task tls
-#   ansible.builtin.import_tasks: tls.yml
+- name: Task tls
+  ansible.builtin.import_tasks: tls.yml
 
-# - name: Task sshd
-#   ansible.builtin.import_tasks: sshd.yml
+- name: Task sshd
+  ansible.builtin.import_tasks: sshd.yml
 
 - name: Task ftp_server
   ansible.builtin.import_tasks: ftp_server.yml
 
-# - name: Task nginx
-#   ansible.builtin.import_tasks: nginx.yml
+- name: Task nginx
+  ansible.builtin.import_tasks: nginx.yml
 
-# - name: Task php
-#   ansible.builtin.import_tasks: php.yml
+- name: Task php
+  ansible.builtin.import_tasks: php.yml
 
 # userminで十分？なため、入れない
 # - name: Task phpmyadmin
@@ -48,5 +48,5 @@
 # - name: Task cockpit
 #   ansible.builtin.import_tasks: cockpit.yml
 
-# - name: Task usermin
-#   ansible.builtin.import_tasks: usermin.yml
+- name: Task usermin
+  ansible.builtin.import_tasks: usermin.yml

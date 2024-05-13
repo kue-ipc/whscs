@@ -17,12 +17,15 @@
 
 - name: Task mariadb
   ansible.builtin.import_tasks: mariadb.yml
+  when: backup_target in ["all", "db"]
 
 - name: Task postgresql
-  ansible.builtin.include_tasks: postgresql.yml
+  ansible.builtin.import_tasks: postgresql.yml
+  when: backup_target in ["all", "pg"]
 
 - name: Task web
-  ansible.builtin.include_tasks: web.yml
+  ansible.builtin.import_tasks: web.yml
+  when: backup_target in ["all", "web"]
 
 - name: Remove temp directory in local
   delegate_to: localhost

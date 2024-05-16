@@ -13,10 +13,34 @@
       {{ find_backups.files | map(attribute="path") | map("basename") | sort | reverse | first }}
   when: find_backups.matched > 0
 
+- name: Find snapshops
+  ansible.builtin.find:
+    path: '{{ web_dir }}/.snaps'
+    pattern: '{{ gluster_snapshot_name }}_GMT-\d{4}\.\d{2}\.\d{2}-\d{2}\.\d{2}\.\d{2}'
+    use_regex: true
+    file_type: directory
+  register: find_snapshots
+
+- name: Set last snapshot
+  ansible.builtin.set_fact:
+    last_snapshot: >-
+      {{ find_snapshots.files | map(attribute="path") | map("basename") | sort | reverse | first }}
+  when: find_snapshots.matched > 0
+
+- name: Set backup web src to last snapshot
+  ansible.builtin.set_fact:
+    backup_web_src: '{{ web_dir }}/.snaps/{{ last_snapshot }}'
+  when: last_snapshot is defined
+
+- name: Set backup web src to root
+  ansible.builtin.set_fact:
+    backup_web_src: '{{ web_dir }}'
+  when: last_snapshot is not defined
+
 - name: Sync web with link-dest
   delegate_to: '{{ inventory_hostname }}'
   ansible.posix.synchronize:
-    src: '{{ web_dir }}/'
+    src: '{{ backup_web_src }}/'
     dest: '{{ backup_data_dir }}/web/work/'
     link_dest: '{{ backup_data_dir }}/web/{{ last_backup }}/'
     archive: true
@@ -29,7 +53,7 @@
 - name: Sync web without link-dest
   delegate_to: '{{ inventory_hostname }}'
   ansible.posix.synchronize:
-    src: '{{ web_dir }}/'
+    src: '{{ backup_web_src }}/'
     dest: '{{ backup_data_dir }}/web/work/'
     archive: true
     rsync_opts: '--one-file-system'

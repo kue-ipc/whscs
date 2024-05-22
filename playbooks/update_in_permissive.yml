@@ -7,6 +7,4 @@
   max_fail_percentage: 0
   roles:
     - role: update_in_permissive
-      when:
-        - id is not defined or inventory_hostname_short[-1:] == id
-        - group is not defined or group in group_names
+      when: id is not defined or inventory_hostname_short[-1:] == id

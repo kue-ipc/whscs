@@ -1,11 +1,10 @@
-- name: Update and reboot all except ctl and fs
+- name: Update in permsinnive all except ctl
   hosts:
     - all
     - '!ctl'
-    - '!fs'
   become: true
   serial: 1
   max_fail_percentage: 0
   roles:
-    - role: update_reboot
+    - role: update_in_permissive
       when: id is not defined or inventory_hostname_short[-1:] == id

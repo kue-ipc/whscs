@@ -126,4 +126,4 @@ see playbooks/roles/creat_tls/REDME.md
 
 Rocky9でglusterfsをマウントしている環境でselinux-policy-targeted適用時にauditdが暴走する。回避には `sudo setenforce 0` とパーミッションモードに切り替えてから `sudo dnf update` を実施し、再起動すればよい。
 
-selinux-policyおよびselinux-policy-targetedはアップデートから除外し、必要な場合は、他のアップデートが終わった後にfailになるようにしている。failが検出された場合は、手動で対応すること。
+selinux-policyおよびselinux-policy-targetedはアップデートから除外し、必要な場合は、他のアップデートが終わった後にfailになるようにしている。failが検出された場合は、update_in_permissive.ymlのプレイブックで対応すること。

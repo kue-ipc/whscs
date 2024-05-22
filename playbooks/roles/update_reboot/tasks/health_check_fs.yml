@@ -1,0 +1,4 @@
+- name: Role health_check gluster
+  ansible.builtin.import_role:
+    name: health_check
+    tasks_from: gluster

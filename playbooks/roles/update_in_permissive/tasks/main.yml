@@ -5,10 +5,10 @@
   ansible.builtin.set_fact:
     update_reboot_force: true
 
+# all update
 - name: Set fact update_exclude empty
   ansible.builtin.set_fact:
     update_exclude: []
-
 
 # update後の再起動でenforcedに戻す
 - name: Set permissive mode
@@ -18,9 +18,3 @@
 - name: Role update_reboot
   ansible.builtin.import_role:
     name: update_reboot
-  when: '"fs" not in group_names'
-
-- name: Role update_reboot_fs
-  ansible.builtin.import_role:
-    name: update_reboot
-  when: '"fs" in group_names'

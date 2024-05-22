@@ -20,4 +20,4 @@
 
 - name: Set needs restarting
   ansible.builtin.set_fact:
-    update_reboot_requierd: '{{ result_dnf_needs_restarting.rc != 0 }}'
+    update_reboot_requierd: '{{ result_dnf_needs_restarting.rc != 0 or "fs" in group_names }}'

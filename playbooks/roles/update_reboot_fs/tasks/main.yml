@@ -6,20 +6,11 @@
     name: health_check
     tasks_from: gluster
 
-# force reboot
-- name: Set fact update_reboot_force
-  ansible.builtin.set_fact:
-    update_reboot_force: true
-  when: update_reboot_force is not defined
-
-- name: Set fact reboot_timeout set 1h
-  ansible.builtin.set_fact:
-    reboot_timeout: 3600
-  when: reboot_timeout is not defined
-
 - name: Role update_reboot
   ansible.builtin.import_role:
     name: update_reboot
+  vars:
+    update_reboot_force: true
 
 - name: Wait for 24007 port
   ansible.builtin.wait_for:

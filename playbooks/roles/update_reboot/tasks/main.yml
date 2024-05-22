@@ -1,5 +1,9 @@
 # update and reboot if necessary
 ---
+- name: Task health check fs
+  ansible.builtin.import_tasks: health_check_fs.yml
+  when: '"fs" in group_names'
+
 - name: Role update
   ansible.builtin.import_role:
     name: update
@@ -7,8 +11,16 @@
 - name: Role reboot
   ansible.builtin.import_role:
     name: reboot
-  when: update_reboot_force or update_reboot_requierd
+  when: update_reboot_force or update_reboot_requierd or "fs" in group_names
+
+- name: Task wait fs
+  ansible.builtin.import_tasks: wait_fs.yml
+  when: '"fs" in group_names'
 
 - name: Role check update
   ansible.builtin.import_role:
     name: update_check
+
+- name: Task health check gluster
+  ansible.builtin.import_tasks: health_check_fs.yml
+  when: '"fs" in group_names'

@@ -1,0 +1,8 @@
+- name: Wait for 24007 port
+  ansible.builtin.wait_for:
+    port: 24007
+    timeout: 300
+
+- name: Wait for 5 min
+  ansible.builtin.wait_for:
+    timeout: 300

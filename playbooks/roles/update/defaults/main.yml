@@ -1,2 +1,6 @@
 update_only: false
 update_autoremove: false
+# FIXME: Rocky9/glusterfs環境でselinux-policy-targted適用時にauditdが暴走
+update_exclude:
+  - selinux-policy
+  - selinux-policy-targeted

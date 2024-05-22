@@ -108,7 +108,7 @@ sudo lvextend --poolmetadatasize 1G vg/pool
 
 see playbooks/roles/creat_tls/REDME.md
 
-## 注意事項
+## 注意事項と制限事項
 
 ### vsftpdのデフォルト変更
 
@@ -121,3 +121,9 @@ see playbooks/roles/creat_tls/REDME.md
 ホームページビルダー22等の一部のFTPクライアントでTLSv1.3ではデータ転送が正常に行えない不具合が発生することがあるため、デフォルトではTLSv1.3は無効にし、TLSv1.2のみ有効としている。
 
 <https://access.redhat.com/solutions/7042423>
+
+### selinux-policyとselinux-policy-targetedのアップデート除外
+
+Rocky9でglusterfsをマウントしている環境でselinux-policy-targeted適用時にauditdが暴走する。回避には `sudo setenforce 0` とパーミッションモードに切り替えてから `sudo dnf update` を実施し、再起動すればよい。
+
+selinux-policyおよびselinux-policy-targetedはアップデートから除外し、必要な場合は、他のアップデートが終わった後にfailになるようにしている。failが検出された場合は、手動で対応すること。

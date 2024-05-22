@@ -1,11 +1,13 @@
 # This file contains ignores rule violations for ansible-lint
+playbooks/roles/common/defaults/main.yml var-naming[no-role-prefix]
+playbooks/roles/conf_mgt/tasks/usermin.yml no-tabs
+playbooks/roles/health_check/tasks/mount.yml command-instead-of-module
 playbooks/roles/user_absent/tasks/no_nginx.yml no-handler
 playbooks/roles/user_absent/tasks/no_php-fpm.yml no-handler
+playbooks/roles/user_present/tasks/app.yml ignore-errors
+playbooks/roles/user_present/tasks/nginx_rp.yml no-handler
+playbooks/roles/user_present/tasks/nginx_web.yml no-handler
 playbooks/roles/user_present/tasks/nginx.yml no-handler
 playbooks/roles/user_present/tasks/php-fpm.yml no-handler
-playbooks/roles/health_check/tasks/mount.yml command-instead-of-module
-playbooks/roles/conf_mgt/tasks/usermin.yml no-tabs
-playbooks/roles/user_present/tasks/nginx_web.yml no-handler
-playbooks/roles/user_present/tasks/nginx_rp.yml no-handler
-playbooks/roles/common/defaults/main.yml var-naming[no-role-prefix]
-playbooks/roles/user_present/tasks/app.yml ignore-errors
+playbooks/roles/update_check/tasks/main.yml package-latest
+playbooks/roles/update_check/tasks/main.yml ignore-errors

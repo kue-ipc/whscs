@@ -3,6 +3,7 @@
 - name: Update all packages
   ansible.builtin.dnf:
     name: "*"
+    exclude: '{{ update_exclude }}'
     state: latest
     update_only: '{{ update_only }}'
 

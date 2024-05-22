@@ -8,3 +8,7 @@
   ansible.builtin.import_role:
     name: reboot
   when: update_reboot_force or update_reboot_requierd
+
+- name: Role check update
+  ansible.builtin.import_role:
+    name: update_check

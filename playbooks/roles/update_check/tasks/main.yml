@@ -1,0 +1,15 @@
+# update check
+---
+- name: Update all packages in check mode
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+  check_mode: true
+  register: check_update
+
+- name: Check packages
+  ansible.builtin.assert:
+    that: not check_update.changed
+    msg: 'remain update packages: {{ check_update.results }}'
+    quiet: true
+  ignore_errors: '{{ update_check_ignore_errors }}'

@@ -1,0 +1,19 @@
+
+module local_msmtp 1.0;
+
+require {
+	type fusefs_t;
+	type tmpfs_t;
+	type system_mail_t;
+	class file { append getattr open read write };
+	class dir { search write };
+	class lnk_file read;
+}
+
+#============= system_mail_t ==============
+#!!!! This avc has a dontaudit rule in the current policy
+allow system_mail_t fusefs_t:dir search;
+allow system_mail_t fusefs_t:file append;
+allow system_mail_t fusefs_t:lnk_file read;
+allow system_mail_t tmpfs_t:dir write;
+allow system_mail_t tmpfs_t:file { getattr open read write };

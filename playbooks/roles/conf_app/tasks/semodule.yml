@@ -1,0 +1,62 @@
+# semodule
+#
+#   audit2allow -m name -a
+#   checkmodule -m -M -o nome.mod name.te
+#   semodule_package -o name.pp -m name.mod
+#   semodule -i namae.pp
+---
+- name: Check semodule list
+  ansible.builtin.command:
+    cmd: semodule -l
+  register: result_semodule_l
+  changed_when: false
+
+- name: 'Create temp directory for {{ semodule_name }}'
+  ansible.builtin.tempfile:
+    state: directory
+  register: tempdir
+  when: semodule_name not in result_semodule_l.stdout_lines | default([])
+
+- name: 'Copy semodule {{ semodule_name }}'
+  ansible.builtin.copy:
+    src: 'selinux/{{ semodule_name }}.te'
+    dest: '{{ tempdir.path }}/{{ semodule_name }}.te'
+    mode: '0644'
+  when:
+    - semodule_name not in result_semodule_l.stdout_lines | default([])
+    - tempdir.path is defined
+
+- name: 'Check semodule {{ semodule_name }}'
+  ansible.builtin.command:
+    cmd: 'checkmodule -m -M -o {{ semodule_name }}.mod {{ semodule_name }}.te'
+    chdir: '{{ tempdir.path }}'
+  changed_when: true
+  when:
+    - semodule_name not in result_semodule_l.stdout_lines | default([])
+    - tempdir.path is defined
+
+- name: 'Package semodule {{ semodule_name }}'
+  ansible.builtin.command:
+    cmd: 'semodule_package -o {{ semodule_name }}.pp -m {{ semodule_name }}.mod'
+    chdir: '{{ tempdir.path }}'
+  changed_when: true
+  when:
+    - semodule_name not in result_semodule_l.stdout_lines | default([])
+    - tempdir.path is defined
+
+- name: 'Intall semodule {{ semodule_name }}'
+  ansible.builtin.command:
+    cmd: 'semodule -i {{ semodule_name }}.pp'
+    chdir: '{{ tempdir.path }}'
+  changed_when: true
+  when:
+    - semodule_name not in result_semodule_l.stdout_lines | default([])
+    - tempdir.path is defined
+
+- name: 'Remove temp directory for {{ semodule_name }}'
+  ansible.builtin.file:
+    path: '{{ tempdir.path }}'
+    state: absent
+  when:
+    - semodule_name not in result_semodule_l.stdout_lines | default([])
+    - tempdir.path is defined

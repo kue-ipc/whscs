@@ -17,6 +17,12 @@
     state: present
     name: msmtp
 
+- name: Task semodule for local_msmtp
+  ansible.builtin.import_tasks:
+    file: semodule.yml
+  vars:
+    semodule_name: local_msmtp
+
 - name: Template msmtprc
   ansible.builtin.template:
     src: msmtprc.j2

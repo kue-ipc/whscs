@@ -39,65 +39,11 @@
     setype: http_port_t
     state: present
 
-# audit2allow -m httpd -a
-# checkmodule -m -M -o httpd.mod httpd.te
-# semodule_package -o httpd.pp -m httpd.mod
-# semodule -i httpd.pp
-- name: Check semodule list
-  ansible.builtin.command:
-    cmd: semodule -l
-  register: result_semodule_l
-  changed_when: false
-
-- name: Create temp directory
-  ansible.builtin.tempfile:
-    state: directory
-  register: tempdir
-  when: '"httpd" not in result_semodule_l.stdout_lines | default([])'
-
-- name: Copy semodule httpd
-  ansible.builtin.copy:
-    src: selinux/httpd.te
-    dest: '{{ tempdir.path }}/httpd.te'
-    mode: '0644'
-  when:
-    - '"httpd" not in result_semodule_l.stdout_lines | default([])'
-    - tempdir.path is defined
-
-- name: Check semodule httpd
-  ansible.builtin.command:
-    cmd: checkmodule -m -M -o httpd.mod httpd.te
-    chdir: '{{ tempdir.path }}'
-  changed_when: true
-  when:
-    - '"httpd" not in result_semodule_l.stdout_lines | default([])'
-    - tempdir.path is defined
-
-- name: Package semodule httpd
-  ansible.builtin.command:
-    cmd: semodule_package --outfile httpd.pp --module httpd.mod
-    chdir: '{{ tempdir.path }}'
-  changed_when: true
-  when:
-    - '"httpd" not in result_semodule_l.stdout_lines | default([])'
-    - tempdir.path is defined
-
-- name: Intall semodule httpd
-  ansible.builtin.command:
-    cmd: semodule -i httpd.pp
-    chdir: '{{ tempdir.path }}'
-  changed_when: true
-  when:
-    - '"httpd" not in result_semodule_l.stdout_lines | default([])'
-    - tempdir.path is defined
-
-- name: Remove temp directory
-  ansible.builtin.file:
-    path: '{{ tempdir.path }}'
-    state: absent
-  when:
-    - '"httpd" not in result_semodule_l.stdout_lines | default([])'
-    - tempdir.path is defined
+- name: Task semodule for local_httpd
+  ansible.builtin.import_tasks:
+    file: semodule.yml
+  vars:
+    semodule_name: local_httpd
 
 - name: Repalce mpm load module
   ansible.builtin.replace:

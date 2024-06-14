@@ -1,0 +1,18 @@
+
+module local_httpd 1.0;
+
+require {
+	type httpd_sys_script_t;
+	type fusefs_t;
+	type tmpfs_t;
+	type sysfs_t;
+	class file { create entrypoint lock open read setattr unlink write };
+	class filesystem getattr;
+	class dir { add_name remove_name write };
+}
+
+#============= httpd_sys_script_t ==============
+allow httpd_sys_script_t fusefs_t:file entrypoint;
+allow httpd_sys_script_t sysfs_t:filesystem getattr;
+allow httpd_sys_script_t tmpfs_t:dir { add_name remove_name write };
+allow httpd_sys_script_t tmpfs_t:file { create lock open read setattr unlink write };

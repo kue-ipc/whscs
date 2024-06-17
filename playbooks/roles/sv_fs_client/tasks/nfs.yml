@@ -15,7 +15,7 @@
     path: '{{ web_dir }}'
     src: '{{ gluster_main_server }}:/{{ gluster_volume }}'
     fstype: nfs4
-    opts: 'defaults,_netdev'
+    opts: 'defaults,_netdev,minorversion=1'
     state: mounted
   when: not web_dir_mounted
 
@@ -25,6 +25,6 @@
     path: '{{ web_dir }}'
     src: '{{ gluster_main_server }}:/{{ gluster_volume }}'
     fstype: nfs4
-    opts: 'defaults,_netdev'
+    opts: 'defaults,_netdev,minorversion=1'
     state: present
   when: web_dir_mounted

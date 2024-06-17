@@ -86,3 +86,9 @@ EXPORT
 		#enable = active;
 	#}
 #}
+{% if inventory_hostname == gluster_main_server %}
+GLUSTER
+{
+	PNFS_MDS = true;
+}
+{% endif %}

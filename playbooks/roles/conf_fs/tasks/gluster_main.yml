@@ -48,3 +48,33 @@
   when:
     - gluster_snapshot_config_hard is defined
     - gluster_snapshot_config_hard | int != gluster_snapshot_hard
+
+- name: Get gluster volume get all
+  ansible.builtin.command:
+    argv:
+      - /usr/sbin/gluster
+      - volume
+      - get
+      - '{{ gluster_volume }}'
+      - all
+  changed_when: false
+  register: gluster_volume_get_all
+
+# for NFS-Ganesha
+- name: Set gluster volume set features.cache-invalidation on
+  ansible.builtin.command:
+    argv:
+      - /usr/sbin/gluster
+      - volume
+      - set
+      - '{{ gluster_volume }}'
+      - features.cache-invalidation
+      - 'on'
+    stdin: 'y'
+  changed_when: true
+  when:
+    - gluster_volume_get_all.stdout_lines | length > 0
+    - >-
+      (gluster_volume_get_all.stdout_lines
+        | select("match", "features.cache-invalidation")
+        | first | split)[1] == "off"

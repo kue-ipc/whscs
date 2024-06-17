@@ -1,12 +1,24 @@
 # ファイアウォール設定
 ---
-- name: Add rich rule to firewalld for httpd
+- name: Add rich rule to firewalld for glusterfs
   ansible.posix.firewalld:
     state: enabled
     rich_rule: >-
       rule family="{{ item is ansible.utils.ipv4 | ternary("ipv4", "ipv6") }}"
       source address="{{ item }}"
       service name="glusterfs"
+      accept
+    permanent: true
+  loop: '{{ web_networks }}'
+  notify: 'reload firewalld'
+
+- name: Add rich rule to firewalld for nfs
+  ansible.posix.firewalld:
+    state: enabled
+    rich_rule: >-
+      rule family="{{ item is ansible.utils.ipv4 | ternary("ipv4", "ipv6") }}"
+      source address="{{ item }}"
+      service name="nfs"
       accept
     permanent: true
   loop: '{{ web_networks }}'

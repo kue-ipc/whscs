@@ -8,3 +8,9 @@
   ansible.builtin.systemd:
     daemon_reload: true
   listen: 'reload systemd'
+
+- name: Reload nfs-ganesha
+  ansible.builtin.systemd:
+    name: nfs-ganesha.service
+    state: reloaded
+  listen: 'reload nfs-ganesha'

@@ -103,6 +103,7 @@ gluster_data_size: 128G
 gluster_data_pool_name: pool
 gluster_data_pool_size: 192G
 gluster_device_timeout: 5min
+nfs_ganesha_version: "5"
 ## MariaDB
 db_data_name: mysql
 db_data_size: 16G

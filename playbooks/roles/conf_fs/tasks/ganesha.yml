@@ -1,0 +1,33 @@
+# Gluster + NFS-Ganesha
+---
+- name: Install centos-release-nfs-ganesha
+  ansible.builtin.dnf:
+    state: present
+    name: 'centos-release-nfs-ganesha{{ nfs_ganesha_version }}'
+
+- name: Enable highavailability repository
+  ansible.builtin.import_role:
+    name: sv_app
+    tasks_from: enable_repo
+  vars:
+    sv_app_repo: highavailability
+
+- name: Install glusterfs-ganesha
+  ansible.builtin.dnf:
+    state: present
+    name: glusterfs-ganesha
+
+- name: Config ganesha.conf
+  ansible.builtin.template:
+    src: ganesha/ganesha.conf.j2
+    dest: /etc/ganesha/ganesha.conf
+    mode: '0644'
+    owner: root
+    group: root
+  notify: 'reload nfs-ganesha'
+
+- name: Enable and start nfs-ganesha
+  ansible.builtin.systemd:
+    name: nfs-ganesha.service
+    enabled: true
+    state: started

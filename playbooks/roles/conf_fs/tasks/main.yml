@@ -8,3 +8,6 @@
 
 - name: Task gluster
   ansible.builtin.import_tasks: gluster.yml
+
+- name: Task ganesha
+  ansible.builtin.import_tasks: ganesha.yml

@@ -5,21 +5,33 @@
     state: present
     name: 'centos-release-gluster{{ gluster_version }}'
 
-# centos-release-gluster9はEL8に対して$relserverでは提供していないため、
-# $streamに変更する必要がある。
-# centos-relesae-gluster10では修正されている模様
-- name: Fix Centos-Gluster-9.repo for EL8
-  ansible.builtin.replace:
-    path: /etc/yum.repos.d/CentOS-Gluster-9.repo
-    regexp: '\$releasever'
-    replace: '$stream'
-  when:
-    - gluster_version is version("9")
-    - ansible_distribution_version is version("9", "<")
-
 - name: Install glusterfs glusterfs-fuse
   ansible.builtin.dnf:
     state: present
     name:
       - glusterfs
       - glusterfs-fuse
+
+# {{ web_dir is mount }} では確認できないため ansible_mounts を使用する。
+- name: Set web dir mounted
+  ansible.builtin.set_fact:
+    web_dir_mounted: '{{ web_dir in ansible_mounts | map(attribute="mount") }}'
+
+- name: Mount web dir gluster
+  ansible.posix.mount:
+    path: '{{ web_dir }}'
+    src: '{{ gluster_main_server }}:/{{ gluster_volume }}'
+    fstype: glusterfs
+    opts: 'defaults,_netdev,backup-volfile-servers={{ gluster_backup_servers | join(":") }}'
+    state: mounted
+  when: not web_dir_mounted
+
+# effect reboot if changed
+- name: Preset web dir gluster
+  ansible.posix.mount:
+    path: '{{ web_dir }}'
+    src: '{{ gluster_main_server }}:/{{ gluster_volume }}'
+    fstype: glusterfs
+    opts: 'defaults,_netdev,backup-volfile-servers={{ gluster_backup_servers | join(":") }}'
+    state: present
+  when: web_dir_mounted

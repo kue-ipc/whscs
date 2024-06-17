@@ -1,25 +1,30 @@
-# web dir
+# NFS
 ---
+- name: Install nfs-utils
+  ansible.builtin.dnf:
+    state: present
+    name: nfs-utils
+
 # {{ web_dir is mount }} では確認できないため ansible_mounts を使用する。
 - name: Set web dir mounted
   ansible.builtin.set_fact:
     web_dir_mounted: '{{ web_dir in ansible_mounts | map(attribute="mount") }}'
 
-- name: Mount web dir
+- name: Mount web dir nfs
   ansible.posix.mount:
     path: '{{ web_dir }}'
     src: '{{ gluster_main_server }}:/{{ gluster_volume }}'
-    fstype: glusterfs
-    opts: 'defaults,_netdev,backup-volfile-servers={{ gluster_backup_servers | join(":") }}'
+    fstype: nfs4
+    opts: 'defaults,_netdev'
     state: mounted
   when: not web_dir_mounted
 
 # effect reboot if changed
-- name: Preset web dir
+- name: Preset web dir nfs
   ansible.posix.mount:
     path: '{{ web_dir }}'
     src: '{{ gluster_main_server }}:/{{ gluster_volume }}'
-    fstype: glusterfs
-    opts: 'defaults,_netdev,backup-volfile-servers={{ gluster_backup_servers | join(":") }}'
+    fstype: nfs4
+    opts: 'defaults,_netdev'
     state: present
   when: web_dir_mounted

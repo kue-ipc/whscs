@@ -1,11 +1,9 @@
-# fs client - GlusterFS client
+# fs client - GlusterFS or NFS client
 ---
-# TODO: Rocky8用のGlusterのレポジトリが消されたため、
-#   何かしらの対応が必要
 - name: Task gluster
   ansible.builtin.import_tasks: gluster.yml
   when: ansible_distribution_version is version("9", ">=")
 
-- name: Task web
-  ansible.builtin.import_tasks: web.yml
-  when: ansible_distribution_version is version("9", ">=")
+- name: Task nfs
+  ansible.builtin.import_tasks: nfs.yml
+  when: ansible_distribution_version is version("9", "<")

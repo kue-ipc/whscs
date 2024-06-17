@@ -1,10 +1,13 @@
 # sshd
 ---
-- name: Set seboolean use fusefs hom dirs
+- name: Set seboolean for home dirs
   ansible.posix.seboolean:
-    name: use_fusefs_home_dirs
+    name: '{{ item }}'
     state: true
     persistent: true
+  loop:
+    - use_fusefs_home_dirs
+    - use_nfs_home_dirs
 
 - name: Check sshd_config.d
   ansible.builtin.find:

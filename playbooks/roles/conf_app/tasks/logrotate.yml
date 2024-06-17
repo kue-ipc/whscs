@@ -7,3 +7,4 @@
     persistent: true
   loop:
     - logrotate_use_fusefs
+    - logrotate_use_nfs

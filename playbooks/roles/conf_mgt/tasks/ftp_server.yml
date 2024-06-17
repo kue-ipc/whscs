@@ -7,6 +7,7 @@
     persistent: true
   loop:
     - ftpd_use_fusefs
+    - ftpd_use_nfs
 
 - name: Set ftp service in firewalld
   ansible.posix.firewalld:

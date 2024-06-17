@@ -10,8 +10,9 @@
     state: true
     persistent: true
   loop:
-    - httpd_use_fusefs
     - httpd_can_network_relay
+    - httpd_use_fusefs
+    - httpd_use_nfs
 
 - name: Set seport for nginx to httpd
   community.general.seport:

@@ -7,6 +7,7 @@
     persistent: true
   loop:
     - logrotate_use_fusefs
+    - logrotate_use_nfs
 
 - name: Template nginx_user to logrotate.d
   ansible.builtin.template:

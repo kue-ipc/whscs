@@ -29,6 +29,7 @@
     - httpd_can_sendmail
     - httpd_graceful_shutdown
     - httpd_use_fusefs
+    - httpd_use_nfs
 
 - name: Set SELinux port for httpd
   community.general.seport:

@@ -8,3 +8,4 @@
 
 - name: Task web
   ansible.builtin.import_tasks: web.yml
+  when: ansible_distribution_version is version("9", ">=")

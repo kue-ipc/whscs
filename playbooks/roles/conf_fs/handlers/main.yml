@@ -14,3 +14,9 @@
     name: nfs-ganesha.service
     state: reloaded
   listen: 'reload nfs-ganesha'
+
+- name: Restart nfs-ganesha
+  ansible.builtin.systemd:
+    name: nfs-ganesha.service
+    state: restarted
+  listen: 'restart nfs-ganesha'

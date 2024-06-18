@@ -46,7 +46,7 @@ ctlのセットアップを行った後に、セットアップ、アップデ�
 
 ## ファイルシステム
 
-glusterを使用した分散型ファイルシステムになっている。
+glusterを使用した分散型ファイルシステムになっている。nfs-ganeshaでpNFSも提供している。
 
 ### スナップショットについて
 
@@ -83,6 +83,12 @@ sudo lvextend --poolmetadatasize 1G vg/pool
 #### スナップショットタイミング
 
 ログローテートの時刻(デフォルトは午前0時)と被る場合は、ログローテートの実行時刻をずらす。group_varsやhost_varsで`logrotate_time`変数を設定しsetup.ymlを適用することで、実行時刻を調整できる。
+
+### EOLに伴う注意
+
+GlusterおよびGaneshaはSIGのレポジトリであり、CentOS Stream向けであるため5年でEOLになる。EOLを迎えた場合はpNFS経由でのアクセスとなり、冗長性はなくなる。
+
+pNFSがちゃんと動いているかは、ちょっと怪しい。
 
 ## 新サーバーの追加
 

@@ -5,6 +5,7 @@
     name: "*"
     exclude: '{{ update_exclude }}'
     state: latest
+    nobest: true
     update_only: '{{ update_only }}'
 
 - name: Autoremove

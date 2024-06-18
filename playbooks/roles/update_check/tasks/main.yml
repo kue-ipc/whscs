@@ -5,6 +5,7 @@
     name: "*"
     state: latest
   check_mode: true
+  ignore_errors: '{{ update_check_ignore_errors }}'
   register: check_update
 
 - name: Check packages

@@ -26,6 +26,26 @@
     group: root
   notify: 'restart nfs-ganesha'
 
+- name: Make systemd nfs-ganesha.service.d
+  ansible.builtin.file:
+    path: /etc/systemd/system/nfs-ganesha.service.d/
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+# FIXME: nfsganeshaがコア吐いて落ちる場合がある。
+- name: Copy systemd conf nfs-ganesha.service.d
+  ansible.builtin.copy:
+    src: 'systemd/{{ item }}'
+    dest: '/etc/systemd/system/nfs-ganesha.service.d/{{ item }}'
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - restart.conf
+  notify: 'reload systemd'
+
 - name: Enable and start nfs-ganesha
   ansible.builtin.systemd:
     name: nfs-ganesha.service

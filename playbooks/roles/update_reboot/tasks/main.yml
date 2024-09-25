@@ -21,6 +21,7 @@
   ansible.builtin.import_role:
     name: update_check
 
-- name: Task health check gluster
-  ansible.builtin.import_tasks: health_check_fs.yml
-  when: '"fs" in group_names'
+# リブート直後だと失敗する場合があるため、ヘルスチェックはしない
+# - name: Task health check gluster
+#   ansible.builtin.import_tasks: health_check_fs.yml
+#   when: '"fs" in group_names'

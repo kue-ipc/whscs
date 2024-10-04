@@ -3,15 +3,21 @@
 - name: Gluster prove peer
   gluster.gluster.gluster_peer:
     state: present
-    nodes: '{{ groups["fs"] }}'
+    nodes: '{{ gluster_servers }}'
+
+- name: Check cluster replicas
+  ansible.builtin.assert:
+    that: ((gluster_cluster_servers | length) % gluster_cluster_replicas) == 0
+    msg: 'number of gluster cluster servers is not a mutiple of {{ gluster_cluster_replicas }}'
+    quiet: true
 
 - name: Gluster create volume
   gluster.gluster.gluster_volume:
     state: present
     name: '{{ gluster_volume }}'
-    replicas: 3
+    replicas: '{{ gluster_cluster_replicas }}'
     bricks: '{{ gluster_data_dir }}/{{ gluster_volume }}'
-    cluster: '{{ groups["fs"] }}'
+    cluster: '{{ gluster_cluster_servers }}'
 
 - name: Get gluster snapshot config
   ansible.builtin.command:

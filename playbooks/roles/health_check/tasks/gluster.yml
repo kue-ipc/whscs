@@ -29,7 +29,7 @@
     that: gluster_pool_list.stdout_lines | select("match", "^[\da-f\-]+\s+" ~ item ~ "\s+Connected\s*$") | length == 1
     msg: 'gluster dose not connetct to {{ item }}'
     quiet: true
-  loop: '{{ groups["fs"] | reject("eq", inventory_hostname) + ["localhost"] }}'
+  loop: '{{ gluster_servers | reject("eq", inventory_hostname) + ["localhost"] }}'
   when: not ansible_check_mode
 
 - name: Check gluster volume status brick
@@ -39,7 +39,7 @@
         "^Brick " ~ item ~ ":" ~ gluster_data_dir ~ "/" ~ gluster_volume ~ "\s+\d+\s+\d+\s+Y\s+\d+\s*$") | length == 1
     msg: 'gluster no brick {{ item }}'
     quiet: true
-  loop: '{{ groups["fs"] }}'
+  loop: '{{ gluster_cluster_servers }}'
   when: not ansible_check_mode
 
 - name: Check gluster volume status snapshot and self-heal
@@ -49,7 +49,7 @@
         "^(Snapshot|Self-heal) Daemon on " ~ item ~ "\s+(\d+|N/A)\s+(\d+|N/A)\s+Y\s+\d+\s*$") | length == 2
     msg: 'gluster no snapshot or self-heal {{ item }}'
     quiet: true
-  loop: '{{ groups["fs"] | reject("eq", inventory_hostname) + ["localhost"] }}'
+  loop: '{{ gluster_cluster_servers | reject("eq", inventory_hostname) + ["localhost"] }}'
   when: not ansible_check_mode
 
 - name: Check gluster self heal
@@ -57,4 +57,6 @@
     that: gluster_self_heal_status.glusterfs.heal_info | selectattr("no_of_entries", "ne", "0") | length == 0
     msg: 'heal entries exists'
     quiet: true
-  when: not ansible_check_mode
+  when:
+    - not ansible_check_mode
+    - not health_check_skip_gluster_heal

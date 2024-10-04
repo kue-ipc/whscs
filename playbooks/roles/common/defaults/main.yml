@@ -95,8 +95,11 @@ gluster_volume: web
 gluster_snapshot_name: ss
 # default snapshot soft limit 90%
 gluster_snapshot_hard: 100
-gluster_main_server: '{{ groups["fs"] | first }}'
-gluster_backup_servers: '{{ groups["fs"][1:] }}'
+gluster_servers: '{{ groups["fs"] }}'
+gluster_main_server: '{{ gluster_servers | first }}'
+gluster_cluster_replicas: 3
+gluster_cluster_servers: '{{ gluster_servers }}'
+gluster_backup_servers: '{{ gluster_cluster_servers | difference([gluster_main_server]) }}'
 gluster_data_dir: /data
 gluster_data_name: data
 gluster_data_size: 128G

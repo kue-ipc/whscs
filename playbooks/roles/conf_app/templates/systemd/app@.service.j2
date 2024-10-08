@@ -7,6 +7,7 @@ Type=forking
 ExecStartPre=/usr/bin/test -x {{ web_dir }}/%i/data/app/start
 ExecStart=/usr/sbin/chroot --userspec=%i:apache {{ web_dir }}/%i /data/app/start
 ExecStop=/usr/sbin/chroot --userspec=%i:apache {{ web_dir }}/%i /data/app/stop
+TimeoutStartSec=150
 
 [Install]
 WantedBy=multi-user.target

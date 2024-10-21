@@ -1,7 +1,7 @@
 health_check_threshold_disk_size: 0.8
 health_check_threshold_lvm_pool_data_size: 0.8
 health_check_threshold_lvm_pool_metadata_size: 0.8
-health_check_threshold_memory_nocache_free: 256
+health_check_threshold_memory_nocache_free: 128
 health_check_threshold_memory_real_free: 32
 health_check_threshold_memory_swap_free: 1024
 health_check_threshold_loadavg_1m: 2.0

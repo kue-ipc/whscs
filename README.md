@@ -80,6 +80,11 @@ sudo lvextend --poolmetadatasize 1G vg/pool
 
 等を実行する。(1Gはサイズに応じて要調整)
 
+#### 自動拡張をオンにすべき？
+
+(これは未実施)
+/etc/lvm/lvm.confでactivation/thin_pool_autoextend_thresholdを100未満にして、poolを自動拡張すべき？
+
 #### スナップショットタイミング
 
 ログローテートの時刻(デフォルトは午前0時)と被る場合は、ログローテートの実行時刻をずらす。group_varsやhost_varsで`logrotate_time`変数を設定しsetup.ymlを適用することで、実行時刻を調整できる。

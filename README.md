@@ -95,6 +95,20 @@ GlusterおよびGaneshaはSIGのレポジトリであり、CentOS Stream向け�
 
 pNFSがちゃんと動いているかは、ちょっと怪しい。
 
+### キャッシュが圧迫
+
+TODO: 自動的な対応は未実施
+
+EL9ではdnfの古いキャッシュが溜まりすぎている場合がある。ひとまず、下記で減らせる。
+
+```
+sudo dnf clean packages
+# または
+sudo dnf clean all
+```
+
+定期的なパッケージキャッシュのクリーンを検討した方がいいかもしれない？
+
 ## 新サーバーの追加
 
 1. ansibleが見に行くhostsファイルに新サーバーを追加する。

@@ -14,6 +14,17 @@ ctlのセットアップを行った後に、セットアップ、アップデ�
 4. `ansible-playbook conf_all.yml`
 5. `ansible-playbook user_sync.yml`
 
+### サーバーを追加する手順
+
+1. インベントリにサーバーを追加する。
+2. `ansible-playbook -l ctl setup.yml`
+3. `ansible-playbook setup.yml`
+4. `ansible-playbook -l {0} update_reboot.yml -e update_autoremove=yes`
+5. `ansible-playbook -l {0} conf_all.yml`
+6. `ansible-playbook user_sync.yml`
+
+`{0}`に追加したサーバー名を入れる。setup.ymlとuser_sync.ymlはサーバーを指定せずに実行する。
+
 ## ユーザー管理
 
 ### 登録

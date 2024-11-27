@@ -54,4 +54,3 @@
     name: proftpd.service
     state: restarted
   listen: 'restart proftpd'
-

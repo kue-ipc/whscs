@@ -1,8 +1,14 @@
 # FIXME: SIGレポジトリがstream向けであるため、追いつけないパッケージがある。
 update_only: false
 update_autoremove: false
-update_exclude: []
+# update_exclude: []
 # MEMO: Rocky9/glusterfs環境でselinux-policy-targted適用時にauditdが暴走した時があった
 # update_exclude:
 #   - selinux-policy
 #   - selinux-policy-targeted
+# MEMO: NFS Ganeshaをアップデートすると、NFSが動作しなくなった。
+update_exclude:
+  - libntirpc
+  - nfs-ganesha
+  - nfs-ganesha-gluster
+  - nfs-ganesha-selinux

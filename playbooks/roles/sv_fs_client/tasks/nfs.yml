@@ -10,21 +10,19 @@
   ansible.builtin.set_fact:
     web_dir_mounted: '{{ web_dir in ansible_mounts | map(attribute="mount") }}'
 
+- name: Set web mount server
+  ansible.builtin.set_fact:
+    web_mount_server: >-
+      {{ gluster_cluster_servers[
+        (groups["all"].index(inventory_hostname)) %
+        (gluster_cluster_servers | length)] }}
+
+# if mounted then mount after reboot
+# else immediately mount
 - name: Mount web dir nfs
   ansible.posix.mount:
     path: '{{ web_dir }}'
-    src: '{{ gluster_main_server }}:/{{ gluster_volume }}'
+    src: '{{ web_mount_server }}:/{{ gluster_volume }}'
     fstype: nfs4
     opts: 'defaults,_netdev,minorversion=1'
-    state: mounted
-  when: not web_dir_mounted
-
-# effect reboot if changed
-- name: Preset web dir nfs
-  ansible.posix.mount:
-    path: '{{ web_dir }}'
-    src: '{{ gluster_main_server }}:/{{ gluster_volume }}'
-    fstype: nfs4
-    opts: 'defaults,_netdev,minorversion=1'
-    state: present
-  when: web_dir_mounted
+    state: '{{ web_dir_mounted | ternary("present", "mounted") }}'

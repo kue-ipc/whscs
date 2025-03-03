@@ -1,0 +1,13 @@
+#
+# This file is part of centos-release-gluster.
+#
+# Enabling services that are provided by the Gluster project as part of the
+# CentOS Storage SIG. When add-on services are installed, users expect them to
+# be started/enabled automatically.
+#
+# Services that are enabled by default, should be able to function without
+# requiring pre-configuration steps by users.
+#
+
+enable glusterd.service
+enable gluster-blockd.service

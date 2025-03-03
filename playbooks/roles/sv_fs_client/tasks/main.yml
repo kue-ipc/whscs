@@ -1,9 +1,9 @@
 # fs client - GlusterFS or NFS client
 ---
-- name: Task gluster
-  ansible.builtin.import_tasks: gluster.yml
-  when: ansible_distribution_version is version("9", ">=")
+- name: Task glusterfs
+  ansible.builtin.import_tasks: glusterfs.yml
+  when: web_mount_fstype == "glusterfs"
 
 - name: Task nfs
   ansible.builtin.import_tasks: nfs.yml
-  when: ansible_distribution_version is version("9", "<")
+  when: web_mount_fstype == "nfs"

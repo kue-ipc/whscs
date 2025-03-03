@@ -1,0 +1,66 @@
+# GlusterFS
+---
+# NOTE: centos-release-glusterパッケージで入るレポジトリは、
+#   Streamのレポジトリを参照してしまう
+# - name: Install centos-release-gluster
+#   ansible.builtin.dnf:
+#     state: present
+#     name: 'centos-release-gluster{{ gluster_version }}'
+
+# centos-relese-storage-common rpm
+- name: Copy RPM-GPG-KEY for CentOS-SIG-Storage
+  ansible.builtin.copy:
+    src: pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Storage
+    dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Storage
+    owner: root
+    group: root
+    mode: '0644'
+
+# centos-relese-gluster rpm customized!!!
+- name: Template copy CentOS Gluster custom repo
+  ansible.builtin.template:
+    src: yum.repos.d/CentOS-Gluster--custom.repo.j2
+    dest: '/etc/yum.repos.d/CentOS-Gluster-{{ gluster_version }}-custom.repo'
+    owner: root
+    group: root
+    mode: '0644'
+
+# centos-relese-gluster rpm
+- name: Copy RPM-GPG-KEY for CentOS-SIG-Storage
+  ansible.builtin.copy:
+    src: systemd/system-preset/75-gluster.preset
+    dest: /usr/lib/systemd/system-preset/75-gluster.preset
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Install glusterfs glusterfs-fuse
+  ansible.builtin.dnf:
+    state: present
+    name:
+      - glusterfs
+      - glusterfs-fuse
+
+# {{ web_dir is mount }} では確認できないため ansible_mounts を使用する。
+- name: Set web dir mounted
+  ansible.builtin.set_fact:
+    web_dir_mounted: '{{ web_dir in ansible_mounts | map(attribute="mount") }}'
+
+- name: Mount web dir gluster
+  ansible.posix.mount:
+    path: '{{ web_dir }}'
+    src: '{{ gluster_main_server }}:/{{ gluster_volume }}'
+    fstype: glusterfs
+    opts: 'defaults,_netdev,backup-volfile-servers={{ gluster_backup_servers | join(":") }}'
+    state: mounted
+  when: not web_dir_mounted
+
+# effect reboot if changed
+- name: Preset web dir gluster
+  ansible.posix.mount:
+    path: '{{ web_dir }}'
+    src: '{{ gluster_main_server }}:/{{ gluster_volume }}'
+    fstype: glusterfs
+    opts: 'defaults,_netdev,backup-volfile-servers={{ gluster_backup_servers | join(":") }}'
+    state: present
+  when: web_dir_mounted

@@ -1,11 +1,13 @@
 # GlusterFS
 ---
-# NOTE: centos-release-glusterパッケージで入るレポジトリは、
-#   Streamのレポジトリを参照してしまう
-# - name: Install centos-release-gluster
-#   ansible.builtin.dnf:
-#     state: present
-#     name: 'centos-release-gluster{{ gluster_version }}'
+# NOTE: centos-release-glusterパッケージで入るレポジトリは、Streamのレポジトリを参照してしまう。
+#   代わりにカスタマイズされたレポジトリをいれるため、削除する。
+- name: Uninstall centos-release-gluster and centos-relese-storage-common
+  ansible.builtin.dnf:
+    state: absent
+    name:
+      - 'centos-release-gluster{{ gluster_version }}'
+      - centos-relese-storage-common
 
 # centos-relese-storage-common rpm
 - name: Copy RPM-GPG-KEY for CentOS-SIG-Storage

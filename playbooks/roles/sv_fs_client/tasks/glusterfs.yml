@@ -18,11 +18,12 @@
     group: root
     mode: '0644'
 
-# centos-relese-gluster rpm customized!!!
-- name: Template copy CentOS Gluster custom repo
+# centos-relese-gluster rpm
+# customized repo
+- name: Copy CentOS Gluster Custom repo template
   ansible.builtin.template:
-    src: yum.repos.d/CentOS-Gluster--custom.repo.j2
-    dest: '/etc/yum.repos.d/CentOS-Gluster-{{ gluster_version }}-custom.repo'
+    src: yum.repos.d/CentOS-Gluster-Custom.repo.j2
+    dest: '/etc/yum.repos.d/CentOS-Gluster-Custom.repo'
     owner: root
     group: root
     mode: '0644'

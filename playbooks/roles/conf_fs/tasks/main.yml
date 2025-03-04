@@ -11,3 +11,4 @@
 
 - name: Task ganesha
   ansible.builtin.import_tasks: ganesha.yml
+  when: nfs_ganesha_use

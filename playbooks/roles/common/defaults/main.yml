@@ -106,7 +106,7 @@ gluster_data_dir: /data
 gluster_data_name: data
 gluster_data_size: 128G
 gluster_data_pool_name: pool
-gluster_data_pool_size: 192G
+gluster_data_pool_size: 224G
 gluster_device_timeout: 5min
 nfs_ganesha_use: false
 nfs_ganesha_version: "5"

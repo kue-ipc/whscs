@@ -96,7 +96,7 @@ gluster_version: "10"
 gluster_volume: web
 gluster_snapshot_name: ss
 # default snapshot soft limit 90%
-gluster_snapshot_hard: 100
+gluster_snapshot_hard: 10
 gluster_servers: '{{ groups["fs"] }}'
 gluster_main_server: '{{ gluster_servers | first }}'
 gluster_cluster_replicas: 3

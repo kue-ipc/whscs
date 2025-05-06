@@ -71,11 +71,7 @@ ansible-playbook gluster_ss.yml
 
 #### スナップショット数
 
-snapshotの保持数は`gluster_snapshot_hard`で調整する。(デフォルトは256)
-
-```shell
-gluster snapshot config web snap-max-hard-limit 100
-```
+snapshotの保持数は`gluster_snapshot_hard`で調整する。(デフォルトは10)
 
 #### スナップショット頻度
 

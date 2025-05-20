@@ -20,10 +20,19 @@ ctlのセットアップを行った後に、セットアップ、アップデ�
 2. `ansible-playbook -l ctl setup.yml`
 3. `ansible-playbook setup.yml`
 4. `ansible-playbook -l {0} update_reboot.yml -e update_autoremove=yes`
-5. `ansible-playbook -l {0} conf_all.yml`
+5. `ansible-playbook conf_all.yml`
 6. `ansible-playbook user_sync.yml`
 
-`{0}`に追加したサーバー名を入れる。setup.ymlとuser_sync.ymlはサーバーを指定せずに実行する。
+`{0}`に追加したサーバー名を入れる。setup.yml、conf_all.yml、user_sync.ymlはサーバーを指定せずに実行する。
+
+### サーバーを削除する手順
+
+1. インベントリからサーバーを削除する。
+2. `ansible-playbook user_sync.yml`
+3. `ansible-playbook conf_all.yml`
+4. `ansible-playbook setup.yml`
+
+setup.ymlを実施する前にuser_sync.ymlとconf_all.ymlをサーバーを指定せずに実施する。
 
 ## ユーザー管理
 

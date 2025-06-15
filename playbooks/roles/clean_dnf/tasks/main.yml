@@ -1,0 +1,14 @@
+# update
+---
+- name: Autoremove
+  ansible.builtin.dnf:
+    autoremove: true
+
+- name: Clear chace
+  ansible.builtin.command:
+    argv:
+      - dnf
+      - clean
+      - all
+  register: dnf_cache_all
+  changed_when: dnf_cache_all.rc == 0

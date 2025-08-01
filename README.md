@@ -42,8 +42,9 @@ setup.ymlを実施する前にuser_sync.ymlとconf_all.ymlをサーバーを指�
 
 1. `ansible-playbook create_webuser.yml -e user={ユーザー名}`
 2. `ansible-playbook create_tls.yml -e user={ユーザー名}`
-3. `vim ../data/webuser/{ユーザー名}.yml`
-4. `ansible-playbook user_present.yml -e user={ユーザー名}`
+3. `../data/csrs/{fqdn}.csr`から証明書を作成し、`../data/certs/{fqdn}.cer`に置く。
+4. `vim ../data/webuser/{ユーザー名}.yml`
+5. `ansible-playbook user_present.yml -e user={ユーザー名}`
 
 ### 無効化
 

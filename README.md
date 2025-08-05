@@ -19,11 +19,11 @@ ctlのセットアップを行った後に、セットアップ、アップデ�
 1. インベントリにサーバーを追加する。
 2. `ansible-playbook -l ctl setup.yml`
 3. `ansible-playbook setup.yml`
-4. `ansible-playbook -l {0} update_reboot.yml -e update_autoremove=yes`
+4. `ansible-playbook -l {{サーバー名}} update_reboot.yml -e update_autoremove=yes`
 5. `ansible-playbook conf_all.yml`
 6. `ansible-playbook user_sync.yml`
 
-`{0}`に追加したサーバー名を入れる。setup.yml、conf_all.yml、user_sync.ymlはサーバーを指定せずに実行する。
+update_reboot.ymlのみサーバー名を指定する。setup.yml、conf_all.yml、user_sync.ymlはサーバーを指定せずに実行する。
 
 ### サーバーを削除する手順
 
@@ -40,28 +40,30 @@ setup.ymlを実施する前にuser_sync.ymlとconf_all.ymlをサーバーを指�
 
 ユーザーの登録とTLSの作成後にユーザー同期を行う。ユーザー名には `/^[a-z][a-z0-9_]*$/` で、ユーザー名の"_"はサイト名(FQDN)では"-"に変換される。
 
-1. `ansible-playbook create_webuser.yml -e user={ユーザー名}`
-2. `ansible-playbook create_tls.yml -e user={ユーザー名}`
-3. `../data/csrs/{fqdn}.csr`から証明書を作成し、`../data/certs/{fqdn}.cer`に置く。
-4. `vim ../data/webuser/{ユーザー名}.yml`
-5. `ansible-playbook user_present.yml -e user={ユーザー名}`
+1. `ansible-playbook create_webuser.yml -e user={{ユーザー名}}`
+2. `ansible-playbook create_tls.yml -e user={{ユーザー名}}`
+3. `../data/csrs/{{fqdn}}.csr`から証明書を作成し、`../data/certs/{{fqdn}}.cer`に置く。
+4. `vim ../data/webuser/{{ユーザー名}}.yml`
+5. `ansible-playbook user_present.yml -e user={{ユーザー名}}`
+
+`data/webuser/{{ユーザー名}}.yml`ファイルのパラメーターの詳細は[ユーザー設定](doc/webuser_yml.md)に記載している。
 
 ### 無効化
 
 サイトを無効化するにはdisabledをtrueにしてuser_presentを実行する。
 
-1. `vim ../data/webuser/{ユーザー名}.yml`
+1. `vim ../data/webuser/{{ユーザー名}}.yml`
     `disabled`を`true`に設定する。
-2. `ansible-playbook user_present.yml -e user={ユーザー名}`
+2. `ansible-playbook user_present.yml -e user={{ユーザー名}}`
 
 ### 削除
 
 ファイルがつかんである可能性があるため、削除前に無効にすることを推奨する。
 
-`{ユーザー名}.yml`のファイルを退避させてから`user_absent.yml`を実行する。
+`{{ユーザー名}}.yml`のファイルを退避させてから`user_absent.yml`を実行する。
 
-1. `mv ../data/webuser/{ユーザー名}.yml ../data/backup/.`
-2. `ansible-playbook user_absent.yml -e user={ユーザー名}`
+1. `mv ../data/webuser/{{ユーザー名}}.yml ../data/backup/.`
+2. `ansible-playbook user_absent.yml -e user={{ユーザー名}}`
 
 ログも含めて、ファイルサーバー上のファイルはすべて削除される。`../data/tls`にある証明書類は自動で退避や削除はされないため、必要に応じて手動で退避しておくこと。
 

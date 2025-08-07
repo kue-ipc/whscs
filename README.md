@@ -48,6 +48,11 @@ setup.ymlを実施する前にuser_sync.ymlとconf_all.ymlをサーバーを指�
 
 `data/webuser/{{ユーザー名}}.yml`ファイルのパラメーターの詳細は[ユーザー設定](doc/webuser_yml.md)に記載している。
 
+TLSの種類を変えたい場合はcreate_tls.ymlで下記を追加する。
+
+- `-e tls_type=ECC -e tls_curve=secp384r1 -e tls_digest=sha384`
+- `-e tls_type=RSA -e tls_size=4096 -e tls_digest=sha384`
+
 ### 無効化
 
 サイトを無効化するにはdisabledをtrueにしてuser_presentを実行する。

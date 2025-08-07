@@ -15,6 +15,55 @@ upstream {{ webuser.name }}-app {
 }
 {% endif %}
 
+{% if webuser.http %}
+server {
+    listen       80;
+    listen       [::]:80;
+    server_name  {{ webuser.site }};
+    root         {{ webuser.chroot_dir }}/public_html;
+
+    access_log  {{ webuser.chroot_dir }}/var/log/nginx/access_{{ inventory_hostname }}.log
+                main  buffer=64k  flush=1m;
+
+    add_header  Strict-Transport-Security  "max-age=0"   always;
+    add_header  X-Frame-Options            "SAMEORIGIN"  always;
+    add_header  X-Content-Type-Options     "nosniff"     always;
+
+{% if not webuser.public %}
+    allow 127.0.0.0/8;
+    allow ::1;
+    allow 10.0.0.0/8;
+    allow 172.16.0.0/12;
+    allow 192.168.0.0/16;
+    allow fe80::/10;
+    allow fc00::/7;
+    deny all;
+{% endif %}
+
+    location @backend {
+        return 307 https://$host$request_uri;
+    }
+
+    # deny dot files
+    location ~ /\. {
+        deny all;
+    }
+
+    # php cgi fcgi shtml
+    location ~ (?:\.php|\.cgi|\.fcgi|\.shtml)$ {
+        return 308 https://$host$request_uri;
+    }
+
+    # normal files
+    location / {
+        error_page 403 404 = @backend;
+        if ($request_method != GET) {
+            return 308 https://$host$request_uri;
+        }
+    }
+}
+{% endif %}
+
 server {
 {% if webuser.site == default_site %}
     listen       443 ssl http2 default_server;
@@ -31,6 +80,12 @@ server {
 
     ssl_certificate     "{{ webuser.tls_cert }}";
     ssl_certificate_key "{{ webuser.tls_key }}";
+
+{% if webuser.http %}
+    add_header  Strict-Transport-Security  "max-age=0"   always;
+    add_header  X-Frame-Options            "SAMEORIGIN"  always;
+    add_header  X-Content-Type-Options     "nosniff"     always;
+{% endif %}
 
 {% if not webuser.public %}
     allow 127.0.0.0/8;

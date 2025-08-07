@@ -18,5 +18,6 @@
 - app_path: (string) アプリケーション使用になるパス
 - app_one: (boolean) アプリケーション使用を1台のサーバーに限定
 - public: (boolean) 外部公開の有無
+- http: (boolean) HTTP接続の有無、falseの場合はHTTPSにリダイレクト
 
 [変更不可]となっている項目は変更してはいけない。変更した場合の動作は保証できない。

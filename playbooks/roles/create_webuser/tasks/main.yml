@@ -86,7 +86,8 @@
         "app_port": (uid | int) + 17000,
         "app_path": "/",
         "app_one": False,
-        "public": False
+        "public": False,
+        "http": False
       } }}
 
 - name: Copy webuser yml

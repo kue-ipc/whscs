@@ -25,7 +25,16 @@
 
 - name: Load webuser yml
   ansible.builtin.set_fact:
-    webuser: '{{ lookup("file", webuser_yml) | from_yaml }}'
+    webuser: >-
+      {{ {
+        "enabled": False,
+        "db_use": False,
+        "pg_use": False,
+        "app_use": False,
+        "app_one": False,
+        "public": False,
+        "http": False,
+      } | combine(lookup("file", webuser_yml) | from_yaml) }}
 
 - name: Task merge webuser
   ansible.builtin.import_tasks: merge_webuser.yml

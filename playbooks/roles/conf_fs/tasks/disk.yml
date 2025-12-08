@@ -7,13 +7,13 @@
 - name: Set gluster_data_pool_data_size_g
   ansible.builtin.set_fact:
     gluster_data_pool_data_size_g: >-
-      {{ (ansible_lvm.vgs[lvm_vg].size_g | float) - 32.0 }}
+      {{ ((ansible_lvm.vgs[lvm_vg].size_g | float) - 32.0) | round(2, "common") }}
   when: gluster_data_pool_data_size_g is not defined or gluster_data_pool_data_size_g is none
 
 - name: Set gluster_data_size_g
   ansible.builtin.set_fact:
     gluster_data_size_g: >-
-      {{ (gluster_data_pool_data_size_g | float) * (1.0 - gluster_data_snapshot_ratio) }}
+      {{ ((gluster_data_pool_data_size_g | float) * (1.0 - gluster_data_snapshot_ratio)) | round(2, "common") }}
   when: gluster_data_size_g is not defined or gluster_data_size_g is none
 
 - name: Create a thin pool for glfs
@@ -42,6 +42,7 @@
   community.general.filesystem:
     dev: '/dev/{{ lvm_vg }}/{{ gluster_data_name }}'
     fstype: xfs
+    resizefs: true
 
 - name: Mount glunter data
   ansible.posix.mount:

@@ -121,17 +121,15 @@ pNFSがちゃんと動いているかは、ちょっと怪しい。
 
 ### キャッシュが圧迫
 
-TODO: 自動的な対応は未実施
+EL9ではdnfの古いキャッシュが溜まりすぎている場合がある。clean.ymlでキャシュ削除できる。または、下記コマンドをサーバーで実行する。
 
-EL9ではdnfの古いキャッシュが溜まりすぎている場合がある。ひとまず、下記で減らせる。
-
-```
+```shell
 sudo dnf clean packages
 # または
 sudo dnf clean all
 ```
 
-定期的なパッケージキャッシュのクリーンを検討した方がいいかもしれない？
+TODO: 定期的なパッケージキャッシュのクリーンを検討した方がいいかもしれない？
 
 ### 容量増加(ディスク追加)
 
@@ -141,6 +139,24 @@ LVMになっている領域はディスクを追加することで容量を増�
 2. そのサーバーを対象としてconf_all.ymlを実行する。
     `ansible-playbook -l 【対象サーバー】conf_all.yml`
 3. 追加されたディスクにPVが作られ、VGに追加し、LVを拡張し、ボリュームをリサイズする。
+
+### Glusterのbrick構成変更
+
+ansibleで追加する場合はレプリカ数(デフォルトは3)と同じ数を一度に追加する必要がある。削除も同様で、減らす必要がある。1台だけ置き換えるという場合は、peerの設定まで終わった段階で、手動でreplica-brickを実行する。
+
+```shell
+gluster volume replace-brick web  whs-fs1:/data/web whs-fs7:/data/web commit force
+```
+
+上記をマスターで実行することで、fs1をfs7に置き換える。上記実行後に、clustersの構成を変えること。-C付きでマスターに対してconf_fs.ymlをしても、OKになることで確認が可能。
+
+/etc/fstabを書き換えるために、conf_all.ymlを実行しておくこと。
+
+最後に、peerは削除しても消えないため、手動で切り離す必要がある。
+
+```shell
+gluster peer detach whs-fs1
+```
 
 ## 新サーバーの追加
 

@@ -28,3 +28,10 @@
     pvs: '{{ lvm_devices }}'
     pesize: '{{ lvm_pesize }}'
     pvresize: true
+  register: lvm_lvg_result
+
+- name: Refresh facts after VG creation
+  ansible.builtin.setup:
+  when:
+    - lvm_lvg_result is defined
+    - lvm_lvg_result.changed

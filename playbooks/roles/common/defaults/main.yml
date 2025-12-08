@@ -104,9 +104,12 @@ gluster_cluster_servers: '{{ gluster_servers }}'
 gluster_backup_servers: '{{ gluster_cluster_servers | difference([gluster_main_server]) }}'
 gluster_data_dir: /data
 gluster_data_name: data
-gluster_data_size: 128G
+# data size is 30% of pool size
+gluster_data_snapshot_ratio: 0.3
+# gluster_data_size_g: pool.size_g * (1 - gluster_data_snapshot_ratio)
 gluster_data_pool_name: pool
-gluster_data_pool_size: 224G
+# gluster_data_pool_data_size_g: vg.size_g - 16
+gluster_data_pool_meta_size: 1G
 gluster_device_timeout: 1h
 nfs_ganesha_use: false
 nfs_ganesha_version: "5"

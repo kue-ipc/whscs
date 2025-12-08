@@ -88,7 +88,7 @@ ldap_group: member
 # ldap_bind_dn: cn=bind
 # ldap_bind_password: pass
 ## LVM
-# default 4(MiB) -> max 256 GiB
+# default 4(MiB)
 lvm_pesize: 4
 lvm_vg: vg
 ## GlusterFS

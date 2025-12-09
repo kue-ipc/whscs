@@ -133,7 +133,7 @@ TODO: 定期的なパッケージキャッシュのクリーンを検討した�
 
 ### 容量増加(ディスク追加)
 
-LVMになっている領域はディスクを追加することで容量を増やすことができます。
+LVMになっている領域はディスクを追加することで容量を増やすことができる。
 
 1. ディスクを追加し、再起動でOSに認識させる。
 2. そのサーバーを対象としてconf_all.ymlを実行する。
@@ -142,21 +142,50 @@ LVMになっている領域はディスクを追加することで容量を増�
 
 ### Glusterのbrick構成変更
 
-ansibleで追加する場合はレプリカ数(デフォルトは3)と同じ数を一度に追加する必要がある。削除も同様で、減らす必要がある。1台だけ置き換えるという場合は、peerの設定まで終わった段階で、手動でreplica-brickを実行する。
+ansibleで構成変更はできない。手動で変更する必要がある。
+
+`gluster_cluster_servers`が未設定の場合、fsサーバーすべてを見に行くため、追加したfsが追加されないように、まずは、現在のfsサーバーのみをリストとし記載しておく。この状態であれば、メインサーバーに対してconf_fs.ymlを実行しても、ボリュームに追加されることはなく、fsサーバーのpeerのみ設定される。追加や置換をする場合は、peerの設定までは完了しておくこと。
+
+サーバーを追加する場合は、レプリカ数(デフォルトは3)と同じ数を一度に追加する必要がある。手動でadd-brickを実行する。
 
 ```shell
-gluster volume replace-brick web  whs-fs1:/data/web whs-fs7:/data/web commit force
+gluster volume add-brick web fs1:/data/web fs2:/data/web fs3:/data/web
 ```
 
-上記をマスターで実行することで、fs1をfs7に置き換える。上記実行後に、clustersの構成を変えること。-C付きでマスターに対してconf_fs.ymlをしても、OKになることで確認が可能。
-
-/etc/fstabを書き換えるために、conf_all.ymlを実行しておくこと。
-
-最後に、peerは削除しても消えないため、手動で切り離す必要がある。
+削除も同様に、レプリカ数と同じ数を減らす必要がある。手動でremove-brickを実行する。(絶対にforceはつかないこと、ファイルが見えなくなる)
 
 ```shell
-gluster peer detach whs-fs1
+gluster volume remove-brick web fs1:/data/web fs2:/data/web fs3:/data/web start
 ```
+
+削除は他のサーバーへデータの移動が必要になる場合があるため、すぐに完了しない。下記コマンドで状況を確認する必要がある。
+
+```shell
+gluster volume remove-brick web fs1:/data/web fs2:/data/web fs3:/data/web status
+```
+
+サーバー故障等により1台だけ置き換えるという場合は、手動でreplica-brickを実行する。下記はfs1をfs4に置き換える場合である。(replica-brickは故障時のみのに対応すること)
+
+```shell
+gluster volume replace-brick web fs1:/data/web fs4:/data/web commit force
+```
+
+サーバーの追加、削除、置換後は`gluster_cluster_servers`の構成を変えてメインサーバーでconf_fs.ymlをすることで、構成に問題ないかのチェックを行うことができる。/etc/fstabを書き換えるために、全サーバーに対してconf_all.ymlを実行し、ファイルサーバーを見に行くサーバー(web,app,mgt,bk)は再起動しておくこと。
+
+クライアントを含めて構成変更が完了した後に、リバランスを実行する。
+
+```shell
+gluster volume rebalance web start
+gluster volume rebalance web status
+```
+
+リバラスが完了しても、スナップショットが残る。削除予定のサーバーが管理しているスナップショットをすべて削除されて、サーバーが削除可能になる。conf_fs.ymlを実行してもpeerは削除されないので、手動でpeerから削除する。
+
+```shell
+gluster peer detach fs1
+```
+
+これで、サーバーを廃棄可能になる。
 
 ## 新サーバーの追加
 
@@ -164,6 +193,8 @@ gluster peer detach whs-fs1
 2. コントロールサーバーから新サーバーにSSH接続をする。`ssh-copy-id`で鍵ファイルをコピーしておく。
 3. 新サーバーに対して、setup.yml、update_reboot.yml、conf_all.yml、user_sync.ymlを実行する。
 4. 全体に対して、上記を実行する。
+
+なお、Glusterへの追加などは手動になるため、「Glusterのbrick構成変更」を参照。
 
 ## オプション
 

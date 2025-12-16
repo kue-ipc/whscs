@@ -8,6 +8,7 @@
       source address="{{ item }}"
       service name="glusterfs"
       accept
+    immediate: true
     permanent: true
   loop: '{{ web_networks }}'
   notify: 'reload firewalld'
@@ -20,6 +21,7 @@
       source address="{{ item }}"
       service name="nfs"
       accept
+    immediate: true
     permanent: true
   loop: '{{ web_networks }}'
   notify: 'reload firewalld'

@@ -11,6 +11,7 @@
     msg: 'number of gluster cluster servers is not a mutiple of {{ gluster_cluster_replicas }}'
     quiet: true
 
+# FIXME: peerを追加した直後に実行してもエラーになる場合がある。
 - name: Gluster create volume
   gluster.gluster.gluster_volume:
     state: present
@@ -18,6 +19,7 @@
     replicas: '{{ gluster_cluster_replicas }}'
     bricks: '{{ gluster_data_dir }}/{{ gluster_volume }}'
     cluster: '{{ gluster_cluster_servers }}'
+    rebalance: true
 
 - name: Get gluster snapshot config
   ansible.builtin.command:

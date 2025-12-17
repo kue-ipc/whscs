@@ -1,4 +1,5 @@
 # tls
+# TODO: 証明書を更新しても、各サービスは再起動しないため、手動で再起動が必要になる。
 ---
 - name: Set tls info
   ansible.builtin.set_fact:

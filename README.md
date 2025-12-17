@@ -4,7 +4,27 @@ Webホスティングサービス構築システム
 
 ## 利用方法
 
-ホストファイル、group_varsやhost_varsを適当に設定しておく。各変数は palybooks/roles/common/default/main.yml を参考にする。
+ansibleが見に行くインベントリ、group_vars、host_varsを適当に設定しておく。各変数は palybooks/roles/common/default/main.yml を参考にする。
+
+### インベントリのグループ
+
+各グループは次のようになっている。
+
+- ctl: コントロールサーバー、このansibleを実行する。
+- mgt: 管理サーバー、ユーザーがログインしてコンテンツの管理を行う。
+- fs: ファイルサーバー、コンテンツがおいてある。
+- app: アプリケーションサーバー、PHPやCGIなどの動的コンテンツを実行する。
+- web: ウェブサーバー、HTMLやCSS等の静的コンテンツを返す。
+- db: データベースサーバー、MariaDBやPostgreSQL等のデータベースを実行する。
+- bk: バックアップサーバー、コンテンツやデータベースのバックを保管する。
+- lb: 負荷分散サーバー、ウェブサーバーへのアクセスを分散する。
+- rp: リバースプロキシサーバー、ウェブサーバーへのリバースプロキシになる。
+- test: テストサーバー、サイトの動作を確認する。
+- tpl: テンプレートサーバー、他サーバーのテンプレートになる。
+
+このうち、fs,db,bkは設定時に空のディスクが必要になる。
+
+### 初回セットアップ手順
 
 ctlのセットアップを行った後に、セットアップ、アップデート、全体設定、ユーザー同期を行う。
 
@@ -16,29 +36,44 @@ ctlのセットアップを行った後に、セットアップ、アップデ�
 
 ### サーバーを追加する手順
 
+あらかじめ、追加するサーバーにansible実行ユーザーのの公開鍵が登録しておく。
+
 1. インベントリにサーバーを追加する。
 2. `ansible-playbook -l ctl setup.yml`
 3. `ansible-playbook setup.yml`
 4. `ansible-playbook -l {{サーバー名}} update_reboot.yml -e update_autoremove=yes`
 5. `ansible-playbook conf_all.yml`
 6. `ansible-playbook user_sync.yml`
+7. `ansible-playbook health_check.yml`
 
-update_reboot.ymlのみサーバー名を指定する。setup.yml、conf_all.yml、user_sync.ymlはサーバーを指定せずに実行する。
+update_reboot.ymlのみサーバー名を指定する。setup.yml、conf_all.yml、user_sync.yml、health_check.ymlはサーバーを指定せずに実行する。ctl,fs,db,lbの場合は、user_sync.ymlを省略してもよい。
+
+ファイルサーバーの追加は、レプリカ数と同じ数のサーバーが必要になる。追加と同時にrebalanceも実行されるため、ファイルサーバー全体が少し重くなる。なお、各サーバーが
 
 ### サーバーを削除する手順
+
+追加とは順番が逆になることに注意する。
 
 1. インベントリからサーバーを削除する。
 2. `ansible-playbook user_sync.yml`
 3. `ansible-playbook conf_all.yml`
 4. `ansible-playbook setup.yml`
+5. サーバーをシャットダウンする。
+6. `ansible-playbook health_check.yml`
 
-setup.ymlを実施する前にuser_sync.ymlとconf_all.ymlをサーバーを指定せずに実施する。
+setup.ymlを実施する前にuser_sync.ymlとconf_all.ymlをサーバーを指定せずに実施する。ctl,fs,db,lbの場合は、user_sync.ymlを省略してもよい。
 
-## ユーザー管理
+ファイルサーバーの削除はansibleではできない。「Glusterのbrick構成変更」を参照すること。
+
+## ユーザー/サイト管理
+
+ユーザーとサイトは一対一で紐づけられている。ユーザー名は `/^[a-z][a-z0-9_]*$/` でなければならず、ユーザー名の`_`はサイト名(FQDN)では`-`に変換される。そのため、作成したいサイト名の`-`を`_`にしたユーザー名で登録する必要がある。
+
+ACMEによる証明書自動更新には対応していない。
 
 ### 登録
 
-ユーザーの登録とTLSの作成後にユーザー同期を行う。ユーザー名には `/^[a-z][a-z0-9_]*$/` で、ユーザー名の"_"はサイト名(FQDN)では"-"に変換される。
+ユーザーの登録とTLSの作成後にユーザー同期を行う。
 
 1. `ansible-playbook create_webuser.yml -e user={{ユーザー名}}`
 2. `ansible-playbook create_tls.yml -e user={{ユーザー名}}`
@@ -52,6 +87,10 @@ TLSの種類を変えたい場合はcreate_tls.ymlで下記を追加する。
 
 - `-e tls_type=ECC -e tls_curve=secp384r1 -e tls_digest=sha384`
 - `-e tls_type=RSA -e tls_size=4096 -e tls_digest=sha384`
+
+自己署名の場合はcreate_tls.ymlで下記を追加する。
+
+- `-e selfsigned=yes`
 
 ### 無効化
 
@@ -71,6 +110,21 @@ TLSの種類を変えたい場合はcreate_tls.ymlで下記を追加する。
 2. `ansible-playbook user_absent.yml -e user={{ユーザー名}}`
 
 ログも含めて、ファイルサーバー上のファイルはすべて削除される。`../data/tls`にある証明書類は自動で退避や削除はされないため、必要に応じて手動で退避しておくこと。
+
+### 証明書更新
+
+1. `ansible-playbook create_tls.yml -e user={{ユーザー名}} -e backup=yes`
+2. `../data/csrs/{{fqdn}}.csr`から証明書を作成し、`../data/certs/{{fqdn}}.cer`に置く。
+3. `ansible-playbook user_present.yml -e user={{ユーザー名}}`
+
+TLSの種類を変えたい場合はcreate_tls.ymlで下記を追加する。
+
+- ECC ECDSA(NIST P-384) + SHA384`-e tls_type=ECC -e tls_curve=secp384r1 -e tls_digest=sha384`
+- RSA 4096ビット + SHA384 `-e tls_type=RSA -e tls_size=4096 -e tls_digest=sha384`
+
+自己署名の場合はcreate_tls.ymlで下記を追加する。
+
+- `-e selfsigned=yes`
 
 ## ファイルシステム
 
@@ -142,11 +196,11 @@ LVMになっている領域はディスクを追加することで容量を増�
 
 ### Glusterのbrick構成変更
 
-ansibleで構成変更はできない。手動で変更する必要がある。
+ansibleで追加以外の構成変更はできないため、削除や置換は手動で変更する必要がある。
 
 `gluster_cluster_servers`が未設定の場合、fsサーバーすべてを見に行くため、追加したfsが追加されないように、まずは、現在のfsサーバーのみをリストとし記載しておく。この状態であれば、メインサーバーに対してconf_fs.ymlを実行しても、ボリュームに追加されることはなく、fsサーバーのpeerのみ設定される。追加や置換をする場合は、peerの設定までは完了しておくこと。
 
-サーバーを追加する場合は、レプリカ数(デフォルトは3)と同じ数を一度に追加する必要がある。手動でadd-brickを実行する。
+サーバーを追加する場合はansibleで可能であり、次のサーバー追加の項目を参照すること。ただし、レプリカ数(デフォルトは3)と同じ数を一度に追加する必要がある。add-brickを実行することで手動で追加することもできる。
 
 ```shell
 gluster volume add-brick web fs1:/data/web fs2:/data/web fs3:/data/web
@@ -187,15 +241,6 @@ gluster peer detach fs1
 
 これで、サーバーを廃棄可能になる。
 
-## 新サーバーの追加
-
-1. ansibleが見に行くhostsファイルに新サーバーを追加する。
-2. コントロールサーバーから新サーバーにSSH接続をする。`ssh-copy-id`で鍵ファイルをコピーしておく。
-3. 新サーバーに対して、setup.yml、update_reboot.yml、conf_all.yml、user_sync.ymlを実行する。
-4. 全体に対して、上記を実行する。
-
-なお、Glusterへの追加などは手動になるため、「Glusterのbrick構成変更」を参照。
-
 ## オプション
 
 ### update_reboot.yml
@@ -235,5 +280,8 @@ selinux-policyおよびselinux-policy-targetedはアップデートから除外�
 
 ### DNFのキャッシュ増加
 
-EL8やEL9を長時間運用しているとDNFのキャッシュが溜まって、ディスクを圧迫する。
-今のところ、clean.ymlを定期実行すうることで回避するが、ディスク容量に応じて自動実行も考えたい。
+EL8やEL9を長時間運用しているとDNFのキャッシュが溜まって、ディスクを圧迫する。今のところ、clean.ymlを定期実行すうることで回避するが、ディスク容量に応じて自動実行も考えたい。
+
+### 中間証明書
+
+`tls_im_certs`で証明書の名前(CN)とファイル名のマップを作ることで、中間証明書がインストールされる。中間証明書から先は見に行かないため、2つ以上の証明書をチェインされたい場合は、チェインされた中間証明書のファイルを用意する必要がある。

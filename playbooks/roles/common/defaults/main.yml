@@ -92,6 +92,8 @@ ldap_group: member
 lvm_pesize: 4
 lvm_vg: vg
 ## GlusterFS
+# repo: stream, relesae, custom
+gluster_repo: custom
 gluster_version: "10"
 gluster_volume: web
 gluster_snapshot_name: ss
@@ -111,6 +113,7 @@ gluster_data_pool_name: pool
 # gluster_data_pool_data_size_g: vg.size_g - 16
 gluster_data_pool_meta_size: 1G
 gluster_device_timeout: 1h
+## NFS Ganesha
 nfs_ganesha_use: false
 nfs_ganesha_version: "5"
 nfs_ganesha_pnfs: false

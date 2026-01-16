@@ -1,0 +1,64 @@
+# Install Gluster repo
+# TODO: アップデートには対応していない。
+---
+- name: Install or remove centos-release-gluster and centos-relese-storage-common
+  ansible.builtin.dnf:
+    state: '{{ (gluster_repo == "custom") | ternary("absent", "present") }}'
+    name:
+      - 'centos-release-gluster{{ gluster_version }}'
+      - centos-release-storage-common
+
+- name: Delete CentOS Gluster Custom repo
+  ansible.builtin.file:
+    path: /etc/yum.repos.d/CentOS-Gluster-Custom.repo
+    state: absent
+  when: gluster_repo != "custom"
+
+- name: Copy stream template
+  ansible.builtin.template:
+    src: dnf/vars/stream.j2
+    dest: /etc/dnf/vars/stream
+    owner: root
+    group: root
+    mode: '0644'
+  when: gluster_repo == "stream"
+
+- name: Copy stream release template
+  ansible.builtin.template:
+    src: dnf/vars/stream-release.j2
+    dest: /etc/dnf/vars/stream
+    owner: root
+    group: root
+    mode: '0644'
+  when: gluster_repo == "release"
+
+# centos-relese-storage-common rpm for custom
+- name: Copy RPM-GPG-KEY for CentOS-SIG-Storage for custom
+  ansible.builtin.copy:
+    src: pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Storage
+    dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Storage
+    owner: root
+    group: root
+    mode: '0644'
+  when: gluster_repo == "custom"
+
+# centos-relese-gluster rpm
+# customized repo
+- name: Copy CentOS Gluster Custom repo template for custom
+  ansible.builtin.template:
+    src: yum.repos.d/CentOS-Gluster-Custom.repo.j2
+    dest: /etc/yum.repos.d/CentOS-Gluster-Custom.repo
+    owner: root
+    group: root
+    mode: '0644'
+  when: gluster_repo == "custom"
+
+# centos-relese-gluster rpm
+- name: Copy systemd preset for CentOS Gluster for custom
+  ansible.builtin.copy:
+    src: systemd/system-preset/75-gluster.preset
+    dest: /usr/lib/systemd/system-preset/75-gluster.preset
+    owner: root
+    group: root
+    mode: '0644'
+  when: gluster_repo == "custom"

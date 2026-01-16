@@ -1,41 +1,7 @@
 # GlusterFS
 ---
-# NOTE: centos-release-glusterパッケージで入るレポジトリは、Streamのレポジトリを参照してしまう。
-#   代わりにカスタマイズされたレポジトリをいれるため、削除する。
-- name: Uninstall centos-release-gluster and centos-relese-storage-common
-  ansible.builtin.dnf:
-    state: absent
-    name:
-      - 'centos-release-gluster{{ gluster_version }}'
-      - centos-release-storage-common
-
-# centos-relese-storage-common rpm
-- name: Copy RPM-GPG-KEY for CentOS-SIG-Storage
-  ansible.builtin.copy:
-    src: pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Storage
-    dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Storage
-    owner: root
-    group: root
-    mode: '0644'
-
-# centos-relese-gluster rpm
-# customized repo
-- name: Copy CentOS Gluster Custom repo template
-  ansible.builtin.template:
-    src: yum.repos.d/CentOS-Gluster-Custom.repo.j2
-    dest: '/etc/yum.repos.d/CentOS-Gluster-Custom.repo'
-    owner: root
-    group: root
-    mode: '0644'
-
-# centos-relese-gluster rpm
-- name: Copy systemd preset for CentOS Gluster
-  ansible.builtin.copy:
-    src: systemd/system-preset/75-gluster.preset
-    dest: /usr/lib/systemd/system-preset/75-gluster.preset
-    owner: root
-    group: root
-    mode: '0644'
+- name: Task gluster_repo
+  ansible.builtin.import_tasks: gluster_repo.yml
 
 - name: Install glusterfs glusterfs-fuse
   ansible.builtin.dnf:

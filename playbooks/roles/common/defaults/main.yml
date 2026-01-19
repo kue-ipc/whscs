@@ -142,6 +142,13 @@ app_list:
   - python
   - php
   - ruby
+  # - nodejs
+  # - java
+  # - dotnet
+  # - gcc
+  # - clang
+  # - rust
+  # - golang
 app_life_cycle: lts
 app_dev: false
 app_util: false

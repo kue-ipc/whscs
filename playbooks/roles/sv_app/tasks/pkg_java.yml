@@ -11,7 +11,7 @@
 
 - name: Get file stat alternative
   ansible.builtin.stat:
-    path: '/etc/alternatives/java_sdk_{{ sv_app_versions.java | default(["latest"]) | first }}_openjdk'
+    path: '/etc/alternatives/java_sdk_{{ sv_app_versions.java | default(["latest"]) | first }}'
   register: sv_app_java_sdk_openjdk
 
 - name: Select java

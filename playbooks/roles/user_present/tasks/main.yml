@@ -46,7 +46,7 @@
     user_present_app_host: >-
       {{ webuser.enabled and (
           ("app" in group_names and webuser.host in group_names) or
-          "test" in group_names
+          ("test" in group_names and webuser.host ~ "_test" in group_names)
       ) }}
 
 - name: Task app

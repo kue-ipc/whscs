@@ -12,6 +12,14 @@
   loop:
     - httpd_can_network_relay
 
+- name: Make /var/www/html dir
+  ansible.builtin.file:
+    path: /var/www/html
+    owner: root
+    group: root
+    mode: '0755'
+    state: directory
+
 - name: Template nginx.conf
   ansible.builtin.template:
     src: nginx/nginx.conf.j2

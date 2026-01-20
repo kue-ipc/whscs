@@ -41,8 +41,8 @@
 
 - name: Create ACME account
   community.crypto.acme_account:
+    acme_version: 2
     acme_directory: '{{ acme_account.server }}'
-    state: present
     account_key_src: '{{ acme_info.key }}'
     contact:
       - "mailto:{{ acme_account.email | default(acme_email) }}"
@@ -51,3 +51,4 @@
       kid: '{{ acme_account.eab_kid }}'
       key: '{{ acme_account.eab_hmac_key }}'
       alg: '{{ acme_account.eab_hmac_alg | default("HS256") }}'
+    state: present

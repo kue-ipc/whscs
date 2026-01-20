@@ -12,3 +12,4 @@ playbooks/roles/user_present/tasks/php-fpm.yml no-handler
 playbooks/roles/update_check/tasks/main.yml package-latest
 playbooks/roles/update_check/tasks/main.yml ignore-errors
 playbooks/roles/conf_mgt/tasks/usermin.yml no-tabs
+playbooks/roles/acme_tls/tasks/main.yml no-handler

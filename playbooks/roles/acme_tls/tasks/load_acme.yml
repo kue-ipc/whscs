@@ -1,0 +1,40 @@
+# acme tls
+---
+- name: Import task webuser_presnt from user_present
+  ansible.builtin.import_role:
+    name: user_present
+    tasks_from: webuser_present
+  when:
+    - site is not defined
+    - user is defined
+
+- name: Set site
+  ansible.builtin.set_fact:
+    site: '{{ webuser.site }}'
+  when:
+    - site is not defined
+    - user is defined
+
+- name: Check site
+  ansible.builtin.assert:
+    that: site is defined
+    msg: 'Require `site` or `user` variable'
+    quiet: true
+
+- name: Set acme info
+  ansible.builtin.set_fact:
+    acme_info:
+      account: '{{ data_acme_account_dir }}/{{ site }}.yml'
+      key: '{{ data_acme_key_dir }}/{{ site }}.key'
+
+- name: Load acme account yml
+  ansible.builtin.set_fact:
+    acme_account: '{{ lookup("file", acme_info.account) | from_yaml }}'
+
+- name: Set tls info
+  ansible.builtin.set_fact:
+    tls_info:
+      cn: '{{ site }}'
+      cert: '{{ data_tls_certs_dir }}/{{ site }}.cer'
+      csr: '{{ data_tls_csrs_dir }}/{{ site }}.csr'
+      key: '{{ data_tls_private_dir }}/{{ site }}.key'

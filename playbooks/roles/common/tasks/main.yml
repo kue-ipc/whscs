@@ -20,7 +20,7 @@
   ansible.builtin.set_fact:
     data_acme_account_dir: '{{ data_acme_account_dir | default(data_acme_dir ~ "/account") }}'
     data_acme_key_dir: '{{ data_acme_key_dir | default(data_acme_dir ~ "/key") }}'
-    data_acme_challenge_dir: '{{ data_acme_key_dir | default(data_acme_dir ~ "/challenge") }}'
+    data_acme_html_dir: '{{ data_acme_html_dir | default(data_acme_dir ~ "/html") }}'
 
 - name: Set httpd php
   ansible.builtin.set_fact:

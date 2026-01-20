@@ -1,0 +1,39 @@
+- name: Task load_acme
+  ansible.builtin.include_tasks:
+    file: load_acme.yml
+
+# - name: Task create_csr
+#   ansible.builtin.include_tasks:
+#     file: create_csr.yml
+#   when: ansible_host == "localhost"
+
+# - name: Task create_challenge
+#   ansible.builtin.include_tasks:
+#     file: create_challenge.yml
+#   when: ansible_host == "localhost"
+
+- name: Task sync_html
+  ansible.builtin.include_tasks:
+    file: sync_html.yml
+  when: ("rp" in group_names)
+
+- name: Task get_cert
+  ansible.builtin.include_tasks:
+    file: get_cert.yml
+  when: ansible_host == "localhost"
+
+# - name: Task tls of user_present
+#   ansible.builtin.include_role:
+#     name: user_present
+#     tasks_from: tls
+#   when: group_names | intersect(["web", "app", "rp", "test"]) | length > 0
+
+# - name: Task restart web
+#   ansible.builtin.include_role:
+#     name: restart_web
+#   when: group_names | intersect(["web", "rp", "test"]) | length > 0
+
+# - name: Task restart app
+#   ansible.builtin.include_role:
+#     name: restart_app
+#   when: group_names | intersect(["app", "test"]) | length > 0

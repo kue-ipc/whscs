@@ -1,0 +1,13 @@
+# get ACME challange
+---
+- name: Get certificate from ACME
+  community.crypto.acme_certificate:
+    acme_version: 2
+    acme_directory: '{{ acme_account.server }}'
+    account_key_src: '{{ acme_info.key }}'
+    csr: '{{ tls_info.csr }}'
+    dest: '{{ tls_info.cert }}'
+    fullchain_dest: '{{ tls_info.cert }}.fullchain'
+    challenge: http-01
+    modify_account: false
+  

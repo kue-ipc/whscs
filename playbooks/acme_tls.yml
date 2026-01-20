@@ -1,0 +1,12 @@
+---
+- name: ACME tls
+  # serial: 1
+  max_fail_percentage: 0
+  hosts:
+    - localhost
+    - web
+    - app
+    - rp
+    - test
+  roles:
+    - acme_tls

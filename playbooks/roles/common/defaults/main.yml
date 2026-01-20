@@ -48,6 +48,11 @@ tls_dn: {}
 #   organizational_unit_name:
 #   email_address:
 tls_im_certs: {}
+# use only ACME account
+acme_tls_type: ECC
+acme_tls_curve: secp384r1
+acme_tls_size: 4096
+# acme_email: no-reply@example.jp
 haproxy_check_user: haproxy
 mgt_site: localhost
 mgt_tls_cert: /etc/pki/tls/certs/server.cer
@@ -163,4 +168,4 @@ mail_smtp_host: smtp.example.jp
 mail_smtp_port: 25
 mail_smtp_tls: false
 mail_smtp_starttls: false
-mail_from: no-reply@example.jp
+# mail_from: no-reply@example.jp

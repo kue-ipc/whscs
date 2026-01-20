@@ -27,6 +27,10 @@
       account: '{{ data_acme_account_dir }}/{{ site }}.yml'
       key: '{{ data_acme_key_dir }}/{{ site }}.key'
 
+- name: Load acme account yml
+  ansible.builtin.set_fact:
+    acme_account: '{{ lookup("file", acme_info.account) | from_yaml }}'
+
 - name: Create account key
   community.crypto.openssl_privatekey:
     path: '{{ acme_info.key }}'
@@ -34,10 +38,6 @@
     curve: '{{ acme_tls_curve }}'
     size: '{{ acme_tls_size }}'
     mode: '0600'
-
-- name: Load acme account yml
-  ansible.builtin.set_fact:
-    acme_account: '{{ lookup("file", acme_info.account) | from_yaml }}'
 
 - name: Create ACME account
   community.crypto.acme_account:

@@ -7,10 +7,10 @@
 #     file: create_csr.yml
 #   when: ansible_host == "localhost"
 
-# - name: Task create_challenge
-#   ansible.builtin.include_tasks:
-#     file: create_challenge.yml
-#   when: ansible_host == "localhost"
+- name: Task create_challenge
+  ansible.builtin.include_tasks:
+    file: create_challenge.yml
+  when: not (group_names | intersect(["web", "app", "rp", "test"]) | length > 0)
 
 - name: Task sync_html
   ansible.builtin.include_tasks:
@@ -20,7 +20,8 @@
 - name: Task get_cert
   ansible.builtin.include_tasks:
     file: get_cert.yml
-  when: ansible_host == "localhost"
+  when: not (group_names | intersect(["web", "app", "rp", "test"]) | length > 0)
+  # when: ansible_host == "localhost"
 
 # - name: Task tls of user_present
 #   ansible.builtin.include_role:

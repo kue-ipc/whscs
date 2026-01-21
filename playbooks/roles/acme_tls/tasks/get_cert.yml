@@ -10,4 +10,8 @@
     fullchain_dest: '{{ tls_info.cert }}.fullchain'
     challenge: http-01
     modify_account: false
-  
+    data: '{{ acme_challenge }}'
+  register: acme_get
+
+- debug:
+    var: acme_get

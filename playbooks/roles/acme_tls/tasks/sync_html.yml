@@ -1,6 +1,6 @@
 - name: Sync html dir
   become: true
   ansible.builtin.copy:
-    src: '{{ data_acme_html_dir }}'
+    src: '{{ data_acme_html_dir }}/'
     dest: /var/www/html/
     mode: "0755"

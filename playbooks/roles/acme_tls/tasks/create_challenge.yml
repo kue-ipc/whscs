@@ -12,6 +12,9 @@
     modify_account: false
   register: acme_challenge
 
+- debug:
+    var: acme_challenge
+
 - name: Make well-known acme-challeng dir
   ansible.builtin.file:
     path: '{{ data_acme_html_dir }}/.well-known/acme-challenge'

@@ -1,0 +1,37 @@
+- name: Make data dir
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: directory
+    mode: '0755'
+  loop:
+    # - '{{ data_dir }}'
+    - '{{ data_webuser_dir }}'
+    # - '{{ data_tls_dir }}'
+    # - '{{ data_tls_private_dir }}'
+    - '{{ data_tls_csrs_dir }}'
+    - '{{ data_tls_certs_dir }}'
+    - '{{ data_tls_chained_certs_dir }}'
+    - '{{ data_tls_im_certs_dir }}'
+    # - '{{ data_acme_dir }}'
+    - '{{ data_acme_account_dir }}'
+    # - '{{ data_acme_key_dir }}'
+    - '{{ data_acme_html_dir }}'
+    # - '{{ data_acme_tls_dir }}'
+    - '{{ data_html_dir }}'
+    - '{{ data_backup_dir }}'
+
+- name: Make data dir with restricted permissions
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: directory
+    mode: '0700'
+  loop:
+    - '{{ data_tls_private_dir }}'
+    - '{{ data_acme_key_dir }}'
+    - '{{ data_acme_tls_dir }}'

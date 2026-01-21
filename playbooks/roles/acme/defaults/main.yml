@@ -1,0 +1,5 @@
+# acme options
+acme_account_type: ECC
+acme_account_curve: secp384r1
+acme_account_size: 4096
+# tls_acme_email: no-reply@example.jp

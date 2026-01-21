@@ -1,0 +1,16 @@
+## tls options
+# https://docs.ansible.com/ansible/latest/collections/community/crypto/openssl_privatekey_module.html
+# https://docs.ansible.com/ansible/latest/collections/community/crypto/openssl_csr_module.html
+tls_type: ECC
+tls_curve: secp384r1
+tls_size: 4096
+tls_digest: sha384
+tls_dn: {}
+# tls_dn:
+#   country_name:
+#   state_or_province_name:
+#   locality_name:
+#   organization_name:
+#   organizational_unit_name:
+#   email_address:
+tls_im_certs: {}

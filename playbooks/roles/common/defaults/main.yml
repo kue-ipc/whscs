@@ -30,29 +30,7 @@ web_services:
   # - {name: http3, protocol: udp, port: 443}
 # glusterfs or nfs
 web_mount_fstype: glusterfs
-data_dir: '{{ (playbook_dir ~ "/../data") | normpath }}'
 admin_mail: root@localhost
-# tls options
-# https://docs.ansible.com/ansible/latest/collections/community/crypto/openssl_privatekey_module.html
-# https://docs.ansible.com/ansible/latest/collections/community/crypto/openssl_csr_module.html
-tls_type: ECC
-tls_curve: secp384r1
-tls_size: 4096
-tls_digest: sha384
-tls_dn: {}
-# tls_dn:
-#   country_name:
-#   state_or_province_name:
-#   locality_name:
-#   organization_name:
-#   organizational_unit_name:
-#   email_address:
-tls_im_certs: {}
-# use only ACME account
-acme_tls_type: ECC
-acme_tls_curve: secp384r1
-acme_tls_size: 4096
-# acme_email: no-reply@example.jp
 haproxy_check_user: haproxy
 mgt_site: localhost
 mgt_tls_cert: /etc/pki/tls/certs/server.cer

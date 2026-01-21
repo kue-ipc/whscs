@@ -1,0 +1,20 @@
+data_dir: '{{ (playbook_dir ~ "/../data") | normpath }}'
+# webuser dir
+data_webuser_dir: '{{ data_dir ~ "/webuser" }}'
+# tls dirs
+data_tls_dir: '{{ data_dir ~ "/tls" }}'
+data_tls_private_dir: '{{ data_tls_dir ~ "/private" }}'
+data_tls_csrs_dir: '{{ data_tls_dir ~ "/csrs" }}'
+data_tls_certs_dir: '{{ data_tls_dir ~ "/certs" }}'
+data_tls_chained_certs_dir: '{{ data_tls_dir ~ "/chained_certs" }}'
+data_tls_im_certs_dir: '{{ data_tls_dir ~ "/im_certs" }}'
+# acme dirs
+data_acme_dir: '{{ data_dir ~ "/acme" }}'
+data_acme_account_dir: '{{ data_acme_dir ~ "/account" }}'
+data_acme_key_dir: '{{ data_acme_dir ~ "/key" }}'
+data_acme_html_dir: '{{ data_acme_dir ~ "/html" }}'
+data_acme_tls_dir: '{{ data_acme_dir ~ "/key" }}'
+# htmml dri for mgt
+data_html_dir: '{{ data_dir ~ "/html" }}'
+# backup dir
+data_backup_dir: '{{ data_dir ~ "/backup" }}'

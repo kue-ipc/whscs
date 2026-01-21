@@ -1,26 +1,8 @@
 ---
-- name: Set other variables
-  ansible.builtin.set_fact:
-    data_webuser_dir: '{{ data_webuser_dir | default(data_dir ~ "/webuser") }}'
-    data_tls_dir: '{{ data_tls_dir | default(data_dir ~ "/tls") }}'
-    data_acme_dir: '{{ data_tls_dir | default(data_dir ~ "/acme") }}'
-    data_html_dir: '{{ data_tls_dir | default(data_dir ~ "/html") }}'
-    data_backup_dir: '{{ data_backup_dir | default(data_dir ~ "/backup") }}'
-
 - name: Set other tls dir variables
   ansible.builtin.set_fact:
     web_tls_certs_dir: '{{ web_tls_certs_dir | default(web_tls_dir ~ "/certs") }}'
     web_tls_private_dir: '{{ web_tls_private_dir | default(web_tls_dir ~ "/private") }}'
-    data_tls_certs_dir: '{{ data_tls_certs_dir | default(data_tls_dir ~ "/certs") }}'
-    data_tls_private_dir: '{{ data_tls_private_dir | default(data_tls_dir ~ "/private") }}'
-    data_tls_im_certs_dir: '{{ data_tls_im_certs_dir | default(data_tls_dir ~ "/im_certs") }}'
-    data_tls_csrs_dir: '{{ data_tls_certs_dir | default(data_tls_dir ~ "/csrs") }}'
-
-- name: Set other acme dir variables
-  ansible.builtin.set_fact:
-    data_acme_account_dir: '{{ data_acme_account_dir | default(data_acme_dir ~ "/account") }}'
-    data_acme_key_dir: '{{ data_acme_key_dir | default(data_acme_dir ~ "/key") }}'
-    data_acme_html_dir: '{{ data_acme_html_dir | default(data_acme_dir ~ "/html") }}'
 
 - name: Set httpd php
   ansible.builtin.set_fact:

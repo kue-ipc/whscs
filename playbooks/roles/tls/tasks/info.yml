@@ -1,0 +1,14 @@
+- name: Check tls_domain
+  ansible.builtin.assert:
+    that: tls_domain is defined
+    msg: 'Require `tls_domain` variable'
+    quiet: true
+
+- name: Set tls info
+  ansible.builtin.set_fact:
+    tls_info:
+      cn: '{{ tls_domain }}'
+      key: '{{ data_tls_private_dir }}/{{ tls_domain }}.key'
+      csr: '{{ data_tls_csrs_dir }}/{{ tls_domain }}.csr'
+      cert: '{{ data_tls_certs_dir }}/{{ tls_domain }}.cer'
+      chained_cert: '{{ data_tls_chained_certs_dir }}/{{ tls_domain }}_chained.cer'

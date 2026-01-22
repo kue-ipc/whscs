@@ -18,3 +18,5 @@ data_acme_tls_dir: '{{ data_acme_dir ~ "/key" }}'
 data_html_dir: '{{ data_dir ~ "/html" }}'
 # backup dir
 data_backup_dir: '{{ data_dir ~ "/backup" }}'
+data_backup_webuser_dir: '{{ data_dir ~ "/backup/webuser" }}'
+data_backup_tls_dir: '{{ data_dir ~ "/backup/tls" }}'

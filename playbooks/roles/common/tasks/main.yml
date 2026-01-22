@@ -1,9 +1,4 @@
 ---
-- name: Set other tls dir variables
-  ansible.builtin.set_fact:
-    web_tls_certs_dir: '{{ web_tls_certs_dir | default(web_tls_dir ~ "/certs") }}'
-    web_tls_private_dir: '{{ web_tls_private_dir | default(web_tls_dir ~ "/private") }}'
-
 - name: Set httpd php
   ansible.builtin.set_fact:
     httpd_php: >-

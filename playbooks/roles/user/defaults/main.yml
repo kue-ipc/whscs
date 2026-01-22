@@ -1,0 +1,3 @@
+user_uid_range: {start: 1001, stop: 2000}
+user_httpd_port_offset: 7000
+user_app_port_offset: 17000

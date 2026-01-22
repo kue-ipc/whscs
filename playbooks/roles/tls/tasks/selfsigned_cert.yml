@@ -1,0 +1,27 @@
+- name: Task info
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.import_tasks:
+    file: info.yml
+
+- name: Create selfsigned crt
+  delegate_to: localhost
+  become: false
+  run_once: true
+  community.crypto.x509_certificate:
+    privatekey_path: '{{ tls_info.key }}'
+    csr_path: '{{ tls_info.csr }}'
+    path: '{{ tls_info.cert }}'
+    provider: selfsigned
+    selfsigned_digest: '{{ tls_digest }}'
+    mode: '0644'
+
+- name: Copy cert as chained cert for self-signed cert
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.copy:
+    src: '{{ tls_info.cert }}'
+    dest: '{{ tls_info.chained_cert }}'
+    mode: '0644'

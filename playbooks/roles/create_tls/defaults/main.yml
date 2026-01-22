@@ -1,0 +1,4 @@
+# site: fqdn for user
+# user: username
+backup: false
+selfsigned: false

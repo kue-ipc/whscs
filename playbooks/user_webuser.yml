@@ -1,0 +1,11 @@
+- name: User webuser
+  hosts:
+    - ctl
+  tasks:
+    - name: Task webuser in user role
+      ansible.builtin.import_role:
+        name: user
+        tasks_from: webuser
+    - name: Debug user_webuser var in playbook
+      ansible.builtin.debug:
+        var: user_webuser

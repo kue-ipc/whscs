@@ -1,3 +1,12 @@
+# FIXME: すべてのタスクがrun_onceだと、重複してroleが実行される。
+- name: Make parent data dir
+  delegate_to: localhost
+  become: false
+  ansible.builtin.file:
+    path: '{{ data_dir }}'
+    state: directory
+    mode: '0755'
+
 - name: Make data dir
   delegate_to: localhost
   become: false
@@ -22,6 +31,8 @@
     # - '{{ data_acme_tls_dir }}'
     - '{{ data_html_dir }}'
     - '{{ data_backup_dir }}'
+    - '{{ data_backup_webuser_dir }}'
+    # - '{{ data_backup_tls_dir }}'
 
 - name: Make data dir with restricted permissions
   delegate_to: localhost
@@ -35,3 +46,4 @@
     - '{{ data_tls_private_dir }}'
     - '{{ data_acme_key_dir }}'
     - '{{ data_acme_tls_dir }}'
+    - '{{ data_backup_tls_dir }}'

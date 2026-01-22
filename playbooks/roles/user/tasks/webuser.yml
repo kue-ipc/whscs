@@ -1,0 +1,91 @@
+# webuser
+# 存在するwebuserのデータを取得し、各変数をセットする。
+---
+- name: Require user
+  ansible.builtin.assert:
+    that: user is defined
+    msg: 'Require `user` variable'
+    quiet: true
+
+- name: Check user pattern
+  ansible.builtin.assert:
+    that: user is regex("^\w+$")
+    msg: 'Invalid `user` variable: {{ user }}'
+    quiet: true
+
+- name: Set webuser yml
+  ansible.builtin.set_fact:
+    user_webuser_yml: '{{ data_webuser_dir }}/{{ user }}.yml'
+
+- name: Read webuser yml
+  ansible.builtin.set_fact:
+    user_webuser: '{{ lookup("file", user_webuser_yml) | from_yaml }}'
+
+- name: Check require parameters
+  ansible.builtin.assert:
+    that: user_webuser[item] is defined
+    msg: 'Missing required parametercs: {{ item }}'
+    quiet: true
+  loop:
+    - name
+    - site
+    - uid
+
+- name: Check name
+  ansible.builtin.assert:
+    that: user_webuser.name == user
+    msg: 'Not match name: {{ user_webuser.name }} != {{ user }}'
+    quiet: true
+
+- name: Set default vars for webuser
+  ansible.builtin.set_fact:
+    user_webuser: >-
+      {{ {
+        "enabled": false,
+        "host": default_host,
+        "http": false,
+        "public": false,
+        "group": default_user_group,
+        "groups": default_user_groups,
+        "dir": default_user_dir | regex_replace("%u", user),
+        "shell": default_user_shell,
+        "gecos": default_user_gecos | regex_replace("%u", user),
+        "db_use": false,
+        "pg_use": false,
+        "app_use": false,
+      } | combine(user_webuser) }}
+
+- name: Check db_pass
+  ansible.builtin.assert:
+    that: user_webuser.db_pass | default("") | length > 0
+    msg: 'Required db_pass is missing or empty'
+    quiet: true
+  when: user_webuser.db_use
+
+- name: Check pg_pass
+  ansible.builtin.assert:
+    that: user_webuser.pg_pass | default("") | length > 0
+    msg: 'Required pg_pass is missing or empty'
+    quiet: true
+  when: user_webuser.pg_use
+
+- name: Set default app vars for webuser
+  ansible.builtin.set_fact:
+    user_webuser: >-
+      {{ {
+        "app_port": user_webuser.uid + user_app_port_offset,
+        "app_path": "/",
+        "app_one": false,
+      } | combine(user_webuser) }}
+  when: user_webuser.app_use
+
+- name: Set webuser ovrewrite variable
+  ansible.builtin.set_fact:
+    user_webuser: >-
+      {{ user_webuser | combine({
+        "chroot_dir": web_dir ~ "/" ~ user,
+        "var_dir": web_var_dir ~ "/" ~ user,
+        "tls_cert": web_tls_certs_dir ~ "/" ~ user_webuser.site ~ ".cer",
+        "tls_key": web_tls_private_dir ~ "/" ~ user_webuser.site ~ ".key",
+        "httpd_port": user_webuser.uid + user_httpd_port_offset,
+      }) }}

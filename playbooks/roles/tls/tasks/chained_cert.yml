@@ -1,0 +1,76 @@
+- name: Task info
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.import_tasks:
+    file: info.yml
+
+- name: Read cert file
+  delegate_to: localhost
+  become: false
+  run_once: true
+  community.crypto.x509_certificate_info:
+    path: '{{ tls_info.cert }}'
+  register: tls_cert_info
+
+- name: Read private key file
+  delegate_to: localhost
+  become: false
+  run_once: true
+  community.crypto.openssl_privatekey_info:
+    path: '{{ tls_info.key }}'
+  register: tls_key_info
+
+- name: Check to validate key and cert
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.assert:
+    that: tls_cert_info.public_key_fingerprint.sha256 == tls_key_info.public_key_fingerprint.sha256
+    msg: 'Certificate and private key do not validate: {{ tls_info.cert }} != {{ tls_info.key }}'
+    quiet: true
+
+- name: Check to match cert common name
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.assert:
+    that: tls_info.cn == tls_cert_info.subject.commonName
+    msg: >-
+      Certificate common name does not match expected value:
+      {{ tls_info.cn }} != {{ tls_cert_info.subject.commonName }}
+    quiet: true
+
+- name: Stat chained cert file
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.stat:
+    path: '{{ tls_info.chained_cert }}'
+  register: tls_chained_cert_stat
+
+- name: Create chained cert
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.copy:
+    content: |
+      {{ lookup("file", tls_info.cert) }}
+      {{ lookup("file", data_tls_im_certs_dir ~ "/" ~ tls_im_certs[tls_cert_info.issuer.commonName]) }}
+    dest: '{{ tls_info.chained_cert }}'
+    mode: '0644'
+  when:
+    - not tls_chained_cert_stat.stat.exists
+    - tls_cert_info.issuer.commonName != tls_cert_info.subject.commonName
+
+- name: Copy cert as chained cert for self-signed cert
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.copy:
+    src: '{{ tls_info.cert }}'
+    dest: '{{ tls_info.chained_cert }}'
+    mode: '0644'
+  when:
+    - not tls_chained_cert_stat.stat.exists
+    - tls_cert_info.issuer.commonName != tls_cert_info.subject.commonName

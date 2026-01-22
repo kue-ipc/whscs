@@ -1,0 +1,22 @@
+- name: Task info
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.import_tasks:
+    file: info.yml
+
+- name: Create csr
+  delegate_to: localhost
+  become: false
+  run_once: true
+  community.crypto.openssl_csr:
+    path: '{{ tls_info.csr }}'
+    privatekey_path: '{{ tls_info.key }}'
+    digest: '{{ tls_digest }}'
+    country_name: '{{ tls_dn.country_name | default(omit) }}'
+    state_or_province_name: '{{ tls_dn.state_or_province_name | default(omit) }}'
+    locality_name: '{{ tls_dn.locality_name | default(omit) }}'
+    organization_name: '{{ tls_dn.organization_name | default(omit) }}'
+    common_name: '{{ tls_info.cn }}'
+    email_address: '{{ tls_dn.email_address | default(omit) }}'
+    mode: '0644'

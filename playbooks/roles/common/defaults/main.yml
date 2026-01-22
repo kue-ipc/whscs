@@ -16,20 +16,11 @@ proxy_excludes:
   - fe80::/10
   - fc00::/7
 # mgt_networks:
-# web_networks:
 # trusted_proxies:
 # vip_addresses:
 # lvs_dr_addresses:
 # lvs_dr_group:
-web_dir: /web
-web_var_dir: /var/web
-web_tls_dir: /etc/pki/web
-web_services:
-  - {name: http, protocol: tcp, port: 80}
-  - {name: https, protocol: tcp, port: 443}
-  # - {name: http3, protocol: udp, port: 443}
 # glusterfs or nfs
-web_mount_fstype: glusterfs
 admin_mail: root@localhost
 haproxy_check_user: haproxy
 mgt_site: localhost
@@ -37,20 +28,8 @@ mgt_tls_cert: /etc/pki/tls/certs/server.cer
 mgt_tls_key: /etc/pki/tls/private/server.key
 mgt_main_server: '{{ groups["mgt"] | first }}'
 mgt_app: false
-default_site: null
-default_host: 'app'
 # additional_hosts:
 ## User
-user_uid_range: {start: 1001, stop: 2000}
-# default_user_name:
-# default_user_passwd:
-# default_user_uid:
-default_user_gid: 100
-default_user_gecos: '%u'
-default_user_dir: '/home/%u'
-default_user_shell: /bin/bash
-default_user_group: users
-default_user_groups: []
 ## Apache HTTP Server
 httpd_mpm: event
 ## ftp

@@ -1,0 +1,46 @@
+- name: Task info
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.import_tasks:
+    file: info.yml
+
+- name: Stat files
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.stat:
+    path: '{{ item }}'
+  register: tls_backup_stat
+  loop:
+    - '{{ tls_info.key }}'
+    - '{{ tls_info.csr }}'
+    - '{{ tls_info.cert }}'
+    - '{{ tls_info.chained_cert }}'
+
+- name: Copy file
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.copy:
+    remote_src: true
+    src: '{{ item.item }}'
+    dest: '{{ data_backup_tls_dir }}/{{ item.item | basename }}.{{ "%Y%m%d_%H%M%S" | strftime }}'
+    mode: '{{ item.stat.mode }}'
+    force: false
+  loop: '{{ tls_backup_stat.results }}'
+  loop_control:
+    label: '{{ item.item }}'
+  when: item.stat.exists
+
+- name: Delete file
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.file:
+    path: '{{ item.item }}'
+    state: absent
+  loop: '{{ tls_backup_stat.results }}'
+  loop_control:
+    label: '{{ item.item }}'
+  when: item.stat.exists

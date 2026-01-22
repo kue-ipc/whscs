@@ -1,0 +1,11 @@
+default_site: null
+default_host: 'app'
+# default_user_name:
+# default_user_passwd:
+# default_user_uid:
+default_user_gid: 100
+default_user_gecos: '%u'
+default_user_dir: '/home/%u'
+default_user_shell: /bin/bash
+default_user_group: users
+default_user_groups: []

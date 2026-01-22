@@ -1,0 +1,5 @@
+---
+- name: Creat ACME account
+  hosts: localhost
+  roles:
+    - create_acme_account

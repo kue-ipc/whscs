@@ -1,0 +1,59 @@
+- name: Check acme_domain
+  ansible.builtin.assert:
+    that: acme_domain is defined
+    msg: 'Require `acme_domain` variable'
+    quiet: true
+
+- name: Set acme info
+  ansible.builtin.set_fact:
+    acme_info:
+      cn: '{{ acme_domain }}'
+      account: '{{ data_acme_account_dir }}/{{ acme_domain }}.yml'
+      key: '{{ data_acme_key_dir }}/{{ acme_domain }}.key'
+
+- name: Load acme account yml
+  ansible.builtin.set_fact:
+    acme_account: '{{ lookup("file", acme_info.account) | from_yaml }}'
+
+- name: Set server vars for acme account
+  ansible.builtin.set_fact:
+    acme_account: '{{ {"server": acme_server} | combine(acme_account) }}'
+  when: acme_server is defined
+
+- name: Set server vars for acme account
+  ansible.builtin.set_fact:
+    acme_account: '{{ {"email": acme_email} | combine(acme_account) }}'
+  when: acme_email is defined
+
+- name: Check acme_account parameters
+  ansible.builtin.assert:
+    that: acme_account[item] is defined
+    msg: 'Missing required acme_account parametercs: {{ item }}'
+    quiet: true
+  loop:
+    - server
+    - email
+    - eab_kid
+    - eab_hmac_key
+
+- name: Set default vars for acme account
+  ansible.builtin.set_fact:
+    acme_account: >-
+      {{ {
+        "domain": acme_domain,
+        "eab_hmac_alg": "HS256",
+        "rsa_key_size": 2048,
+        "key_type": "ecdsa",
+        "elliptic_curve": "secp256r1",
+      } | combine(acme_account) }}
+
+- name: Set acme tls
+  ansible.builtin.set_fact:
+    acme_tls:
+      key: '{{ data_acme_tls_dir }}/{{ acme_domain }}.key'
+      csr: '{{ data_acme_tls_dir }}/{{ acme_domain }}.csr'
+      cert: '{{ data_acme_tls_dir }}/{{ acme_domain }}.cer'
+      chained_cert: '{{ data_acme_tls_dir }}/{{ acme_domain }}_chained.cer'
+      type: '{{ {"rsa": "RSA", "ecdsa": "ECC"}[acme_account.key_type] }}'
+      curve: '{{ acme_account.elliptic_curve }}'
+      size: '{{ acme_account.rsa_key_size }}'

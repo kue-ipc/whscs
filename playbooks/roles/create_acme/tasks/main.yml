@@ -1,16 +1,16 @@
 # create acme
 ---
-- name: Import task webuser_presnt from user_present
+- name: Import task webuser in user role
   ansible.builtin.import_role:
-    name: user_present
-    tasks_from: webuser_present
+    name: user
+    tasks_from: webuser
   when:
     - site is not defined
     - user is defined
 
 - name: Set site
   ansible.builtin.set_fact:
-    site: '{{ webuser.site }}'
+    site: '{{ user_webuser.site }}'
   when:
     - site is not defined
     - user is defined
@@ -21,34 +21,9 @@
     msg: 'Require `site` or `user` variable'
     quiet: true
 
-- name: Set acme info
-  ansible.builtin.set_fact:
-    acme_info:
-      account: '{{ data_acme_account_dir }}/{{ site }}.yml'
-      key: '{{ data_acme_key_dir }}/{{ site }}.key'
-
-- name: Load acme account yml
-  ansible.builtin.set_fact:
-    acme_account: '{{ lookup("file", acme_info.account) | from_yaml }}'
-
-- name: Create account key
-  community.crypto.openssl_privatekey:
-    path: '{{ acme_info.key }}'
-    type: '{{ acme_tls_type }}'
-    curve: '{{ acme_tls_curve }}'
-    size: '{{ acme_tls_size }}'
-    mode: '0600'
-
-- name: Create ACME account
-  community.crypto.acme_account:
-    acme_version: 2
-    acme_directory: '{{ acme_account.server }}'
-    account_key_src: '{{ acme_info.key }}'
-    contact:
-      - "mailto:{{ acme_account.email | default(acme_email) }}"
-    terms_agreed: true
-    external_account_binding:
-      kid: '{{ acme_account.eab_kid }}'
-      key: '{{ acme_account.eab_hmac_key }}'
-      alg: '{{ acme_account.eab_hmac_alg | default("HS256") }}'
-    state: present
+- name: Task account in acme role
+  ansible.builtin.import_role:
+    name: acme
+    tasks_from: account
+  vars:
+    acme_domain: '{{ site }}'

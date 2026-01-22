@@ -1,0 +1,11 @@
+- name: ACME account
+  hosts:
+    - ctl
+  tasks:
+    - name: Task account in acme role
+      ansible.builtin.import_role:
+        name: acme
+        tasks_from: account
+    - name: Debug acme_account_info var
+      ansible.builtin.debug:
+        var: acme_account_info

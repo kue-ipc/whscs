@@ -17,11 +17,11 @@
   ansible.builtin.set_fact:
     user_webuser_yml: '{{ data_webuser_dir }}/{{ user }}.yml'
 
-- name: Read webuser yml
+- name: Load webuser yml
   ansible.builtin.set_fact:
     user_webuser: '{{ lookup("file", user_webuser_yml) | from_yaml }}'
 
-- name: Check require parameters
+- name: Check require webuser parameters
   ansible.builtin.assert:
     that: user_webuser[item] is defined
     msg: 'Missing required parametercs: {{ item }}'

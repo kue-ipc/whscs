@@ -1,0 +1,7 @@
+---
+- name: Create ACME tls
+  max_fail_percentage: 0
+  hosts:
+    - rp
+  roles:
+    - create_acme_tls

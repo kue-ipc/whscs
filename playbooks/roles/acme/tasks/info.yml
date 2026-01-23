@@ -10,25 +10,27 @@
       cn: '{{ acme_domain }}'
       account: '{{ data_acme_account_dir }}/{{ acme_domain }}.yml'
       key: '{{ data_acme_key_dir }}/{{ acme_domain }}.key'
+      challenge: '{{ data_acme_tls_dir }}/{{ acme_domain }}.yml'
 
+# account info
 - name: Load acme account yml
   ansible.builtin.set_fact:
-    acme_account: '{{ lookup("file", acme_info.account) | from_yaml }}'
+    acme_account_info: '{{ lookup("file", acme_info.account) | from_yaml }}'
 
 - name: Set server vars for acme account
   ansible.builtin.set_fact:
-    acme_account: '{{ {"server": acme_server} | combine(acme_account) }}'
+    acme_account_info: '{{ {"server": acme_server} | combine(acme_account_info) }}'
   when: acme_server is defined
 
 - name: Set server vars for acme account
   ansible.builtin.set_fact:
-    acme_account: '{{ {"email": acme_email} | combine(acme_account) }}'
+    acme_account_info: '{{ {"email": acme_email} | combine(acme_account_info) }}'
   when: acme_email is defined
 
-- name: Check acme_account parameters
+- name: Check acme_account_info parameters
   ansible.builtin.assert:
-    that: acme_account[item] is defined
-    msg: 'Missing required acme_account parametercs: {{ item }}'
+    that: acme_account_info[item] is defined
+    msg: 'Missing required acme_account_info parametercs: {{ item }}'
     quiet: true
   loop:
     - server
@@ -38,22 +40,30 @@
 
 - name: Set default vars for acme account
   ansible.builtin.set_fact:
-    acme_account: >-
+    acme_account_info: >-
       {{ {
         "domain": acme_domain,
         "eab_hmac_alg": "HS256",
         "rsa_key_size": 2048,
         "key_type": "ecdsa",
         "elliptic_curve": "secp256r1",
-      } | combine(acme_account) }}
+      } | combine(acme_account_info) }}
 
+# challenge info
+- name: Load acme challenge yml if exists
+  ansible.builtin.set_fact:
+    acme_challenge_info: '{{ lookup("file", acme_info.challenge) | from_yaml }}'
+  when: acme_info.challenge is exists
+
+# tls info
 - name: Set acme tls
   ansible.builtin.set_fact:
-    acme_tls:
+    acme_tls_info:
+      cn: '{{ acme_domain }}'
       key: '{{ data_acme_tls_dir }}/{{ acme_domain }}.key'
       csr: '{{ data_acme_tls_dir }}/{{ acme_domain }}.csr'
       cert: '{{ data_acme_tls_dir }}/{{ acme_domain }}.cer'
       chained_cert: '{{ data_acme_tls_dir }}/{{ acme_domain }}_chained.cer'
-      type: '{{ {"rsa": "RSA", "ecdsa": "ECC"}[acme_account.key_type] }}'
-      curve: '{{ acme_account.elliptic_curve }}'
-      size: '{{ acme_account.rsa_key_size }}'
+      type: '{{ {"rsa": "RSA", "ecdsa": "ECC"}[acme_account_info.key_type] }}'
+      curve: '{{ acme_account_info.elliptic_curve }}'
+      size: '{{ acme_account_info.rsa_key_size }}'

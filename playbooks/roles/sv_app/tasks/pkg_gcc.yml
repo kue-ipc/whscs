@@ -4,4 +4,4 @@
   ansible.builtin.dnf:
     state: present
     name: 'gcc-toolset-{{ item }}'
-  loop: '{{ sv_app_versions.gcc | deafult([]) }}'
+  loop: '{{ sv_app_versions.gcc | default([]) }}'

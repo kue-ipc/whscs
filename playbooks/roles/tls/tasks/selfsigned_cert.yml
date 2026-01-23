@@ -4,6 +4,7 @@
   run_once: true
   ansible.builtin.import_tasks:
     file: info.yml
+  when: tls_info is not defined
 
 - name: Create selfsigned crt
   delegate_to: localhost

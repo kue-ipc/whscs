@@ -1,9 +1,12 @@
+# Create ACME account
+---
 - name: Task info
   delegate_to: localhost
   become: false
   run_once: true
   ansible.builtin.import_tasks:
     file: info.yml
+  when: acme_info is not defined
 
 - name: Create account key
   delegate_to: localhost
@@ -22,15 +25,15 @@
   run_once: true
   community.crypto.acme_account:
     acme_version: 2
-    acme_directory: '{{ acme_account.server }}'
+    acme_directory: '{{ acme_account_info.server }}'
     account_key_src: '{{ acme_info.key }}'
     contact:
-      - "mailto:{{ acme_account.email }}"
+      - "mailto:{{ acme_account_info.email }}"
     terms_agreed: true
     external_account_binding:
-      kid: '{{ acme_account.eab_kid }}'
-      key: '{{ acme_account.eab_hmac_key }}'
-      alg: '{{ acme_account.eab_hmac_alg }}'
+      kid: '{{ acme_account_info.eab_kid }}'
+      key: '{{ acme_account_info.eab_hmac_key }}'
+      alg: '{{ acme_account_info.eab_hmac_alg }}'
     state: present
 
 - name: Get ACME account info
@@ -39,6 +42,6 @@
   run_once: true
   community.crypto.acme_account_info:
     acme_version: 2
-    acme_directory: '{{ acme_account.server }}'
+    acme_directory: '{{ acme_account_info.server }}'
     account_key_src: '{{ acme_info.key }}'
-  register: acme_account_info
+  register: acme_account

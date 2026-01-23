@@ -1,0 +1,113 @@
+# create acme
+---
+- name: Import task webuser in user role
+  ansible.builtin.import_role:
+    name: user
+    tasks_from: webuser
+  when:
+    - site is not defined
+    - user is defined
+
+- name: Set site
+  ansible.builtin.set_fact:
+    site: '{{ user_webuser.site }}'
+  when:
+    - site is not defined
+    - user is defined
+
+- name: Check site
+  ansible.builtin.assert:
+    that: site is defined
+    msg: 'Require `site` or `user` variable'
+    quiet: true
+
+- name: Task info in acme role
+  ansible.builtin.import_role:
+    name: acme
+    tasks_from: info
+  vars:
+    acme_domain: '{{ site }}'
+
+- name: Task key in tls role
+  ansible.builtin.import_role:
+    name: tls
+    tasks_from: key
+  vars:
+    tls_info: '{{ acme_tls_info }}'
+
+- name: Task csr in tls role
+  ansible.builtin.import_role:
+    name: tls
+    tasks_from: csr
+  vars:
+    tls_info: '{{ acme_tls_info }}'
+
+- name: Task cert in acme role for challenge
+  ansible.builtin.import_role:
+    name: acme
+    tasks_from: cert
+  vars:
+    acme_domain: '{{ site }}'
+
+- name: Sync html dir
+  become: true
+  ansible.builtin.copy:
+    src: '{{ data_acme_html_dir }}/'
+    dest: /var/www/html/
+    mode: "0755"
+  when: ("rp" in group_names)
+
+- name: Task cert in acme role for get cert
+  ansible.builtin.import_role:
+    name: acme
+    tasks_from: cert
+  vars:
+    acme_domain: '{{ site }}'
+
+- name: Check key and tls files
+  ansible.builtin.assert:
+    that:
+      - acme_tls_info.key is file
+      - acme_tls_info.cert is file
+      - acme_tls_info.chained_cert is file
+    msg: 'ACME TLS files are not created properly'
+    quiet: true
+
+- name: Veriyf tls
+  ansible.builtin.import_role:
+    name: tls
+    tasks_from: verify
+  vars:
+    tls_info: '{{ acme_tls_info }}'
+
+- name: Set tls_info by info task in tls role
+  ansible.builtin.import_role:
+    name: tls
+    tasks_from: info
+  vars:
+    tls_domain: '{{ site }}'
+
+- name: Copy file
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.copy:
+    remote_src: true
+    src: '{{ acme_tls_info[item] }}'
+    dest: '{{ tls_info[item] }}'
+    mode: '{{ (item == "key") | ternary("0600", "0644") }}'
+    backup: true
+  loop:
+    - key
+    - csr
+    - cert
+    - chained_cert
+  register: copy_files_result
+
+- name: Task move_backup in data role
+  ansible.builtin.include_role:
+    name: data
+    tasks_from: move_backup_tls
+  loop: >-
+    {{ copy_files_result.results | selectattr("changed") | selectattr("backup_file", "defined")
+      | map(attribute="backup_file") | list }}

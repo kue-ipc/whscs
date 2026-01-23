@@ -4,6 +4,7 @@
   run_once: true
   ansible.builtin.import_tasks:
     file: info.yml
+  when: tls_info is not defined
 
 - name: Create csr
   delegate_to: localhost
@@ -12,7 +13,7 @@
   community.crypto.openssl_csr:
     path: '{{ tls_info.csr }}'
     privatekey_path: '{{ tls_info.key }}'
-    digest: '{{ tls_digest }}'
+    digest: '{{ tls_info.digest | default(tls_digest) }}'
     country_name: '{{ tls_dn.country_name | default(omit) }}'
     state_or_province_name: '{{ tls_dn.state_or_province_name | default(omit) }}'
     locality_name: '{{ tls_dn.locality_name | default(omit) }}'

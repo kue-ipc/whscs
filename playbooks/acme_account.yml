@@ -6,6 +6,6 @@
       ansible.builtin.import_role:
         name: acme
         tasks_from: account
-    - name: Debug acme_account_info var
+    - name: Debug acme_account var
       ansible.builtin.debug:
-        var: acme_account_info
+        var: acme_account

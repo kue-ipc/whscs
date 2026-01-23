@@ -1,0 +1,30 @@
+# move file to backup tls dir (copy and delete)
+---
+- name: Stat file
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.stat:
+    path: '{{ item }}'
+  register: data_backup_file_stat
+
+- name: Copy file
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.copy:
+    remote_src: true
+    src: '{{ item }}'
+    dest: '{{ data_backup_tls_dir }}/{{ item | basename }}'
+    mode: '{{ data_backup_file_stat.stat.mode }}'
+    force: false
+  when: data_backup_file_stat.stat.exists
+
+- name: Delete file
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: absent
+  when: data_backup_file_stat.stat.exists

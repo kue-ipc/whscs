@@ -1,0 +1,55 @@
+# Create ACME challenge or get ACME certificate
+---
+- name: Task info
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.import_tasks:
+    file: info.yml
+  when: acme_info is not defined
+
+- name: Create ACME challenge or get ACME certificate
+  delegate_to: localhost
+  become: false
+  run_once: true
+  community.crypto.acme_certificate:
+    acme_version: 2
+    acme_directory: '{{ acme_account_info.server }}'
+    account_key_src: '{{ acme_info.key }}'
+    csr: '{{ acme_tls_info.csr }}'
+    dest: '{{ acme_tls_info.cert }}'
+    fullchain_dest: '{{ acme_tls_info.chained_cert }}'
+    modify_account: false
+    data: '{{ acme_challenge_info | default(omit) }}'
+  register: acme_certificate_ressult
+
+- name: Set acme_challenge_info
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.set_fact:
+    acme_challenge_info: '{{ acme_certificate_ressult }}'
+  when: acme_certificate_ressult is changed
+
+- name: Save challenge info
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.copy:
+    content: '{{ acme_challenge_info | to_nice_yaml }}'
+    dest: '{{ acme_info.challenge }}'
+    mode: '0644'
+  when: acme_certificate_ressult is changed
+
+- name: Copy http-01 challenge
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.copy:
+    content: '{{ item.value["http-01"].resource_value }}'
+    dest: '{{ data_acme_html_dir }}/{{ item.value["http-01"].resource }}'
+    mode: '0644'
+  loop: '{{ acme_certificate_ressult.challenge_data | dict2items }}'
+  loop_control:
+    label: '{{ item.key }}'
+  when: acme_certificate_ressult is changed

@@ -1,0 +1,40 @@
+- name: User list
+  hosts:
+    - ctl
+  tasks:
+    - name: Task webusers in user role
+      ansible.builtin.import_role:
+        name: user
+        tasks_from: webusers
+    - name: Debug user_webuser_list var
+      ansible.builtin.debug:
+        var: user_webuser_list
+    - name: Debug user_existing_list var
+      ansible.builtin.debug:
+        var: user_existing_list
+    - name: Debug user_webusers var
+      ansible.builtin.debug:
+        var: user_webusers
+    - name: Set columns for CSV
+      ansible.builtin.set_fact:
+        csv_columns:
+          - name
+          - site
+          - uid
+          - host
+          - enabled
+          - public
+          - app_use
+          - db_use
+          - pg_use
+
+    - name: Create CSV
+      delegate_to: localhost
+      ansible.builtin.copy:
+        dest: '{{ data_dir }}/webusers.csv'
+        content: |
+          {{ csv_columns | join(",") }}
+          {% for user, info in user_webusers.items() %}
+          {{ csv_columns | map('extract', info) | join(",") }}
+          {% endfor %}
+        mode: '0644'

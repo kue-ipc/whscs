@@ -1,0 +1,21 @@
+# webusers
+- name: Task list
+  ansible.builtin.import_tasks:
+    file: list.yml
+
+- name: Set webusers to an empty dict
+  ansible.builtin.set_fact:
+    user_webusers: {}
+
+- name: Load webusers
+  ansible.builtin.set_fact:
+    user_webusers: >-
+      {{ {item: (lookup("file", data_webuser_dir ~ "/" ~ item ~ ".yml") | from_yaml)} | combine(user_webusers) }}
+  loop: '{{ user_webuser_list }}'
+
+# - name: Convert webuser_list to webuser_dict
+#   ansible.builtin.set_fact:
+
+# - ansible.builtin.debug:
+#     msg: '{{ webuser_dict }}'
+#   when: ansible_check_mode

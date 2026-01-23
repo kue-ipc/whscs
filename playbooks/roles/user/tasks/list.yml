@@ -1,0 +1,25 @@
+- name: Find webuser yml
+  delegate_to: localhost
+  become: false
+  ansible.builtin.find:
+    paths: '{{ data_webuser_dir }}'
+    patterns: '*.yml'
+  register: user_find_webuser_result
+
+- name: Set webuser_list
+  ansible.builtin.set_fact:
+    user_webuser_list: >-
+      {{ user_find_webuser_result.files | map(attribute="path") | map("basename") | map("splitext") | map("first") }}
+
+- name: Check existing users
+  delegate_to: '{{ groups["mgt"] | first }}'
+  become: false
+  ansible.builtin.find:
+    paths: '{{ web_dir }}'
+    file_type: directory
+  register: user_find_web_dir_result
+
+- name: Set existing_list
+  ansible.builtin.set_fact:
+    user_existing_list: >-
+      {{ user_find_web_dir_result.files | map(attribute="path") | map("basename") }}

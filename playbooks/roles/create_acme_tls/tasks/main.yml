@@ -28,6 +28,13 @@
   vars:
     acme_domain: '{{ site }}'
 
+- name: Set acme_challenge_info is empty when force is false
+  ansible.builtin.set_fact:
+    acme_challenge_info: {}
+  when:
+    - force
+    - acme_challenge_info is defined
+
 - name: Task key in tls role
   ansible.builtin.import_role:
     name: tls

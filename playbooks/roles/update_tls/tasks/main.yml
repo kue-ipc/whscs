@@ -1,0 +1,68 @@
+# update tls
+---
+- name: Import task webuser in user role
+  ansible.builtin.include_role:
+    name: user
+    tasks_from: webuser
+  when:
+    - site is not defined
+    - user is defined
+
+- name: Set site
+  ansible.builtin.set_fact:
+    site: '{{ user_webuser.site }}'
+  when:
+    - site is not defined
+    - user is defined
+
+- name: Check site
+  ansible.builtin.assert:
+    that: site is defined
+    msg: 'Require `site` or `user` variable'
+    quiet: true
+
+- name: Veriyf tls
+  ansible.builtin.import_role:
+    name: tls
+    tasks_from: verify
+  vars:
+    tls_domain: '{{ site }}'
+
+- name: Create chained certs
+  ansible.builtin.import_role:
+    name: tls
+    tasks_from: chained_cert
+  vars:
+    tls_domain: '{{ site }}'
+
+- name: Copy chained certs
+  ansible.builtin.copy:
+    src: '{{ tls_info.chained_cert }}'
+    dest: '{{ web_tls_certs_dir }}/{{ site }}.cer'
+    owner: root
+    group: root
+    mode: '0644'
+  register: copy_cert_result
+
+- name: Copy private key
+  ansible.builtin.copy:
+    src: '{{ tls_info.key }}'
+    dest: '{{ web_tls_private_dir }}/{{ site }}.key'
+    owner: root
+    group: root
+    mode: '0600'
+  register: copy_key_result
+
+- name: Restart web
+  ansible.builtin.import_role:
+    name: restart_web
+  when:
+    - copy_cert_result.changed or copy_key_result.changed
+    - group_names | intersect(["web", "rp", "test"]) | length > 0
+
+- name: Restart app
+  ansible.builtin.import_role:
+    name: restart_app
+  when:
+    - copy_cert_result.changed or copy_key_result.changed
+    - group_names | intersect(["app", "test"]) | length > 0

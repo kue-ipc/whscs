@@ -1,0 +1,10 @@
+---
+- name: Update TLS certificates and keys
+  hosts:
+    - web
+    - app
+    - rp
+    - test
+  become: true
+  roles:
+    - update_tls

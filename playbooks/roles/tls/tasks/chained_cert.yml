@@ -14,6 +14,15 @@
     path: '{{ tls_info.cert }}'
   register: tls_cert_info
 
+- name: Read chained cert file
+  delegate_to: localhost
+  become: false
+  run_once: true
+  community.crypto.x509_certificate_info:
+    path: '{{ tls_info.chained_cert }}'
+  register: tls_chained_cert_info
+  when: tls_info.chained_cert is exists
+
 - name: Create chained cert
   delegate_to: localhost
   become: false
@@ -25,7 +34,7 @@
     dest: '{{ tls_info.chained_cert }}'
     mode: '0644'
   when:
-    - tls_info.chained_cert is not exists
+    - tls_info.chained_cert is not exists or tls_chained_cert_info.serial_number != tls_cert_info.serial_number
     - tls_cert_info.issuer.commonName != tls_cert_info.subject.commonName
 
 - name: Copy cert as chained cert for self-signed cert
@@ -37,5 +46,5 @@
     dest: '{{ tls_info.chained_cert }}'
     mode: '0644'
   when:
-    - tls_info.chained_cert is not exists
+    - tls_info.chained_cert is not exists or tls_chained_cert_info.serial_number != tls_cert_info.serial_number
     - tls_cert_info.issuer.commonName == tls_cert_info.subject.commonName

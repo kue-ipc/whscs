@@ -1,10 +1,7 @@
 # tls key tasks on localhost
 ---
 - name: Task info
-  delegate_to: localhost
-  become: false
-  run_once: true
-  ansible.builtin.import_tasks:
+  ansible.builtin.include_tasks:
     file: info.yml
   when: tls_info is not defined
 

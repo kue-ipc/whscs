@@ -18,3 +18,5 @@
     curve: '{{ tls_info.curve | default(tls_curve) }}'
     size: '{{ tls_info.size | default(tls_size) }}'
     mode: '0600'
+    force: '{{ tls_force }}'
+    backup: '{{ tls_backup }}'

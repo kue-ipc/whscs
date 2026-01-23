@@ -17,6 +17,8 @@
     provider: selfsigned
     selfsigned_digest: '{{ tls_digest }}'
     mode: '0644'
+    force: '{{ tls_force }}'
+    backup: '{{ tls_backup }}'
 
 - name: Copy cert as chained cert for self-signed cert
   delegate_to: localhost

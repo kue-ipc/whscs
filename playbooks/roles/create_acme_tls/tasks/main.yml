@@ -34,6 +34,7 @@
     tasks_from: key
   vars:
     tls_info: '{{ acme_tls_info }}'
+    tls_force: '{{ force }}'
 
 - name: Task csr in tls role
   ansible.builtin.import_role:
@@ -41,6 +42,7 @@
     tasks_from: csr
   vars:
     tls_info: '{{ acme_tls_info }}'
+    tls_force: '{{ force }}'
 
 - name: Task cert in acme role for challenge
   ansible.builtin.import_role:
@@ -48,6 +50,7 @@
     tasks_from: cert
   vars:
     acme_domain: '{{ site }}'
+    acme_force: '{{ force }}'
 
 - name: Sync html dir
   become: true
@@ -63,6 +66,7 @@
     tasks_from: cert
   vars:
     acme_domain: '{{ site }}'
+    acme_force: '{{ force }}'
 
 - name: Check key and tls files
   ansible.builtin.assert:

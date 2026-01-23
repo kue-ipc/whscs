@@ -1,0 +1,7 @@
+---
+- name: Check ACME tls
+  max_fail_percentage: 0
+  hosts:
+    - localhost
+  roles:
+    - check_acme_tls

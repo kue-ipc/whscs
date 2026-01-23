@@ -1,0 +1,47 @@
+- name: Import task webuser in user role
+  ansible.builtin.import_role:
+    name: user
+    tasks_from: webuser
+  when:
+    - site is not defined
+    - user is defined
+
+- name: Set site
+  ansible.builtin.set_fact:
+    site: '{{ user_webuser.site }}'
+  when:
+    - site is not defined
+    - user is defined
+
+- name: Check site
+  ansible.builtin.assert:
+    that: site is defined
+    msg: 'Require `site` or `user` variable'
+    quiet: true
+
+- name: Task info in acme role
+  ansible.builtin.import_role:
+    name: acme
+    tasks_from: info
+  vars:
+    acme_domain: '{{ site }}'
+
+- name: Retrieve renewal information for a certificate
+  delegate_to: localhost
+  become: false
+  run_once: true
+  community.crypto.acme_certificate_renewal_info:
+    acme_version: 2
+    acme_directory: '{{ acme_account_info.server }}'
+    certificate_path: '{{ acme_tls_info.cert }}'
+  register: renewal_info
+
+- name: Assert certificate needs renewal
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.assert:
+    that: not renewal_info.should_renew
+    msg: 'ACME certificate for {{ site }} needs renewal'
+    quiet: true
+

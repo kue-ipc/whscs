@@ -28,7 +28,22 @@
   vars:
     acme_domain: '{{ site }}'
 
-- name: Set acme_challenge_info is empty when force is false
+- name: Delete previous files when force
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: absent
+  loop:
+    - '{{ acme_info.challenge }}'
+    - '{{ acme_tls_info.key }}'
+    - '{{ acme_tls_info.csr }}'
+    - '{{ acme_tls_info.cert }}'
+    - '{{ acme_tls_info.chained_cert }}'
+  when: force
+
+- name: Set acme_challenge_info to empty when force
   ansible.builtin.set_fact:
     acme_challenge_info: {}
   when:
@@ -41,7 +56,6 @@
     tasks_from: key
   vars:
     tls_info: '{{ acme_tls_info }}'
-    tls_force: '{{ force }}'
 
 - name: Task csr in tls role
   ansible.builtin.import_role:
@@ -49,7 +63,6 @@
     tasks_from: csr
   vars:
     tls_info: '{{ acme_tls_info }}'
-    tls_force: '{{ force }}'
 
 - name: Task cert in acme role for challenge
   ansible.builtin.import_role:
@@ -57,7 +70,6 @@
     tasks_from: cert
   vars:
     acme_domain: '{{ site }}'
-    acme_force: '{{ force }}'
 
 - name: Sync html dir
   become: true
@@ -73,7 +85,6 @@
     tasks_from: cert
   vars:
     acme_domain: '{{ site }}'
-    acme_force: '{{ force }}'
 
 - name: Check key and tls files
   ansible.builtin.assert:

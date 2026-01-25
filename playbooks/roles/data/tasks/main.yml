@@ -28,12 +28,11 @@
     - '{{ data_acme_account_dir }}'
     # - '{{ data_acme_key_dir }}'
     # - '{{ data_acme_tls_dir }}'
-    - '{{ data_acme_html_dir }}'
+    - '{{ data_acme_challenge_dir }}'
     - '{{ data_html_dir }}'
     - '{{ data_backup_dir }}'
     - '{{ data_backup_webuser_dir }}'
     # - '{{ data_backup_tls_dir }}'
-    - '{{ data_acme_html_dir }}/.well-known/acme-challenge'
 
 - name: Make data dir with restricted permissions
   delegate_to: localhost

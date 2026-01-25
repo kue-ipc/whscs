@@ -13,7 +13,7 @@ data_acme_dir: '{{ data_dir ~ "/acme" }}'
 data_acme_account_dir: '{{ data_acme_dir ~ "/account" }}'
 data_acme_key_dir: '{{ data_acme_dir ~ "/key" }}'
 data_acme_tls_dir: '{{ data_acme_dir ~ "/tls" }}'
-data_acme_html_dir: '{{ data_acme_dir ~ "/html" }}'
+data_acme_challenge_dir: '{{ data_acme_dir ~ "/challenge" }}'
 # htmml dri for mgt
 data_html_dir: '{{ data_dir ~ "/html" }}'
 # backup dir

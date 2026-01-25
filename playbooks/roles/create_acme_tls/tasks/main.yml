@@ -74,9 +74,12 @@
 - name: Sync html dir
   become: true
   ansible.builtin.copy:
-    src: '{{ data_acme_html_dir }}/'
-    dest: /var/www/html/
-    mode: "0755"
+    src: '{{ data_acme_challenge_dir }}/'
+    dest: '{{ web_root_dir }}{{ web_well_known_acme_challeng_path }}/'
+    directory_mode: '0755'
+    mode: '0644'
+    owner: root
+    group: root
   when: ("rp" in group_names)
 
 - name: Task cert in acme role for get cert

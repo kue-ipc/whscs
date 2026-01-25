@@ -45,7 +45,7 @@
   run_once: true
   ansible.builtin.copy:
     content: '{{ item.value["http-01"].resource_value }}'
-    dest: '{{ data_acme_html_dir }}/{{ item.value["http-01"].resource }}'
+    dest: '{{ data_acme_challenge_dir }}/{{ item.value["http-01"].resource | basename }}'
     mode: '0644'
   loop: '{{ acme_certificate_ressult.challenge_data | dict2items }}'
   loop_control:

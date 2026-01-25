@@ -2,10 +2,15 @@
 web_dir: /web
 web_var_dir: /var/web
 web_tls_dir: /etc/pki/web
+web_root_dir: /var/www/html
 web_services:
   - {name: http, protocol: tcp, port: 80}
   - {name: https, protocol: tcp, port: 443}
   # - {name: http3, protocol: udp, port: 443}
 web_mount_fstype: glusterfs
+# tls
 web_tls_certs_dir: '{{ web_tls_dir ~ "/certs" }}'
 web_tls_private_dir: '{{ web_tls_dir ~ "/private" }}'
+# well-known URI
+web_well_known_path: '{{ "/.well-known" }}'
+web_well_known_acme_challeng_path: '{{ web_well_known_path ~ "/acme-challenge" }}'

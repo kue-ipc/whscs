@@ -93,8 +93,8 @@ http {
             return 301 https://$host$request_uri;
         }
 
-        location /.well-known/acme-challenge/ {
-            root /var/www/html;
+        location {{ web_well_known_acme_challeng_path }}/ {
+            root {{ web_root_dir }};
         }
     }
 }

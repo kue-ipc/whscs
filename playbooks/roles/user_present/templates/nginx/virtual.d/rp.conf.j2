@@ -7,6 +7,10 @@ server {
     location / {
         proxy_pass http://web80;
     }
+
+    location {{ web_well_known_acme_challeng_path }}/ {
+        root {{ web_root_dir }};
+    }
 }
 {% endif %}
 

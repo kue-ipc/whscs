@@ -12,9 +12,9 @@
   loop:
     - httpd_can_network_relay
 
-- name: Make /var/www/html dir
+- name: Make well-known acme-challenge dir
   ansible.builtin.file:
-    path: /var/www/html
+    path: '{{ web_root_dir }}{{ web_well_known_acme_challeng_path }}'
     owner: root
     group: root
     mode: '0755'

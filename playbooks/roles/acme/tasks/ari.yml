@@ -1,0 +1,16 @@
+# Create ACME challenge or get ACME certificate
+---
+- name: Task info
+  ansible.builtin.include_tasks:
+    file: info.yml
+  when: acme_info is not defined
+
+- name: Get ACME ARI
+  delegate_to: localhost
+  become: false
+  run_once: true
+  community.crypto.acme_ari_info:
+    acme_version: 2
+    acme_directory: '{{ acme_account_info.server }}'
+    certificate_path: '{{ acme_tls_info.cert }}'
+  register: acme_ari

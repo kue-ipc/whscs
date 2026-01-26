@@ -1,0 +1,4 @@
+## LVM
+# default 4(MiB)
+lvm_pesize: 4
+lvm_vg: vg

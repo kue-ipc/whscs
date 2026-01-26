@@ -1,0 +1,72 @@
+---
+- name: Find backups
+  ansible.builtin.find:
+    path: '{{ backup_data_dir }}/data'
+    pattern: '^\d{8}_\d{6}$'
+    use_regex: true
+    file_type: directory
+  register: backup_find_data_backups
+
+- name: Set last backup
+  ansible.builtin.set_fact:
+    backup_last_data_backup: >-
+      {{ backup_find_data_backups.files | map(attribute="path") | map("basename") | sort | reverse | first }}
+  when: backup_find_data_backups.matched > 0
+
+# - name: Find snapshops
+#   ansible.builtin.find:
+#     path: '{{ web_dir }}/.snaps'
+#     pattern: '{{ gluster_snapshot_name }}_GMT-\d{4}\.\d{2}\.\d{2}-\d{2}\.\d{2}\.\d{2}'
+#     use_regex: true
+#     file_type: directory
+#   register: find_snapshots
+
+# - name: Set last snapshot
+#   ansible.builtin.set_fact:
+#     last_snapshot: >-
+#       {{ find_snapshots.files | map(attribute="path") | map("basename") | sort | reverse | first }}
+#   when: find_snapshots.matched > 0
+
+# - name: Set backup web src to last snapshot
+#   ansible.builtin.set_fact:
+#     backup_web_src: '{{ web_dir }}/.snaps/{{ last_snapshot }}'
+#   when: last_snapshot is defined
+
+# - name: Set backup web src to root
+#   ansible.builtin.set_fact:
+#     backup_web_src: '{{ web_dir }}'
+#   when: last_snapshot is not defined
+
+- name: Sync web with link-dest
+  become: false
+  ansible.posix.synchronize:
+    src: '{{ data_dir }}/'
+    dest: '{{ backup_data_dir }}/data/work/'
+    link_dest: '{{ backup_data_dir }}/data/{{ backup_last_data_backup }}/'
+  when:
+    - backup_last_data_backup is defined
+    - backup_last_data_backup != backup_time
+
+- name: Sync web without link-dest
+  become: false
+  ansible.posix.synchronize:
+    src: '{{ data_dir }}/'
+    dest: '{{ backup_data_dir }}/data/work/'
+  when: backup_last_data_backup is not defined
+
+- name: Move work to name
+  ansible.builtin.command:
+    argv:
+      - mv
+      - '{{ backup_data_dir }}/data/work'
+      - '{{ backup_data_dir }}/data/{{ backup_time }}'
+    removes: '{{ backup_data_dir }}/data/work'
+    creates: '{{ backup_data_dir }}/data/{{ backup_time }}'
+
+- name: Remove old backups
+  ansible.builtin.file:
+    path: '{{ backup_data_dir }}/data/{{ item }}'
+    state: absent
+  loop: >-
+    {{ backup_find_data_backups.files | map(attribute="path") | map("basename")
+      | select("lt", backup_retention_time) }}

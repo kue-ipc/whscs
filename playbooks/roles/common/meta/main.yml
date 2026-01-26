@@ -1,6 +1,10 @@
 dependencies:
   - role: data
+  - role: db
   - role: default
+  - role: gluster
+  - role: lvm
+  - role: pg
   - role: tls
   - role: user
   - role: web

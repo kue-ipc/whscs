@@ -1,0 +1,7 @@
+## PostgreSQL
+pg_main_server: '{{ groups["db"] | last }}'
+pg_backup_servers: '{{ groups["db"][:-1] | reverse }}'
+pg_replication_user: replicator
+# pg_replication_password: set password
+pg_data_name: pgsql
+pg_data_size: 16G

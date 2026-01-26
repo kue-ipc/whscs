@@ -27,7 +27,7 @@
     quiet: true
 
 - name: Fetch webuser yml
-  delegate_to: '{{ backup_main_server }}'
+  delegate_to: '{{ groups["bk"] | first }}'
   ansible.builtin.fetch:
     src: '{{ web_dir }}/{{ user }}/webuser.yml'
     dest: '{{ backup_webuser_yml }}'

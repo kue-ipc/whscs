@@ -49,56 +49,10 @@ ldap_group: member
 # ldap_url: ldaps://ldap/ou=User?uid
 # ldap_bind_dn: cn=bind
 # ldap_bind_password: pass
-## LVM
-# default 4(MiB)
-lvm_pesize: 4
-lvm_vg: vg
-## GlusterFS
-# repo: stream, relesae, custom
-gluster_repo: custom
-gluster_version: "10"
-gluster_volume: web
-gluster_snapshot_name: ss
-# default snapshot soft limit 90%
-gluster_snapshot_hard: 10
-gluster_servers: '{{ groups["fs"] }}'
-gluster_main_server: '{{ gluster_servers | first }}'
-gluster_cluster_replicas: 3
-gluster_cluster_servers: '{{ gluster_servers }}'
-gluster_backup_servers: '{{ gluster_cluster_servers | difference([gluster_main_server]) }}'
-gluster_data_dir: /data
-gluster_data_name: data
-# data size is 30% of pool size
-gluster_data_snapshot_ratio: 0.3
-# gluster_data_size_g: pool.size_g * (1 - gluster_data_snapshot_ratio)
-gluster_data_pool_name: pool
-# gluster_data_pool_data_size_g: vg.size_g - 16
-gluster_data_pool_meta_size: 1G
-gluster_device_timeout: 1h
 ## NFS Ganesha
 nfs_ganesha_use: false
 nfs_ganesha_version: "5"
 nfs_ganesha_pnfs: false
-## MariaDB
-db_data_name: mysql
-db_data_size: 16G
-db_main_server: '{{ groups["db"] | first }}'
-db_backup_servers: '{{ groups["db"][1:] }}'
-db_cluster_name: web_wsrep_cluster
-db_character_set: utf8mb4
-db_collation: utf8mb4_general_ci
-## PostgreSQL
-pg_main_server: '{{ groups["db"] | last }}'
-pg_backup_servers: '{{ groups["db"][:-1] | reverse }}'
-pg_replication_user: replicator
-# pg_replication_password: set password
-pg_data_name: pgsql
-pg_data_size: 16G
-## Backup
-backup_main_server: '{{ groups["bk"] | first }}'
-backup_data_dir: /backup
-backup_data_name: backup
-backup_retention_peroid: '{{ 30 * 24 * 60 * 60 + 12 * 60 * 60 }}'
 app_list:
   - perl
   - python

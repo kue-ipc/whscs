@@ -2,35 +2,53 @@
 - name: Set backup time
   ansible.builtin.set_fact:
     backup_time: '{{ "%Y%m%d_%H%M%S" | strftime }}'
+  tags: always
 
 - name: Set backup retention time
   ansible.builtin.set_fact:
     backup_retention_time: >-
       {{ "%Y%m%d_%H%M%S" | strftime((ansible_date_time.epoch | int) - (backup_retention_peroid | int)) }}
+  tags: always
 
 - name: Create temp directory in local
   delegate_to: localhost
   become: false
+  run_once: true
   ansible.builtin.tempfile:
     state: directory
   register: local_tempdir
+  tags:
+    - db
+    - pg
 
 - name: Task mariadb
-  ansible.builtin.import_tasks: mariadb.yml
-  when: backup_target in ["all", "db"]
+  ansible.builtin.import_tasks:
+    file: mariadb.yml
+  tags: db
 
 - name: Task postgresql
-  ansible.builtin.import_tasks: postgresql.yml
-  when: backup_target in ["all", "pg"]
+  ansible.builtin.import_tasks:
+    file: postgresql.yml
+  tags: pg
 
 - name: Task web
-  ansible.builtin.import_tasks: web.yml
-  when: backup_target in ["all", "web"]
+  ansible.builtin.import_tasks:
+    file: web.yml
+  tags: web
+
+- name: Task data
+  ansible.builtin.import_tasks:
+    file: data.yml
+  tags: data
 
 - name: Remove temp directory in local
   delegate_to: localhost
   become: false
+  run_once: true
   ansible.builtin.file:
     path: '{{ local_tempdir.path }}'
     state: absent
   when: local_tempdir.path is defined
+  tags:
+    - db
+    - pg

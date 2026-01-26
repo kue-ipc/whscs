@@ -1,0 +1,8 @@
+## MariaDB
+db_data_name: mysql
+db_data_size: 16G
+db_main_server: '{{ groups["db"] | first }}'
+db_backup_servers: '{{ groups["db"][1:] }}'
+db_cluster_name: web_wsrep_cluster
+db_character_set: utf8mb4
+db_collation: utf8mb4_general_ci

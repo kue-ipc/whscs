@@ -1,0 +1,54 @@
+# create backup dirs
+---
+- name: Role sv lvm
+  ansible.builtin.import_role:
+    name: sv_lvm
+
+- name: Create a bakup data volume
+  community.general.lvol:
+    vg: '{{ lvm_vg }}'
+    lv: '{{ backup_data_name }}'
+    size: +100%FREE
+
+- name: Create a xfs filesystem on bakup data
+  community.general.filesystem:
+    dev: '/dev/{{ lvm_vg }}/{{ backup_data_name }}'
+    fstype: xfs
+    resizefs: true
+
+- name: Mount backup data
+  ansible.posix.mount:
+    path: '{{ backup_data_dir }}'
+    src: '/dev/{{ lvm_vg }}/{{ backup_data_name }}'
+    fstype: xfs
+    state: mounted
+
+- name: Make backup dirs
+  ansible.builtin.file:
+    path: '{{ backup_data_dir }}/{{ item }}'
+    state: directory
+    owner: root
+    group: wheel
+    mode: '0750'
+  loop:
+    - db
+    - pg
+    - web
+    - data
+
+- name: Run whoami
+  become: false
+  ansible.builtin.command:
+    cmd: whoami
+  register: result_whoami
+  changed_when: false
+
+- name: Make backup dirs for user
+  ansible.builtin.file:
+    path: '{{ backup_data_dir }}/{{ item }}'
+    state: directory
+    owner: '{{ result_whoami.stdout }}'
+    group: wheel
+    mode: '0750'
+  loop:
+    - data

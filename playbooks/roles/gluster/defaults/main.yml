@@ -1,0 +1,22 @@
+## GlusterFS
+# repo: stream, relesae, custom
+gluster_repo: custom
+gluster_version: "10"
+gluster_volume: web
+gluster_snapshot_name: ss
+# default snapshot soft limit 90%
+gluster_snapshot_hard: 10
+gluster_servers: '{{ groups["fs"] }}'
+gluster_main_server: '{{ gluster_servers | first }}'
+gluster_cluster_replicas: 3
+gluster_cluster_servers: '{{ gluster_servers }}'
+gluster_backup_servers: '{{ gluster_cluster_servers | difference([gluster_main_server]) }}'
+gluster_data_dir: /data
+gluster_data_name: data
+# data size is 30% of pool size
+gluster_data_snapshot_ratio: 0.3
+# gluster_data_size_g: pool.size_g * (1 - gluster_data_snapshot_ratio)
+gluster_data_pool_name: pool
+# gluster_data_pool_data_size_g: vg.size_g - 16
+gluster_data_pool_meta_size: 1G
+gluster_device_timeout: 1h

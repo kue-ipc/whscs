@@ -74,4 +74,5 @@
 
 - name: Task no chroot dir
   ansible.builtin.include_tasks: no_chroot_dir.yml
-  when: inventory_hostname == backup_main_server
+  run_once: true
+  when: '"bk" in group_names'

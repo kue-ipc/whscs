@@ -1,2 +1,7 @@
 dependencies:
-  - role: common
+  - role: data
+  - role: db
+  - role: gluster
+  - role: lvm
+  - role: pg
+  - role: web

@@ -15,11 +15,13 @@
 
 - name: Task chroot dir
   ansible.builtin.include_tasks: chroot_dir.yml
-  when: inventory_hostname == backup_main_server
+  run_once: true
+  when: '"bk" in group_names'
 
 - name: Task chroot user
   ansible.builtin.include_tasks: chroot_user.yml
-  when: inventory_hostname == mgt_main_server
+  run_once: true
+  when: '"mgt" in group_names'
 
 ## var
 
@@ -41,31 +43,38 @@
 
 ## app
 
+- name: Set httpd_host
+  ansible.builtin.set_fact:
+    user_present_httpd_host: >-
+      {{ webuser.enabled and (
+          ("app" in group_names and webuser.host in group_names) or
+          ("test" in group_names)
+      ) }}
+
 - name: Set app_host
   ansible.builtin.set_fact:
     user_present_app_host: >-
-      {{ webuser.enabled and (
-          ("app" in group_names and webuser.host in group_names) or
-          ("test" in group_names and webuser.host ~ "_test" in group_names)
-      ) }}
+      {{ webuser.enabled and webuser.app_use and (webuser.app_one | ternary(
+        groups[webuser.host] | first == inventory_hostname,
+        ("app" in group_names and webuser.host in group_names) or
+        ("test" in group_names and webuser.host ~ "_test" in group_names)
+      )) }}
 
 - name: Task app
   ansible.builtin.include_tasks: app.yml
   when:
     - user_present_app_host
-    - webuser.app_use
-    - not webuser.app_one or groups[webuser.host] | first == inventory_hostname
 
 - name: Task php-fpm
   ansible.builtin.include_tasks: php-fpm.yml
   when:
     - httpd_php == "php-fpm"
-    - user_present_app_host
+    - user_present_httpd_host
 
 - name: Task httpd
   ansible.builtin.include_tasks: httpd.yml
   when:
-    - user_present_app_host
+    - user_present_httpd_host
 
 ## web
 
@@ -112,7 +121,7 @@
     tasks_from: no_httpd
   when:
     - group_names | intersect(["app", "test"]) | length > 0
-    - not user_present_app_host
+    - not user_present_httpd_host
 
 - name: Task no php-fpm in user_absent
   ansible.builtin.include_role:
@@ -121,7 +130,7 @@
   when:
     - httpd_php == "php-fpm"
     - group_names | intersect(["app", "test"]) | length > 0
-    - not user_present_app_host
+    - not user_present_httpd_host
 
 - name: Task no app in user_absent
   ansible.builtin.include_role:
@@ -129,10 +138,7 @@
     tasks_from: no_app.yml
   when:
     - group_names | intersect(["app", "test"]) | length > 0
-    - >-
-      not user_present_app_host or
-      not webuser.app_use or
-      (webuser.app_one and groups[webuser.host] | first != inventory_hostname)
+    - not user_present_app_host
 
 ## DB and PG
 

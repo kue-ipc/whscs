@@ -78,16 +78,6 @@
         "enabled": True,
         "host": default_host,
         "uid": uid | int,
-        "db_use": False,
-        "db_pass": "",
-        "pg_use": False,
-        "pg_pass": "",
-        "app_use": False,
-        "app_port": (uid | int) + 17000,
-        "app_path": "/",
-        "app_one": False,
-        "public": False,
-        "http": False
       } }}
 
 - name: Copy webuser yml

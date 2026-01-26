@@ -27,6 +27,7 @@
           - host
           - enabled
           - public
+          - acme
           - app_use
           - db_use
           - pg_use

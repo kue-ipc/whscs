@@ -1,5 +1,10 @@
 # ctl
 ---
+- name: Task dir in data role
+  ansible.builtin.import_role:
+    name: data
+    tasks_from: dir
+
 - name: Role sv user env
   ansible.builtin.import_role:
     name: sv_user_env

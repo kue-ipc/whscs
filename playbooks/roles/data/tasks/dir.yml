@@ -1,4 +1,4 @@
-# FIXME: すべてのタスクがrun_onceだと、重複してroleが実行される。
+# data dir on localhost
 - name: Make parent data dir
   delegate_to: localhost
   become: false
@@ -10,7 +10,6 @@
 - name: Make data dir
   delegate_to: localhost
   become: false
-  run_once: true
   ansible.builtin.file:
     path: '{{ item }}'
     state: directory
@@ -37,7 +36,6 @@
 - name: Make data dir with restricted permissions
   delegate_to: localhost
   become: false
-  run_once: true
   ansible.builtin.file:
     path: '{{ item }}'
     state: directory

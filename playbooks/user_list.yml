@@ -10,13 +10,13 @@
       ansible.builtin.debug:
         var: user_webuser_list
 
-    - name: Debug user_existing_list var
+    - name: Debug need sync users
       ansible.builtin.debug:
-        var: user_existing_list
-
-    - name: Debug user_webusers var
-      ansible.builtin.debug:
-        var: user_webusers
+        msg: >-
+          {{ {
+            "present": user_webuser_list | difference(user_existing_list),
+            "absent": user_existing_list | difference(user_webuser_list),
+          } }}
 
     - name: Set export names
       ansible.builtin.set_fact:
@@ -31,6 +31,10 @@
           - app_use
           - db_use
           - pg_use
+
+    # - name: Debug user_webusers var
+    #   ansible.builtin.debug:
+    #     msg: '{{ user_webusers | ansible.utils.keep_keys(target=export_names) }}'
 
     - name: Create YAML
       delegate_to: localhost

@@ -1,0 +1,10 @@
+- name: Task webuser
+  ansible.builtin.include_tasks:
+    file: webuser.yml
+  vars:
+    user: '{{ item }}'
+
+- name: Add webusers to webusers
+  ansible.builtin.set_fact:
+    user_webusers: >-
+      {{ {item: user_webuser} | combine(user_webusers) }}

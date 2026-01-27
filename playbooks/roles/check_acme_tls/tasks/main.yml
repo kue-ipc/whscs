@@ -19,29 +19,18 @@
     msg: 'Require `site` or `user` variable'
     quiet: true
 
-- name: Task info in acme role
+- name: Task renewal info in acme role
   ansible.builtin.import_role:
     name: acme
-    tasks_from: info
+    tasks_from: renewal
   vars:
     acme_domain: '{{ site }}'
-
-- name: Retrieve renewal information for a certificate
-  delegate_to: localhost
-  become: false
-  run_once: true
-  community.crypto.acme_certificate_renewal_info:
-    acme_version: 2
-    acme_directory: '{{ acme_account_info.server }}'
-    certificate_path: '{{ acme_tls_info.cert }}'
-  register: renewal_info
 
 - name: Assert certificate needs renewal
   delegate_to: localhost
   become: false
   run_once: true
   ansible.builtin.assert:
-    that: not renewal_info.should_renew
+    that: not acme_renewal.should_renew
     msg: 'ACME certificate for {{ site }} needs renewal'
     quiet: true
-

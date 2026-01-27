@@ -1,0 +1,16 @@
+# Check renewal
+- name: Task info
+  ansible.builtin.include_tasks:
+    file: info.yml
+  when: acme_info is not defined
+
+- name: Retrieve renewal information for a certificate
+  delegate_to: localhost
+  become: false
+  run_once: true
+  community.crypto.acme_certificate_renewal_info:
+    acme_version: 2
+    acme_directory: '{{ acme_account_info.server }}'
+    certificate_path: '{{ acme_tls_info.cert }}'
+    remaining_days: '{{ acme_renewal_days | default(omit) }}'
+  register: acme_renewal

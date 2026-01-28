@@ -2,7 +2,7 @@
 - name: Set httpd php
   ansible.builtin.set_fact:
     httpd_php: >-
-      {{ (httpd_mpm == "prefork" and ansible_distribution_version is version("9", "<"))
+      {{ (httpd_mpm == "prefork" and ansible_facts.distribution_version is version("9", "<"))
         | ternary("mod_php", "php-fpm") }}
 
 - name: Set proxy_env

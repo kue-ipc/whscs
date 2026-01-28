@@ -42,7 +42,7 @@
     owner: root
     group: root
     mode: '0644'
-  register: copy_cert_result
+  register: update_tls_copy_cert_result
 
 - name: Copy private key
   ansible.builtin.copy:
@@ -51,18 +51,18 @@
     owner: root
     group: root
     mode: '0600'
-  register: copy_key_result
+  register: update_tls_copy_key_result
 
 - name: Restart web
   ansible.builtin.import_role:
     name: restart_web
   when:
-    - copy_cert_result.changed or copy_key_result.changed
+    - update_tls_copy_cert_result.changed or update_tls_copy_key_result.changed
     - group_names | intersect(["web", "rp", "test"]) | length > 0
 
 - name: Restart app
   ansible.builtin.import_role:
     name: restart_app
   when:
-    - copy_cert_result.changed or copy_key_result.changed
+    - update_tls_copy_cert_result.changed or update_tls_copy_key_result.changed
     - group_names | intersect(["app", "test"]) | length > 0

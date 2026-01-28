@@ -37,4 +37,4 @@
     state: present
     name:
       - lynx
-  when: ansible_distribution_version is version("9", ">=")
+  when: ansible_facts.distribution_version is version("9", ">=")

@@ -25,12 +25,3 @@
     tasks_from: renewal
   vars:
     acme_domain: '{{ site }}'
-
-- name: Assert certificate needs renewal
-  delegate_to: localhost
-  become: false
-  run_once: true
-  ansible.builtin.assert:
-    that: not acme_renewal.should_renew
-    msg: 'ACME certificate for {{ site }} needs renewal'
-    quiet: true

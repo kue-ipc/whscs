@@ -11,6 +11,7 @@
       account: '{{ data_acme_account_dir }}/{{ acme_domain }}.yml'
       key: '{{ data_acme_key_dir }}/{{ acme_domain }}.key'
       challenge: '{{ data_acme_tls_dir }}/{{ acme_domain }}.yml'
+      renewal: '{{ data_acme_renewal_dir }}/{{ acme_domain }}.yml'
 
 # account info
 - name: Load acme account yml

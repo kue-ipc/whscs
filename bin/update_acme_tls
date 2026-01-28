@@ -4,6 +4,10 @@ import os
 import yaml
 import subprocess
 
+# Set Ansible environment variables
+os.environ["ANSIBLE_DISPLAY_OK_HOSTS"] = "False"
+os.environ["ANSIBLE_DISPLAY_SKIPPED_HOSTS"] = "False"
+
 script_dir = os.path.dirname(os.path.abspath(__file__))
 playbook_dir = os.path.abspath(os.path.join(script_dir, "..", "playbooks"))
 data_dir = os.path.abspath(os.path.join(script_dir, "..", "data"))
@@ -11,46 +15,62 @@ data_dir = os.path.abspath(os.path.join(script_dir, "..", "data"))
 subprocess.run(["ansible-playbook", "user_list.yml"], cwd=playbook_dir, check=True)
 
 with open(os.path.join(data_dir, "webusers.yml"), "r") as f:
-        webusers = yaml.safe_load(f)
+    webusers = yaml.safe_load(f)
 
 count = {
     "checked": 0,
     "skipped": 0,
     "updated": 0,
     "failed": 0,
+    "error": 0,
 }
 
 for user, webuser in webusers.items():
-    if not webuser.get("acme", False):
-        continue
+    try:
+        if not webuser.get("acme", False):
+            continue
 
-    print(f"Check ACME TLS for user: { user }")
-    count["checked"] += 1
-    result = subprocess.run(["ansible-playbook", "check_acme_tls.yml", "-e", f"user={user}"], cwd=playbook_dir)
-    if result.returncode == 0:
-        print(f"ACME TLS is up to date for user: { user }")
-        count["skipped"] += 1
-        continue
+        print(f"Check ACME TLS for user: { user }")
+        count["checked"] += 1
+        result = subprocess.run(["ansible-playbook", "check_acme_tls.yml", "-e", f"user={user}"], cwd=playbook_dir)
+        if result.returncode != 0:
+            print(f"Failed to check ACME TLS for user: { user }")
+            count["failed"] += 1
+            continue
+        
+        with open(os.path.join(data_dir, "acme", "renewal", f"{ webuser['site'] }.yml"), "r") as f:
+            renewal = yaml.safe_load(f)
+        if not renewal.get("should_renew", False):
+            print(f"ACME TLS is up to date for user: { user } ")
+            count["skipped"] += 1
+            continue
 
-    print(f"Need update ACME TLS for user: { user }")
-    result = subprocess.run(["ansible-playbook", "create_acme_tls.yml", "-e", f"user={user}", "-e", "force=yes"],
-        cwd=playbook_dir)
-    if result.returncode != 0:
-        print(f"Failed to create ACME TLS for user: { user }")
-        count["failed"] += 1
-        continue
+        print(f"Need update ACME TLS for user: { user }")
+        result = subprocess.run(["ansible-playbook", "create_acme_tls.yml", "-e", f"user={user}", "-e", "force=yes"],
+            cwd=playbook_dir)
+        if result.returncode != 0:
+            print(f"Failed to create ACME TLS for user: { user }")
+            count["failed"] += 1
+            continue
 
-    result = subprocess.run(["ansible-playbook", "reload_webserver.yml", "-e", f"user={user}"], cwd=playbook_dir)
-    if result.returncode != 0:
-        print(f"Failed to update ACME TLS for user: { user }")
-        count["failed"] += 1
-        continue
+        result = subprocess.run(["ansible-playbook", "update_tls.yml", "-e", f"user={user}"], cwd=playbook_dir)
+        if result.returncode != 0:
+            print(f"Failed to update ACME TLS for user: { user }")
+            count["failed"] += 1
+            continue
 
-    print(f"Updated ACME TLS for user: { user }")
-    count["updated"] += 1
+        print(f"Updated ACME TLS for user: { user }")
+        count["updated"] += 1
+    except Exception as e:
+        print(f"Error processing user { user }: { e }")
+        count["error"] += 1
 
 print (f"ACME TLS update summary: { count }")
 
+if count["error"] > 0:
+    print(f"ACME TLS update completed with errors")
+    exit(2)
+
 if count["failed"] > 0:
-    print(f"ACME TLS update completed with failures: { count }")
+    print(f"ACME TLS update completed with failures")
     exit(1)

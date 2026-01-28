@@ -14,3 +14,12 @@
     certificate_path: '{{ acme_tls_info.cert }}'
     remaining_days: '{{ acme_renewal_days | default(omit) }}'
   register: acme_renewal
+
+- name: Save renewal info
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.copy:
+    content: '{{ acme_renewal | to_nice_yaml }}'
+    dest: '{{ acme_info.renewal }}'
+    mode: '0644'

@@ -8,7 +8,7 @@
 - name: Install Python MySQL module
   ansible.builtin.dnf:
     state: present
-    name: python3-PyMySQL
+    name: '{{ ansible_facts.discovered_interpreter_python | basename }}-PyMySQL'
   when: inventory_hostname == db_main_server
 
 - name: Line in client conf

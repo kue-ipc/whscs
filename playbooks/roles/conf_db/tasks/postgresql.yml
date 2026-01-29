@@ -8,7 +8,7 @@
 - name: Install Python PostgreSQL module
   ansible.builtin.dnf:
     state: present
-    name: python3-psycopg2
+    name: '{{ ansible_facts.discovered_interpreter_python | basename }}-psycopg2'
   when: inventory_hostname == pg_main_server
 
 - name: Task postgresql main

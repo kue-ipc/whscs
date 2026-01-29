@@ -6,7 +6,7 @@
     msg: 'disk used over {{ (health_check_threshold_disk_size * 100) }}%'
     quiet: true
   loop: >-
-    {{ ansible_mounts
+    {{ ansible_facts.mounts
        | rejectattr("mount", "match", "(/var/lib/snapd)?/snap/")
        | rejectattr("mount", "match", "/web/[^/]+/")
        | rejectattr("mount", "match", "/run/gluster/snaps/")

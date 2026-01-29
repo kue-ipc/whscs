@@ -11,10 +11,10 @@
 
 - name: Check load average
   ansible.builtin.assert:
-    that: item.value < health_check_threshold_loadavg[item.key] * ansible_processor_vcpus
-    msg: 'load average over {{ health_check_threshold_loadavg[item.key] }} * {{ ansible_processor_vcpus }} vcpus'
+    that: item.value < health_check_threshold_loadavg[item.key] * ansible_facts.processor_vcpus
+    msg: 'load average over {{ health_check_threshold_loadavg[item.key] }} * {{ ansible_facts.processor_vcpus }} vcpus'
     quiet: true
-  loop: '{{ ansible_loadavg | dict2items }}'
+  loop: '{{ ansible_facts.loadavg | dict2items }}'
   loop_control:
     label: '{{ item.key }} {{ item.value }}'
 
@@ -32,6 +32,6 @@
     that: item.value.free >= health_check_threshold_memory_free[item.key]
     msg: 'free memory less than {{ health_check_threshold_memory_free[item.key] }} MiB'
     quiet: true
-  loop: '{{ ansible_memory_mb | dict2items }}'
+  loop: '{{ ansible_facts.memory_mb | dict2items }}'
   loop_control:
     label: '{{ item.key }} {{ item.value.total | default("-") }} {{ item.value.used }} {{ item.value.free }}'

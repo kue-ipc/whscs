@@ -2,27 +2,36 @@
 ---
 - name: Task dnf
   ansible.builtin.import_tasks: dnf.yml
+  tags: dnf
 
 - name: Task firewalld
   ansible.builtin.import_tasks: firewalld.yml
+  tags: firewalld
 
 - name: Task locale
   ansible.builtin.import_tasks: locale.yml
+  tags: locale
 
 - name: Task timezone
   ansible.builtin.import_tasks: timezone.yml
+  tags: timezone
 
 - name: Task chrony
   ansible.builtin.import_tasks: chrony.yml
+  tags: chrony
 
 - name: Task sshd
   ansible.builtin.import_tasks: sshd.yml
+  tags: sshd
 
 - name: Task user
   ansible.builtin.import_tasks: user.yml
+  tags: user
 
 - name: Task hosts
   ansible.builtin.import_tasks: hosts.yml
+  tags: hosts
 
 - name: Task logrotate
   ansible.builtin.import_tasks: logrotate.yml
+  tags: logrotate

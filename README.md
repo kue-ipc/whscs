@@ -291,3 +291,14 @@ EL8やEL9を長時間運用しているとDNFのキャッシュが溜まって�
 ### Streamのサポート終了後のGlusterFS
 
 デフォルトのGlusterFSはCentOS Stream用のレポジトリのため、SteramのEOLとともにレポジトリが消される。クライアント向けはStreamようではないRHEL向けのレポジトリを見に行くカスタムレポジトリで対応している。サーバーはRHEL向けではglusterfs-serverが入らないため、Stream版を使い続けるしかない。
+
+### Ansibleやモジュールのバージョについて
+
+`python3-dnf`パッケージが追加のバージョンには用意されていないため、ターゲットになるサーバー標準のPythonが動作するバージョンにする必要がある。
+
+<https://docs.ansible.com/projects/ansible/latest/reference_appendices/release_and_maintenance.html>
+
+ansible core 2.15系で動作を確認しているが、次のことに注意。
+
+- `netaddr`パッケージも必要になる。
+- `check_acme.yml`を動作させるにはcommunity.crypto 2.20.0以上が必要になる。

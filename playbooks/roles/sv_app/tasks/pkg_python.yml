@@ -34,14 +34,19 @@
       - 'python{{ item }}-psycopg2'
   loop: '{{ sv_app_python_pkg_versions }}'
 
-- name: Select python for EL8
+# TODO: 選択できるようにする
+# FIXME: autoでpathを指定しないと動作する？
+
+- name: Select auto python for EL8
   community.general.alternatives:
     name: python
+    state: auto
     path: '/usr/bin/python3'
   when: ansible_distribution_major_version == '8'
 
-- name: Select python3 for EL8
+- name: Select auto python3 for EL8
   community.general.alternatives:
     name: python3
+    state: auto
     path: '/usr/bin/python{{ sv_app_python_defalut }}'
   when: ansible_distribution_major_version == "8"

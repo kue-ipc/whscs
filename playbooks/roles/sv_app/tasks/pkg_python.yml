@@ -37,11 +37,11 @@
 - name: Select python for EL8
   community.general.alternatives:
     name: python
-    path: '/usr/bin/python{{ (sv_app_python_versions | first)[0] }}'
+    path: '/usr/bin/python3'
   when: ansible_distribution_major_version == '8'
 
 - name: Select python3 for EL8
   community.general.alternatives:
     name: python3
-    path: '/usr/bin/python{{ sv_app_python_versions | first }}'
+    path: '/usr/bin/python{{ sv_app_python_defalut }}'
   when: ansible_distribution_major_version == "8"

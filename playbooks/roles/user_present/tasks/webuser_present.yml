@@ -33,6 +33,7 @@
         "app_use": False,
         "app_one": False,
         "public": False,
+        "acl": [],
         "http": False,
       } | combine(lookup("file", webuser_yml) | from_yaml) }}
 

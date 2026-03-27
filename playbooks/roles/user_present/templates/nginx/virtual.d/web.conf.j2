@@ -29,7 +29,12 @@ server {
     add_header  X-Frame-Options            "SAMEORIGIN"  always;
     add_header  X-Content-Type-Options     "nosniff"     always;
 
-{% if not webuser.public %}
+{% for ip in webuser.acl %}
+    allow {{ ip }};
+{% endfor %}
+{% if webuser.public %}
+    allow all;
+{% else %}
     allow 127.0.0.0/8;
     allow ::1;
     allow 10.0.0.0/8;
@@ -87,7 +92,12 @@ server {
     add_header  X-Content-Type-Options     "nosniff"     always;
 {% endif %}
 
-{% if not webuser.public %}
+{% for ip in webuser.acl %}
+    allow {{ ip }};
+{% endfor %}
+{% if webuser.public %}
+    allow all;
+{% else %}
     allow 127.0.0.0/8;
     allow ::1;
     allow 10.0.0.0/8;

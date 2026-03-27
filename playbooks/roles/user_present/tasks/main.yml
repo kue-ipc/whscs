@@ -91,7 +91,6 @@
   when:
     - '"rp" in group_names'
     - webuser.enabled
-    - webuser.public
 
 ## no rp
 
@@ -101,7 +100,7 @@
     tasks_from: no_nginx
   when:
     - '"rp" in group_names'
-    - not webuser.enabled or not webuser.public
+    - not webuser.enabled
 
 # no web
 

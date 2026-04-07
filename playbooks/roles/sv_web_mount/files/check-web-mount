@@ -8,7 +8,7 @@ import pyinotify
 import subprocess
 import time
 
-MOUNT_POINTS = ["/web/{0}/proc", "/web/{0}/tmp"]
+MOUNT_POINTS = ["/web/{0}/proc", "/web/{0}/tmp", "/web/{0}/sys"]
 
 def get_mounts(name):
     return [point.format(name) for point in MOUNT_POINTS]

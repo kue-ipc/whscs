@@ -1,0 +1,19 @@
+# tls
+---
+- name: Task webusers in user role
+  ansible.builtin.include_role:
+    name: user
+    tasks_from: webusers
+
+- name: Get certificate
+  delegate_to: localhost
+  community.crypto.get_certificate:
+    host: '{{ inventory_hostname }}'
+    port: 443
+    get_certificate_chain: true
+    server_name: '{{ item.value.site }}'
+  register: health_check_tls_results
+  loop: '{{ user_webusers | dict2items }}'
+
+- debug:
+    var: health_check_tls_results

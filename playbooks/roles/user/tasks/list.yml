@@ -9,7 +9,8 @@
 - name: Set webuser_list
   ansible.builtin.set_fact:
     user_webuser_list: >-
-      {{ user_find_webuser_result.files | map(attribute="path") | map("basename") | map("splitext") | map("first") }}
+      {{ user_find_webuser_result.files | map(attribute="path") | map("basename")
+        | map("splitext") | map("first") }}
 
 - name: Check existing users
   delegate_to: '{{ groups["mgt"] | first }}'

@@ -36,13 +36,13 @@
     #   ansible.builtin.debug:
     #     msg: '{{ user_webusers | ansible.utils.keep_keys(target=export_names) }}'
 
-    - name: Create YAML
-      delegate_to: localhost
-      ansible.builtin.copy:
-        dest: '{{ data_dir }}/webusers.yml'
-        content: |
-          {{ user_webusers | ansible.utils.keep_keys(target=export_names) | to_nice_yaml }}
-        mode: '0644'
+    # - name: Create YAML
+    #   delegate_to: localhost
+    #   ansible.builtin.copy:
+    #     dest: '{{ data_dir }}/webusers.yml'
+    #     content: |
+    #       {{ user_webusers | ansible.utils.keep_keys(target=export_names) | to_nice_yaml }}
+    #     mode: '0644'
 
     - name: Create CSV
       delegate_to: localhost

@@ -3,13 +3,71 @@
   ansible.builtin.import_tasks:
     file: list.yml
 
+- name: Stat webusers yml
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.stat:
+    path: '{{ data_webusers_yml }}'
+  register: user_webusers_stat_webusers_yml
+  when: user_webusers_update is not defined
+
+- name: Stat webuser yml list
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.stat:
+    path: '{{ data_webuser_dir }}/{{ item }}.yml'
+  loop: '{{ user_webuser_list }}'
+  register: user_webusers_stat_webuser_yml_list
+  when: user_webusers_update is not defined
+
+- name: Stat webuser dir
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.stat:
+    path: '{{ data_webuser_dir }}'
+  register: user_webusers_stat_webuser_dir
+  when: user_webusers_update is not defined
+
+- name: Set user_webusers_update
+  run_once: true
+  ansible.builtin.set_fact:
+    user_webusers_update: >-
+      {{ not(
+        user_webusers_stat_webusers_yml.stat.exists and
+          (user_webusers_stat_webusers_yml.stat.mtime > user_webusers_stat_webuser_dir.stat.mtime) and
+          (user_webusers_stat_webusers_yml.stat.mtime >
+            user_webusers_stat_webuser_yml_list.results | map(attribute="stat.mtime") | max
+      )) }}
+  when: user_webusers_update is not defined
+
 - name: Set webusers to an empty dict
+  run_once: true
   ansible.builtin.set_fact:
     user_webusers: {}
+  when: user_webusers_update
 
 - name: Load webuser
+  run_once: true
   ansible.builtin.include_tasks:
     file: load_webuser.yml
   loop: '{{ user_webuser_list }}'
   loop_control:
     loop_var: user
+  when: user_webusers_update
+
+- name: Save webusers
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.copy:
+    content: '{{ user_webusers | to_nice_yaml }}'
+    dest: '{{ data_webusers_yml }}'
+    mode: '0644'
+  when: user_webusers_update
+
+- name: Load webusers yml
+  ansible.builtin.set_fact:
+    user_webusers: '{{ lookup("file", data_webusers_yml) | from_yaml }}'

@@ -1,7 +1,5 @@
 ---
 - name: Health Check only test servers
-  hosts:
-    - test
-    - tpl
+  hosts: test
   roles:
     - health_check

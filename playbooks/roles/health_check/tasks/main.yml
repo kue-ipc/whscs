@@ -1,26 +1,35 @@
 # health check
 ---
-- name: Task service
-  ansible.builtin.import_tasks: service.yml
-
 - name: Task lvm pool
   ansible.builtin.include_tasks: lvm_pool.yml
   when: '"fs" in group_names'
+  tags: fs
 
 - name: Task gluster
   ansible.builtin.include_tasks: gluster.yml
   when: inventory_hostname == gluster_main_server
+  tags: fs
 
 - name: Task mount
   ansible.builtin.include_tasks: mount.yml
   when: group_names | intersect(["mgt", "bk", "app", "web", "test"]) | length > 0
+  tags: fs
 
 - name: Task disk
   ansible.builtin.import_tasks: disk.yml
+  tags: fs
+
+- name: Task service
+  ansible.builtin.import_tasks: service.yml
+  tags: service
 
 - name: Task system
   ansible.builtin.import_tasks: system.yml
+  tags: system
 
-# - name: Task tls
-#   ansible.builtin.import_tasks: tls.yml
-#   when: group_names | intersect(["app", "web", "test", "rp"]) | length > 0
+- name: Task tls
+  ansible.builtin.import_tasks: tls.yml
+  when: group_names | intersect(["app", "web", "test", "rp"]) | length > 0
+  tags:
+    - never
+    - tls

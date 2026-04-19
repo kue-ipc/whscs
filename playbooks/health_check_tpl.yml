@@ -1,0 +1,5 @@
+---
+- name: Health Check only tpl servers
+  hosts: tpl
+  roles:
+    - health_check

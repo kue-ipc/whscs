@@ -15,7 +15,7 @@
     dest: /var/lib/pgsql/data/pg_hba.conf
     contype: host
     users: '{{ pg_replication_user }}'
-    source: '{{ item }}'
+    source: '{{ item }}/{{ (item is ansible.utils.ipv4) | ternary("32", "128") }}'
     databases: replication
     method: scram-sha-256
   loop: >-

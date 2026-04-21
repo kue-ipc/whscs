@@ -58,13 +58,23 @@
     loop_var: user
   when: user_webusers_update
 
-- name: Save webusers
+- name: Save webusers yml
   delegate_to: localhost
   become: false
   run_once: true
   ansible.builtin.copy:
     content: '{{ user_webusers | to_nice_yaml }}'
     dest: '{{ data_webusers_yml }}'
+    mode: '0644'
+  when: user_webusers_update
+
+- name: Touch webusers yml
+  delegate_to: localhost
+  become: false
+  run_once: true
+  ansible.builtin.file:
+    path: '{{ data_webusers_yml }}'
+    state: touch
     mode: '0644'
   when: user_webusers_update
 

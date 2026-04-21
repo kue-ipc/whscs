@@ -1,4 +1,5 @@
 # tls
+# TODO: チェインの確認
 ---
 - name: Task webusers in user role
   ansible.builtin.include_role:
@@ -10,10 +11,41 @@
   community.crypto.get_certificate:
     host: '{{ inventory_hostname }}'
     port: 443
-    get_certificate_chain: true
+    # get_certificate_chain: true
     server_name: '{{ item.value.site }}'
   register: health_check_tls_results
   loop: '{{ user_webusers | dict2items }}'
+  loop_control:
+    label: '{{ item.key }}'
 
-- debug:
-    var: health_check_tls_results
+- name: Check certificate expiration
+  ansible.builtin.assert:
+    that: not item.expired
+    msg: '{{ item.invocation.module_args.server_name }} certificate is expired'
+    quiet: true
+  loop: '{{ health_check_tls_results.results }}'
+  loop_control:
+    label: '{{ item.invocation.module_args.server_name }}'
+
+- name: Check certificate as soon as not_after
+  ansible.builtin.assert:
+    that: >-
+      ((item.not_after | to_datetime("%Y%m%d%H%M%S%z")) -
+      (ansible_date_time.iso8601 | to_datetime("%Y-%m-%dT%H:%M:%S%z"))).days >
+      health_check_tls_expire_warning_days
+    msg: '{{ item.invocation.module_args.server_name }} certificate is abount to expire: {{ item.not_after }}'
+    quiet: true
+  loop: '{{ health_check_tls_results.results }}'
+  loop_control:
+    label: '{{ item.invocation.module_args.server_name }}'
+
+- name: Check certificate SAN
+  ansible.builtin.assert:
+    that: >-
+      "DNS:" ~ item.invocation.module_args.server_name in
+      (item.cert | community.crypto.x509_certificate_info).subject_alt_name
+    msg: '{{ item.invocation.module_args.server_name }} certificate does not have DNS in SAN'
+    quiet: true
+  loop: '{{ health_check_tls_results.results }}'
+  loop_control:
+    label: '{{ item.invocation.module_args.server_name }}'

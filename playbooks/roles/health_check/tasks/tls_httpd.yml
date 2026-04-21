@@ -1,4 +1,4 @@
-# tls
+# tls httpd
 # TODO: チェインの確認
 ---
 - name: Task webusers in user role
@@ -7,38 +7,37 @@
     tasks_from: webusers
   when: user_webusers is not defined
 
-# FIXME: rpは公開サイトのみでチェックするが、将来は公開になる。
 - name: Set health_check_tls_targets
   ansible.builtin.set_fact:
-    health_check_tls_targets: >-
-      {{ ("rp" in group_names)
-        | ternary(user_webusers | dict2items | selectattr("value.public"),
+    health_check_tls_httpd_targets: >-
+      {{ ("app" in group_names)
+        | ternary(user_webusers | dict2items | selectattr("value.host", "in", group_names),
                   user_webusers | dict2items)
         | map(attribute='value') | list
       }}
 
-- name: Get certificate
+- name: Get certificate on httpd
   delegate_to: localhost
   community.crypto.get_certificate:
     host: '{{ inventory_hostname }}'
-    port: 443
+    port: '{{ item.httpd_port }}'
     # get_certificate_chain: true
     server_name: '{{ item.site }}'
-  register: health_check_tls_results
-  loop: '{{ health_check_tls_targets }}'
+  register: health_check_tls_httpd_results
+  loop: '{{ health_check_tls_httpd_targets }}'
   loop_control:
     label: '{{ item.name }}'
 
-- name: Check certificate expiration
+- name: Check certificate expiration on httpd
   ansible.builtin.assert:
     that: not item.expired
     msg: '{{ item.invocation.module_args.server_name }} certificate is expired'
     quiet: true
-  loop: '{{ health_check_tls_results.results }}'
+  loop: '{{ health_check_tls_httpd_results.results }}'
   loop_control:
     label: '{{ item.invocation.module_args.server_name }}'
 
-- name: Check certificate as soon as not_after
+- name: Check certificate as soon as not_after on httpd
   ansible.builtin.assert:
     that: >-
       ((item.not_after | to_datetime("%Y%m%d%H%M%S%z")) -
@@ -46,17 +45,17 @@
       health_check_tls_expire_warning_days
     msg: '{{ item.invocation.module_args.server_name }} certificate is abount to expire: {{ item.not_after }}'
     quiet: true
-  loop: '{{ health_check_tls_results.results }}'
+  loop: '{{ health_check_tls_httpd_results.results }}'
   loop_control:
     label: '{{ item.invocation.module_args.server_name }}'
 
-- name: Check certificate SAN
+- name: Check certificate SAN on httpd
   ansible.builtin.assert:
     that: >-
       "DNS:" ~ item.invocation.module_args.server_name in
       (item.cert | community.crypto.x509_certificate_info).subject_alt_name
     msg: '{{ item.invocation.module_args.server_name }} certificate does not have DNS in SAN'
     quiet: true
-  loop: '{{ health_check_tls_results.results }}'
+  loop: '{{ health_check_tls_httpd_results.results }}'
   loop_control:
     label: '{{ item.invocation.module_args.server_name }}'

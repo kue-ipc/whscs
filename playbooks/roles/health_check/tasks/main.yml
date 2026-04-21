@@ -28,8 +28,17 @@
   tags: system
 
 - name: Task tls
-  ansible.builtin.import_tasks: tls.yml
-  when: group_names | intersect(["app", "web", "test", "rp"]) | length > 0
-  tags:
-    - never
-    - tls
+  ansible.builtin.include_tasks:
+    file: tls.yml
+    apply:
+      tags: tls
+  when: group_names | intersect(["web", "test", "rp"]) | length > 0
+  tags: tls
+
+- name: Task tls_httpd
+  ansible.builtin.include_tasks:
+    file: tls_httpd.yml
+    apply:
+      tags: tls
+  when: group_names | intersect(["app", "test"]) | length > 0
+  tags: tls

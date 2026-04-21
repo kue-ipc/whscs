@@ -40,5 +40,5 @@
 
 - name: Dispaly users that need to be deleted
   ansible.builtin.debug:
-    msg: '{{ existing_list | difference(webuser_list) }}'
+    msg: '{{ existing_list | difference(webuser_list) | sort }}'
   when: existing_list | difference(webuser_list) | length > 0

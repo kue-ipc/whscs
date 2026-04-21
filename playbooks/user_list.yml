@@ -14,8 +14,8 @@
       ansible.builtin.debug:
         msg: >-
           {{ {
-            "present": user_webuser_list | difference(user_existing_list),
-            "absent": user_existing_list | difference(user_webuser_list),
+            "present": user_webuser_list | difference(user_existing_list) | sort,
+            "absent": user_existing_list | difference(user_webuser_list) | sort,
           } }}
 
     - name: Set export names

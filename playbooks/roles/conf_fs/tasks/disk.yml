@@ -3,6 +3,11 @@
   ansible.builtin.import_role:
     name: sv_lvm
 
+- name: Gather only LVM facts
+  become: true
+  ansible.builtin.setup:
+    filter: ansible_lvm
+
 # LVM pool meta data size < 16GiB + spare LV < 16GiB = 32
 - name: Set gluster_data_pool_data_size_g
   ansible.builtin.set_fact:

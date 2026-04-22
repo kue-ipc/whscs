@@ -16,6 +16,7 @@
     - httpd_use_nfs
 
 - name: Set seport for nginx to httpd
+  become: true
   community.general.seport:
     ports: '{{ user_uid_range.start + 7000 }}-{{ user_uid_range.stop - 1 + 7000 }}'
     proto: tcp

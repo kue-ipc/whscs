@@ -34,6 +34,7 @@
     - httpd_use_nfs
 
 - name: Set SELinux port for httpd
+  become: true
   community.general.seport:
     ports:
       - '{{ user_uid_range.start + 7000 }}-{{ user_uid_range.stop - 1 + 7000 }}'

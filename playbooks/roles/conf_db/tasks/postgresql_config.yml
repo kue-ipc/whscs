@@ -1,6 +1,7 @@
 # postgresql config
 ---
 - name: Line in postgresql.conf
+  become: true
   ansible.builtin.lineinfile:
     path: /var/lib/pgsql/data/postgresql.conf
     regexp: '^#?{{ item.name }}\s*=.*$'

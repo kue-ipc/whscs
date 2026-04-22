@@ -40,6 +40,7 @@
     name: usermin
 
 - name: Line in config file
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/usermin/config
     regexp: '^{{ item.key }}='
@@ -52,6 +53,7 @@
     lang: ja_JP.UTF-8
 
 - name: Line in filemin/config file
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/usermin/filemin/config
     regexp: '^{{ item.key }}='
@@ -61,6 +63,7 @@
     allowed_paths: "/web/$USER\t$HOME"
 
 - name: Line in chfn/config file
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/usermin/chfn/config
     regexp: '^{{ item.key }}='
@@ -74,6 +77,7 @@
     change_office: 0
 
 - name: Line in postgresql/config file
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/usermin/postgresql/config
     regexp: '^{{ item.key }}='
@@ -121,6 +125,7 @@
       # - xterm
 
 - name: Replace in webmin.acl
+  become: true
   ansible.builtin.replace:
     path: /etc/usermin/webmin.acl
     regexp: '^user:.*$'

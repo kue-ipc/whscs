@@ -52,6 +52,7 @@
     state: mounted
 
 - name: Set DefaultDeviceTimeoutSec 90s
+  become: true
   ansible.builtin.replace:
     path: /etc/systemd/system.conf
     regexp: '^#?DefaultDeviceTimeoutSec=.*$'

@@ -1,17 +1,20 @@
 ---
 - name: Set logrotate.conf rotate 15
+  become: true
   ansible.builtin.replace:
     path: /etc/logrotate.conf
     regexp: '^rotate\s+\d+$'
     replace: 'rotate 15'
 
 - name: Set logrotate.conf dateext
+  become: true
   ansible.builtin.replace:
     path: /etc/logrotate.conf
     regexp: '^#?dateext$'
     replace: 'dateext'
 
 - name: Set logrotate.conf compress
+  become: true
   ansible.builtin.replace:
     path: /etc/logrotate.conf
     regexp: '^#?compress$'

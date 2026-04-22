@@ -12,6 +12,7 @@
     enabled: true
 
 - name: Set ntp server for chrory
+  become: true
   ansible.builtin.replace:
     path: /etc/chrony.conf
     regexp: '^#?pool .*$'

@@ -10,6 +10,7 @@
       - php-pgsql
 
 - name: Set expose_php php.ini
+  become: true
   ansible.builtin.replace:
     path: /etc/php.ini
     regexp: '^;?expose_php\s*=.*$'

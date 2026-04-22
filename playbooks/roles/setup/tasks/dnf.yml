@@ -1,6 +1,7 @@
 # dnf設定
 ---
 - name: Block in dnf.conf
+  become: true
   ansible.builtin.blockinfile:
     path: /etc/dnf/dnf.conf
     marker: '# {mark} ANSIBLE MANAGED BLOCK proxy'

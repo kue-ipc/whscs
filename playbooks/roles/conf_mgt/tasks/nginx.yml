@@ -24,6 +24,7 @@
 ## nginx conf
 
 - name: Remove comment out ssl in nginx.conf
+  become: true
   ansible.builtin.replace:
     path: /etc/nginx/nginx.conf
     regexp: '^#( {4}.*|[ \t]*)$'
@@ -31,6 +32,7 @@
   notify: 'restart nginx'
 
 - name: Replace listen with default_server in nginx.conf
+  become: true
   ansible.builtin.replace:
     path: /etc/nginx/nginx.conf
     regexp: '^(\s*listen\s+(?:\[::\]:)?(?:80|443)(?:\s+(?:ssl|http2))*\s*)(?:\s+default_server)?;'
@@ -38,6 +40,7 @@
   notify: 'restart nginx'
 
 - name: Replace root in nginx.conf
+  become: true
   ansible.builtin.replace:
     path: /etc/nginx/nginx.conf
     regexp: '^(\s*root\s+).*;'
@@ -45,6 +48,7 @@
   notify: 'restart nginx'
 
 - name: Delete error_page server in nginx.conf
+  become: true
   ansible.builtin.replace:
     path: /etc/nginx/nginx.conf
     regexp: '({{ item }})'
@@ -55,6 +59,7 @@
   notify: 'restart nginx'
 
 - name: Replace ssl certificate file in nginx.conf
+  become: true
   ansible.builtin.replace:
     path: /etc/nginx/nginx.conf
     regexp: '^(\s*{{ item.name }}\s+).*;'
@@ -65,6 +70,7 @@
   notify: 'restart nginx'
 
 - name: Replace include to return redirect server 80 in nginx.conf
+  become: true
   ansible.builtin.replace:
     path: /etc/nginx/nginx.conf
     after: '\bserver\s*{\s*listen\s+80\b'

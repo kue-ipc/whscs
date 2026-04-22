@@ -14,6 +14,7 @@
   notify: 'restart nginx'
 
 - name: Replace host
+  become: true
   ansible.builtin.replace:
     path: /etc/phpMyAdmin/config.inc.php
     regexp: ^(?:\s*//)?\s*\$cfg\['Servers'\]\[\$i\]\['host'\]\s*=[^;]*;

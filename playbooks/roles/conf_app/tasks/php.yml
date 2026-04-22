@@ -20,6 +20,7 @@
   notify: 'run restorecon'
 
 - name: Set php.ini
+  become: true
   ansible.builtin.replace:
     path: /etc/php.ini
     regexp: '^;?({{ item.key }})\s*=.*$'
@@ -44,6 +45,7 @@
     - 'restart all httpd'
 
 - name: Set 10-opcache.ini
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/php.d/10-opcache.ini
     regexp: '^;?{{ item.name }}\s*=.*$'

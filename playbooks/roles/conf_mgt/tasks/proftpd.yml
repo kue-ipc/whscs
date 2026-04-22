@@ -14,6 +14,7 @@
     name: proftpd
 
 - name: Line in sysconfig proftpd
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/sysconfig/proftpd
     regexp: '^PROFTPD_OPTIONS='
@@ -21,6 +22,7 @@
   notify: 'restart proftpd'
 
 - name: Repalce DfeaultRoot in proftpd.conf
+  become: true
   ansible.builtin.replace:
     path: /etc/proftpd.conf
     regexp: '^(DefaultRoot[ \t]+)\S.*$'
@@ -42,6 +44,7 @@
   notify: 'restart proftpd'
 
 - name: Line absent TLSCertificateChainFile mod_tls.conf
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/proftpd/mod_tls.conf
     regexp: '^\s*TLSCertificateChainFile\s+\S'
@@ -49,6 +52,7 @@
   notify: 'restart proftpd'
 
 - name: Line in mod_tls.conf
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/proftpd/mod_tls.conf
     regexp: '^(\s*{{ item.key }}\s+)\S'

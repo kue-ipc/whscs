@@ -25,6 +25,7 @@
   when: find_ssh_config_d.matched > 0
 
 - name: Block users in sshd_conf
+  become: true
   ansible.builtin.blockinfile:
     path: /etc/ssh/sshd_config
     content: '{{ lookup("file", "sshd/users.conf") }}'

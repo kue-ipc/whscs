@@ -48,6 +48,7 @@
     semodule_name: local_httpd
 
 - name: Repalce mpm load module
+  become: true
   ansible.builtin.replace:
     path: /etc/httpd/conf.modules.d/00-mpm.conf
     regexp: '#?(LoadModule\s+mpm_{{ item }}_module\s+modules/mod_mpm_{{ item }}.so)$'

@@ -7,6 +7,7 @@
     name: mariadb
 
 - name: Line in client conf
+  become: true
   ansible.builtin.lineinfile:
     path: "/etc/my.cnf.d/client.cnf"
     insertafter: '\[client\]'

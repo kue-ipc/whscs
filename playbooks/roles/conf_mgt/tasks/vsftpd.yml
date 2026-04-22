@@ -7,6 +7,7 @@
     name: vsftpd
 
 - name: Line in vsftpd.conf
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/vsftpd/vsftpd.conf
     regexp: '^#?{{ item.key }}='
@@ -33,6 +34,7 @@
     data_connection_timeout: 10
 
 - name: Block ssl in vsftpd
+  become: true
   ansible.builtin.blockinfile:
     path: /etc/vsftpd/vsftpd.conf
     marker: '# {mark} ANSIBLE MANAGED BLOCK ssl'
@@ -73,6 +75,7 @@
   notify: 'restart vsftpd'
 
 - name: Block pasv port in vsftpd
+  become: true
   ansible.builtin.blockinfile:
     path: /etc/vsftpd/vsftpd.conf
     marker: '# {mark} ANSIBLE MANAGED BLOCK pasv port'

@@ -1,11 +1,13 @@
 # usermin
 ---
 - name: Check /root/setup-repos.sh
+  become: true
   ansible.builtin.stat:
     path: /root/setup-repos.sh
   register: setup_repos_sh
 
-- name: Get wbmin setup-repos.sh
+- name: Get webmin setup-repos.sh
+  become: true
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh
     dest: /root/setup-repos.sh
@@ -14,6 +16,7 @@
   when: not setup_repos_sh.stat.exists
 
 - name: Run webmin setup-repos.sh
+  become: true
   ansible.builtin.command:
     cmd: sh /root/setup-repos.sh
     stdin: "y\n"

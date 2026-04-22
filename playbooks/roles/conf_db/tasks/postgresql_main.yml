@@ -12,6 +12,7 @@
     mode: '0600'
 
 - name: Run postgresql-setup
+  become: true
   ansible.builtin.command:
     cmd: /usr/bin/postgresql-setup --initdb
     creates: /var/lib/pgsql/data/postgresql.conf

@@ -1,6 +1,7 @@
 # glusnter main
 ---
 - name: Gluster prove peer
+  become: true
   gluster.gluster.gluster_peer:
     state: present
     nodes: '{{ gluster_servers }}'
@@ -13,6 +14,7 @@
 
 # FIXME: peerを追加した直後に実行してもエラーになる場合がある。
 - name: Gluster create volume
+  become: true
   gluster.gluster.gluster_volume:
     state: present
     name: '{{ gluster_volume }}'

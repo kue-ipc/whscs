@@ -1,6 +1,7 @@
 # nginx rp
 ---
 - name: Template nginx conf for user in rp
+  become: true
   ansible.builtin.template:
     src: nginx/virtual.d/rp.conf.j2
     dest: '/etc/nginx/virtual.d/{{ webuser.name }}.conf'

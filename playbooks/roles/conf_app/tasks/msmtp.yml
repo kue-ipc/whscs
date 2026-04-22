@@ -26,6 +26,7 @@
     semodule_name: local_msmtp
 
 - name: Template msmtprc
+  become: true
   ansible.builtin.template:
     src: msmtprc.j2
     dest: /etc/msmtprc

@@ -62,6 +62,7 @@
     - local_tempdir.path is defined
 
 - name: Copy backup pg archive
+  become: true
   ansible.builtin.copy:
     src: '{{ local_tempdir.path }}/pg_{{ backup_time }}.tar.xz'
     dest: '{{ backup_data_dir }}/pg/{{ backup_time }}.tar.xz'

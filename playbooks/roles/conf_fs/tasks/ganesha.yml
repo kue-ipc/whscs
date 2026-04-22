@@ -20,6 +20,7 @@
     name: glusterfs-ganesha
 
 - name: Config ganesha.conf
+  become: true
   ansible.builtin.template:
     src: ganesha/ganesha.conf.j2
     dest: /etc/ganesha/ganesha.conf
@@ -38,6 +39,7 @@
 
 # FIXME: nfsganeshaがコア吐いて落ちる場合がある。
 - name: Copy systemd conf nfs-ganesha.service.d
+  become: true
   ansible.builtin.copy:
     src: 'systemd/{{ item }}'
     dest: '/etc/systemd/system/nfs-ganesha.service.d/{{ item }}'

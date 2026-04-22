@@ -146,6 +146,7 @@
     state: present
 
 - name: Copy nginx conf
+  become: true
   ansible.builtin.copy:
     src: nginx/default.d/usermin.conf
     dest: /etc/nginx/default.d/usermin.conf

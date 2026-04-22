@@ -15,6 +15,7 @@
       }) }}
 
 - name: Copy cert (self sigend)
+  become: true
   ansible.builtin.copy:
     src: '{{ tls_info.cert }}'
     dest: '{{ mgt_tls_cert }}'
@@ -24,6 +25,7 @@
   when: tls_info.cn == tls_info.issuer
 
 - name: Copy chained certs
+  become: true
   ansible.builtin.copy:
     content: |
       {{ lookup("file", tls_info.cert) }}
@@ -35,6 +37,7 @@
   when: tls_info.cn != tls_info.issuer
 
 - name: Copy private key
+  become: true
   ansible.builtin.copy:
     src: '{{ tls_info.key }}'
     dest: '{{ mgt_tls_key }}'

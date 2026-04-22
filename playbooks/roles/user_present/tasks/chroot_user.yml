@@ -27,6 +27,7 @@
     state: directory
 
 - name: Copy user home dir from skel
+  become: true
   ansible.builtin.copy:
     src: /etc/skel/
     dest: '{{ webuser.chroot_dir }}{{ webuser.dir }}/'

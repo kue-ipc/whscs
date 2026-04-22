@@ -31,6 +31,7 @@
         | ansible.utils.ipaddr | unique }}
 
 - name: Template keepalived.cfg
+  become: true
   ansible.builtin.template:
     src: keepalived/keepalived.conf.j2
     dest: /etc/keepalived/keepalived.conf

@@ -22,6 +22,7 @@
     state: present
 
 - name: Template nginx.conf
+  become: true
   ansible.builtin.template:
     src: nginx/nginx.conf.j2
     dest: /etc/nginx/nginx.conf

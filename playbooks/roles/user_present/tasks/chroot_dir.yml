@@ -9,6 +9,7 @@
     state: directory
 
 - name: Copy webuser.yml
+  become: true
   ansible.builtin.copy:
     src: '{{ webuser_yml }}'
     dest: '{{ webuser.chroot_dir }}/webuser.yml'

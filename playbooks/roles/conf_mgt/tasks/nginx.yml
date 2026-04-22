@@ -80,6 +80,7 @@
   notify: 'restart nginx'
 
 - name: Copy nginx conf file
+  become: true
   ansible.builtin.copy:
     src: nginx/conf.d/security.conf
     dest: /etc/nginx/conf.d/security.conf

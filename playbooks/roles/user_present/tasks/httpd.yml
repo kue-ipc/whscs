@@ -1,6 +1,7 @@
 # httpd
 ---
 - name: Template httpd conf for user
+  become: true
   ansible.builtin.template:
     src: httpd/conf/user.conf.j2
     dest: '/etc/httpd/conf/{{ webuser.name }}.conf'
@@ -27,6 +28,7 @@
   when: result_template_httpd.changed and not result_start_httpd.changed
 
 - name: Template logrotate for httpd
+  become: true
   ansible.builtin.template:
     src: logrotate.d/httpd.j2
     dest: '/etc/logrotate.d/httpd@{{ webuser.name }}'

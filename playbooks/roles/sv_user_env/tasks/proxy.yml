@@ -1,6 +1,7 @@
 # proxy
 ---
 - name: Copy login shell template in profile.d
+  become: true
   ansible.builtin.template:
     src: 'profile.d/{{ item }}.j2'
     dest: '/etc/profile.d/{{ item }}'

@@ -1,6 +1,7 @@
 # php-fpm
 ---
 - name: Template php-fpm conf for user
+  become: true
   ansible.builtin.template:
     src: php-fpm.d/user.conf.j2
     dest: '/etc/php-fpm.d/{{ webuser.name }}.conf'

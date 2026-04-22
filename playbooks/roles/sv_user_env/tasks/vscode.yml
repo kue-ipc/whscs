@@ -3,6 +3,7 @@
 ---
 # Visual Studio Code is unable to watch for file changes in this large workspace
 - name: Copy max-users-watches template to sysctl.d
+  become: true
   ansible.builtin.template:
     src: 'sysctl.d/max-users-watches.conf.j2'
     dest: '/etc/sysctl.d/max-users-watches.conf'

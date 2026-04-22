@@ -36,6 +36,7 @@
     tls_domain: '{{ site }}'
 
 - name: Copy chained certs
+  become: true
   ansible.builtin.copy:
     src: '{{ tls_info.chained_cert }}'
     dest: '{{ web_tls_certs_dir }}/{{ site }}.cer'
@@ -45,6 +46,7 @@
   register: update_tls_copy_cert_result
 
 - name: Copy private key
+  become: true
   ansible.builtin.copy:
     src: '{{ tls_info.key }}'
     dest: '{{ web_tls_private_dir }}/{{ site }}.key'

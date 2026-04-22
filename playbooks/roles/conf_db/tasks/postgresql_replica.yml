@@ -1,6 +1,7 @@
 # PostgreSQL
 ---
 - name: Create .pgpass
+  become: true
   ansible.builtin.copy:
     dest: /var/lib/pgsql/.pgpass
     content: |

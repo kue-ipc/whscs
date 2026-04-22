@@ -15,6 +15,7 @@
     mode: '0755'
 
 - name: Copy systemd conf php-fpm.service.d
+  become: true
   ansible.builtin.copy:
     src: 'php-fpm/systemd/{{ item }}'
     dest: '/etc/systemd/system/php-fpm.service.d/{{ item }}'

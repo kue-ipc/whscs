@@ -2,6 +2,7 @@
 ---
 # for demotion to backup
 - name: Copy .pgpass
+  become: true
   ansible.builtin.copy:
     dest: /var/lib/pgsql/.pgpass
     content: |

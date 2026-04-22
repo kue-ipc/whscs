@@ -10,6 +10,7 @@
     - logrotate_use_nfs
 
 - name: Template nginx_user to logrotate.d
+  become: true
   ansible.builtin.template:
     src: logrotate.d/nginx_user.j2
     dest: '/etc/logrotate.d/nginx_user'

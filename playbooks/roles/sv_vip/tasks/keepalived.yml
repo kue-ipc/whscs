@@ -20,6 +20,7 @@
         | reject("in", [ansible_default_ipv4.address, ansible_default_ipv6.address]) }}
 
 - name: Template keepalived.cfg
+  become: true
   ansible.builtin.template:
     src: keepalived/keepalived.conf.j2
     dest: /etc/keepalived/keepalived.conf

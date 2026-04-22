@@ -30,6 +30,7 @@
   notify: 'restart proftpd'
 
 - name: Copy proFTPD conf file
+  become: true
   ansible.builtin.copy:
     src: proftpd/hide.conf
     dest: /etc/proftpd/conf.d/hide.conf
@@ -37,6 +38,7 @@
   notify: 'restart proftpd'
 
 - name: Template proFTPD conf file
+  become: true
   ansible.builtin.template:
     src: proftpd/passive_ports.conf
     dest: /etc/proftpd/conf.d/passive_ports.conf

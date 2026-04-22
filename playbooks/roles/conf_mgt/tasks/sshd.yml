@@ -17,6 +17,7 @@
   register: find_ssh_config_d
 
 - name: Copy users.conf
+  become: true
   ansible.builtin.copy:
     src: sshd/users.conf
     dest: /etc/ssh/sshd_config.d/users.conf

@@ -59,6 +59,7 @@
     - event
 
 - name: Template httpd conf
+  become: true
   ansible.builtin.template:
     src: 'httpd/{{ item.path }}.j2'
     dest: '/etc/httpd/{{ item.path }}'
@@ -79,6 +80,7 @@
     mode: '0755'
 
 - name: Copy systemd conf httpd@.service.d
+  become: true
   ansible.builtin.copy:
     src: 'httpd/systemd/{{ item }}'
     dest: '/etc/systemd/system/httpd@.service.d/{{ item }}'

@@ -1,6 +1,7 @@
 # app
 ---
 - name: Creaet systemd app@.serivce
+  become: true
   ansible.builtin.template:
     src: systemd/app@.service.j2
     dest: /etc/systemd/system/app@.service

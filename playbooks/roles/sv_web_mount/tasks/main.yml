@@ -11,6 +11,7 @@
     - { target: '{{ web_dir }}/\w+/tmp', setype: tmp_t }
 
 - name: Creaet systemd web-fs.target
+  become: true
   ansible.builtin.copy:
     src: web-fs.target
     dest: /etc/systemd/system/web-fs.target
@@ -32,6 +33,7 @@
     quiet: true
 
 - name: Creaet systemd web-mount@.service
+  become: true
   ansible.builtin.template:
     src: web-mount@.service.j2
     dest: /etc/systemd/system/web-mount@.service
@@ -47,6 +49,7 @@
     name: python3-inotify
 
 - name: Copy check-web-mount to libexec
+  become: true
   ansible.builtin.copy:
     src: check-web-mount
     dest: /usr/local/sbin/check-web-mount
@@ -55,6 +58,7 @@
     mode: '0755'
 
 - name: Creaet systemd check-web-mount@.service
+  become: true
   ansible.builtin.copy:
     src: check-web-mount@.service
     dest: /etc/systemd/system/check-web-mount@.service

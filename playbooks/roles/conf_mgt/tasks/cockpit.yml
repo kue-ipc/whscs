@@ -47,6 +47,7 @@
 #     state: absent
 
 - name: Copy nginx conf
+  become: true
   ansible.builtin.copy:
     src: nginx/default.d/cockpit.conf
     dest: /etc/nginx/default.d/cockpit.conf

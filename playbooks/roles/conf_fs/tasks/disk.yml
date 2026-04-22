@@ -17,6 +17,7 @@
   when: gluster_data_size_g is not defined or gluster_data_size_g is none
 
 - name: Create a thin pool for glfs
+  become: true
   community.general.lvol:
     vg: '{{ lvm_vg }}'
     thinpool: '{{ gluster_data_pool_name }}'
@@ -26,12 +27,14 @@
 # FIXME: Resizing the metadata of an existing pool hangs.
 #   https://github.com/ansible-collections/community.general/issues/10056
 # - name: Resize a thin pool meta for glfs
+#   become: true
 #   community.general.lvol:
 #     vg: '{{ lvm_vg }}'
 #     lv: '{{ gluster_data_pool_name }}_tmeta'
 #     size: '{{ gluster_data_pool_meta_size }}'
 
 - name: Create a thin volume for glfs
+  become: true
   community.general.lvol:
     vg: '{{ lvm_vg }}'
     thinpool: '{{ gluster_data_pool_name }}'
@@ -39,12 +42,14 @@
     size: '{{ gluster_data_size_g }}G'
 
 - name: Create a xfs filesystem on data
+  become: true
   community.general.filesystem:
     dev: '/dev/{{ lvm_vg }}/{{ gluster_data_name }}'
     fstype: xfs
     resizefs: true
 
 - name: Mount glunter data
+  become: true
   ansible.posix.mount:
     path: '{{ gluster_data_dir }}'
     src: '/dev/{{ lvm_vg }}/{{ gluster_data_name }}'

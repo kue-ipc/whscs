@@ -17,6 +17,7 @@
     web_dir_mounted: '{{ web_dir in ansible_mounts | map(attribute="mount") }}'
 
 - name: Mount web dir gluster
+  become: true
   ansible.posix.mount:
     path: '{{ web_dir }}'
     src: '{{ gluster_main_server }}:/{{ gluster_volume }}'
@@ -27,6 +28,7 @@
 
 # effect reboot if changed
 - name: Preset web dir gluster
+  become: true
   ansible.posix.mount:
     path: '{{ web_dir }}'
     src: '{{ gluster_main_server }}:/{{ gluster_volume }}'

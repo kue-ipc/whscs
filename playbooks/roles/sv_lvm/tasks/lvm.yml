@@ -7,6 +7,7 @@
   register: find_dev_sd
 
 - name: Read device information
+  become: true
   community.general.parted:
     device: '{{ item }}'
   register: parted_devices
@@ -23,6 +24,7 @@
     quiet: true
 
 - name: Create a volume group
+  become: true
   community.general.lvg:
     vg: '{{ lvm_vg }}'
     pvs: '{{ lvm_devices }}'

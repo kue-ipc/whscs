@@ -5,6 +5,7 @@
 
 # 16GiB
 - name: Create a volume for data
+  become: true
   community.general.lvol:
     vg: '{{ lvm_vg }}'
     lv: '{{ item.lv }}'
@@ -14,6 +15,7 @@
     - { lv: '{{ pg_data_name }}', size: '{{ pg_data_size }}'}
 
 - name: Create a xfs filesystem on data
+  become: true
   community.general.filesystem:
     dev: '/dev/{{ lvm_vg }}/{{ item }}'
     fstype: xfs
@@ -23,6 +25,7 @@
     - '{{ pg_data_name }}'
 
 - name: Mount db data
+  become: true
   ansible.posix.mount:
     path: '/var/lib/mysql'
     src: '/dev/{{ lvm_vg }}/{{ db_data_name }}'
@@ -30,6 +33,7 @@
     state: mounted
 
 - name: Mount pg data
+  become: true
   ansible.posix.mount:
     path: '/var/lib/pgsql'
     src: '/dev/{{ lvm_vg }}/{{ pg_data_name }}'

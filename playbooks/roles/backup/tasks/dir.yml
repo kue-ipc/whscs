@@ -5,18 +5,21 @@
     name: sv_lvm
 
 - name: Create a bakup data volume
+  become: true
   community.general.lvol:
     vg: '{{ lvm_vg }}'
     lv: '{{ backup_data_name }}'
     size: +100%FREE
 
 - name: Create a xfs filesystem on bakup data
+  become: true
   community.general.filesystem:
     dev: '/dev/{{ lvm_vg }}/{{ backup_data_name }}'
     fstype: xfs
     resizefs: true
 
 - name: Mount backup data
+  become: true
   ansible.posix.mount:
     path: '{{ backup_data_dir }}'
     src: '/dev/{{ lvm_vg }}/{{ backup_data_name }}'
@@ -24,6 +27,7 @@
     state: mounted
 
 - name: Make backup dirs
+  become: true
   ansible.builtin.file:
     path: '{{ backup_data_dir }}/{{ item }}'
     state: directory
@@ -43,6 +47,7 @@
   check_mode: false
 
 - name: Make backup dirs for user
+  become: true
   ansible.builtin.file:
     path: '{{ backup_data_dir }}/{{ item }}'
     state: directory

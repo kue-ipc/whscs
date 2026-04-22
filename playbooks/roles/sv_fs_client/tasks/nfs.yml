@@ -21,6 +21,7 @@
 # if mounted then mount after reboot
 # else immediately mount
 - name: Mount web dir nfs
+  become: true
   ansible.posix.mount:
     path: '{{ web_dir }}'
     src: '{{ web_mount_server }}:/{{ gluster_volume }}'

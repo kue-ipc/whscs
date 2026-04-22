@@ -1,15 +1,17 @@
 ---
 - name: Set sshd_config root no
-  ansible.builtin.replace:
+  become: true
+  ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
-    regexp: '^#?PermitRootLogin\s.*$'
-    replace: 'PermitRootLogin no'
+    regexp: '^#?PermitRootLogin'
+    line: 'PermitRootLogin no'
   notify: 'restart sshd'
 
 - name: Set sshd_config no password authentication
-  ansible.builtin.replace:
+  become: true
+  ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
-    regexp: '^#?PasswordAuthentication\s.*$'
-    replace: 'PasswordAuthentication no'
+    regexp: '^#?PasswordAuthentication'
+    line: 'PasswordAuthentication no'
   notify: 'restart sshd'
   when: '"ctl" not in group_names'

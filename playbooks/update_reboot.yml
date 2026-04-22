@@ -3,7 +3,6 @@
     - all
     - '!ctl'
     - '!tpl'
-  become: true
   serial: 1
   max_fail_percentage: 0
   roles:

@@ -1,7 +1,6 @@
 ---
 - name: Conf Mgt
   hosts: mgt
-  become: true
   max_fail_percentage: 0
   roles:
     - conf_mgt

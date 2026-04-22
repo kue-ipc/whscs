@@ -3,6 +3,5 @@
   hosts:
     - all
     - '!tpl'
-  become: true
   roles:
     - setup

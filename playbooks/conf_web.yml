@@ -3,7 +3,6 @@
   hosts:
     - web
     - test
-  become: true
   max_fail_percentage: 0
   roles:
     - conf_web

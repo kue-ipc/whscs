@@ -7,7 +7,6 @@
     - db
     - rp
     - test
-  become: true
   max_fail_percentage: 0
   roles:
     - user_absent

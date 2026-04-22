@@ -1,5 +1,5 @@
 ---
-- name: Setup
-  hosts: all
+- name: Setup for tpl
+  hosts: tpl
   roles:
     - setup

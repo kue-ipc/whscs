@@ -1,4 +1,4 @@
-- name: Clean
+- name: Clean for tpl
   hosts:
     - all
     - '!tpl'

@@ -108,6 +108,7 @@
     state: started
 
 - name: Allow http/https service in firewall
+  become: true
   ansible.posix.firewalld:
     state: enabled
     service: '{{ item }}'

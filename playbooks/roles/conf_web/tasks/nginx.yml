@@ -45,6 +45,7 @@
     state: started
 
 - name: Allow web service in firewall
+  become: true
   ansible.posix.firewalld:
     state: enabled
     service: '{{ item }}'

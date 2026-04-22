@@ -32,6 +32,7 @@
   when: find_ssh_config_d.matched == 0
 
 - name: Set ssh service in firewalld
+  become: true
   ansible.posix.firewalld:
     state: enabled
     service: ssh

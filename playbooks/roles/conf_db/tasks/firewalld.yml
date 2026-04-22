@@ -1,6 +1,7 @@
 # ファイアウォール設定
 ---
 - name: Add rich rule to firewalld for mysql
+  become: true
   ansible.posix.firewalld:
     state: enabled
     rich_rule: >-
@@ -13,6 +14,7 @@
   loop: '{{ web_networks }}'
 
 - name: Add rich rule to firewalld for postgresql
+  become: true
   ansible.posix.firewalld:
     state: enabled
     rich_rule: >-
@@ -26,6 +28,7 @@
 
 # IPv4 only
 - name: Add rich rule to firewalld for galera only db group
+  become: true
   ansible.posix.firewalld:
     state: enabled
     rich_rule: >-

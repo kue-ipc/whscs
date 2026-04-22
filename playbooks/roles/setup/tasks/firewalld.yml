@@ -7,6 +7,7 @@
     state: started
 
 - name: Add rich rule to firewalld for ssh
+  become: true
   ansible.posix.firewalld:
     state: enabled
     rich_rule: >-
@@ -19,6 +20,7 @@
   notify: 'reload firewalld'
 
 - name: Rmevoe serivce from firewall
+  become: true
   ansible.posix.firewalld:
     state: disabled
     service: '{{ item }}'
@@ -29,6 +31,7 @@
   notify: 'reload firewalld'
 
 - name: Rmevoe ssh serivce from firewall
+  become: true
   ansible.posix.firewalld:
     state: disabled
     service: ssh

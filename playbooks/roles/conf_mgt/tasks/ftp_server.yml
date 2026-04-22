@@ -10,6 +10,7 @@
     - ftpd_use_nfs
 
 - name: Set ftp service in firewalld
+  become: true
   ansible.posix.firewalld:
     state: enabled
     service: ftp
@@ -17,6 +18,7 @@
   notify: 'reload firewalld'
 
 - name: Set ftp pasv port in firewalld
+  become: true
   ansible.posix.firewalld:
     state: enabled
     port: '{{ ftp_pasv_port_range[0] }}-{{ ftp_pasv_port_range[1] }}/tcp'

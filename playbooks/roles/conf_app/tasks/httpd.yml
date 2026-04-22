@@ -90,6 +90,7 @@
   notify: 'reload systemd'
 
 - name: Allow user https on firewall
+  become: true
   ansible.posix.firewalld:
     state: enabled
     rich_rule: >-

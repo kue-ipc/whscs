@@ -1,6 +1,7 @@
 # ファイアウォール設定
 ---
 - name: Add rich rule to firewalld for glusterfs
+  become: true
   ansible.posix.firewalld:
     state: enabled
     rich_rule: >-
@@ -14,6 +15,7 @@
   notify: 'reload firewalld'
 
 - name: Add rich rule to firewalld for nfs
+  become: true
   ansible.posix.firewalld:
     state: enabled
     rich_rule: >-

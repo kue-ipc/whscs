@@ -12,6 +12,7 @@
     - { name: primary_conninfo, value: "'host={{ pg_main_server }} user={{ pg_replication_user }}'" }
 
 - name: Add host replication pg_hba
+  become: true
   community.postgresql.postgresql_pg_hba:
     dest: /var/lib/pgsql/data/pg_hba.conf
     contype: host
@@ -27,6 +28,7 @@
 
 # Set md5 for HAProxy pgsql-check, but use scram-sha-256 for user authentication.
 - name: Line host all all in pg_hba.conf
+  become: true
   community.postgresql.postgresql_pg_hba:
     dest: /var/lib/pgsql/data/pg_hba.conf
     contype: host

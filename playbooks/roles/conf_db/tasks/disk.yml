@@ -57,6 +57,7 @@
     setype: postgresql_db_t
 
 - name: Make a directorcy in pgsql
+  become: true
   ansible.builtin.file:
     path: '/var/lib/pgsql/{{ item }}'
     owner: postgres

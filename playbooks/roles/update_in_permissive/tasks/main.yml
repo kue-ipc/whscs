@@ -12,6 +12,7 @@
 
 # update後の再起動でenforcedに戻す
 - name: Set permissive mode
+  become: true
   ansible.builtin.command: setenforce 0
   changed_when: true
 

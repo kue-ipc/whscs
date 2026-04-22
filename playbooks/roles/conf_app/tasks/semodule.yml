@@ -6,6 +6,7 @@
 #   semodule -i namae.pp
 ---
 - name: Check semodule list
+  become: true
   ansible.builtin.command:
     cmd: semodule -l
   register: result_semodule_l
@@ -45,6 +46,7 @@
     - tempdir.path is defined
 
 - name: 'Intall semodule {{ semodule_name }}'
+  become: true
   ansible.builtin.command:
     cmd: 'semodule -i {{ semodule_name }}.pp'
     chdir: '{{ tempdir.path }}'

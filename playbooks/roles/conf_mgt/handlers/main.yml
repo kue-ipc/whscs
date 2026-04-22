@@ -1,10 +1,12 @@
 ---
 - name: Reload firewalld
+  become: true
   ansible.builtin.command: firewall-cmd --reload
   changed_when: true
   listen: 'reload firewalld'
 
 - name: Run restorecon
+  become: true
   ansible.builtin.command:
     argv:
       - restorecon

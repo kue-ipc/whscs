@@ -1,4 +1,5 @@
 - name: Load sysctl max-users-watches
+  become: true
   ansible.builtin.command: sysctl -p /etc/sysctl.d/max-users-watches.conf
   changed_when: true
   listen: 'load sysctl max-users-watches'

@@ -19,6 +19,7 @@
   when: ansible_facts.services["glustereventsd.service"] is defined
 
 - name: Kill all gluster
+  become: true
   ansible.builtin.command: killall glusterfs glusterfsd glusterd
   changed_when: true
   failed_when: false

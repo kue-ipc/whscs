@@ -6,6 +6,7 @@
     autoremove: true
 
 - name: Clear chace
+  become: true
   ansible.builtin.command:
     argv:
       - dnf

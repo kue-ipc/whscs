@@ -15,6 +15,7 @@
   when: sv_app_repo != 'epel'
 
 - name: Enable dnf repository
+  become: true
   ansible.builtin.command:
     cmd: 'dnf config-manager --set-enabled {{ sv_app_repo }}'
   changed_when: true

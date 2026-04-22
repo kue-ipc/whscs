@@ -78,6 +78,7 @@
   when: inventory_hostname == db_main_server
 
 - name: Start new cluster
+  become: true
   ansible.builtin.command: galera_new_cluster
   changed_when: true
   when:

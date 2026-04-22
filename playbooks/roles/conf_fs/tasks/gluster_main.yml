@@ -24,6 +24,7 @@
     rebalance: true
 
 - name: Get gluster snapshot config
+  become: true
   ansible.builtin.command:
     argv:
       - /usr/sbin/gluster
@@ -45,6 +46,7 @@
   when: gluster_snapshot_config.stdout_lines | length > 0
 
 - name: Set gluster snapshot config snap-max-hard-limit
+  become: true
   ansible.builtin.command:
     argv:
       - /usr/sbin/gluster
@@ -60,6 +62,7 @@
     - gluster_snapshot_config_hard | int != gluster_snapshot_hard
 
 - name: Get gluster volume get all
+  become: true
   ansible.builtin.command:
     argv:
       - /usr/sbin/gluster
@@ -72,6 +75,7 @@
 
 # for NFS-Ganesha
 - name: Set gluster volume set features.cache-invalidation on
+  become: true
   ansible.builtin.command:
     argv:
       - /usr/sbin/gluster

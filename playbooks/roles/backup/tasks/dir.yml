@@ -26,33 +26,16 @@
     fstype: xfs
     state: mounted
 
-- name: Make backup dirs
-  become: true
-  ansible.builtin.file:
-    path: '{{ backup_data_dir }}/{{ item }}'
-    state: directory
-    owner: root
-    group: wheel
-    mode: '0750'
-  loop:
-    - db
-    - pg
-    - web
-
-- name: Run whoami
-  ansible.builtin.command:
-    cmd: whoami
-  register: result_whoami
-  changed_when: false
-  check_mode: false
-
 - name: Make backup dirs for user
   become: true
   ansible.builtin.file:
     path: '{{ backup_data_dir }}/{{ item }}'
     state: directory
-    owner: '{{ result_whoami.stdout }}'
+    owner: '{{ ansible_user_id }}'
     group: wheel
     mode: '0750'
   loop:
     - data
+    - db
+    - pg
+    - web

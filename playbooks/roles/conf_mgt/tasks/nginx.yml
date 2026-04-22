@@ -87,17 +87,11 @@
     mode: '0644'
   notify: 'restart nginx'
 
-- name: Run whoami
-  ansible.builtin.command:
-    cmd: whoami
-  register: result_whoami
-  changed_when: false
-
 - name: Set owner html root
   ansible.builtin.file:
     path: /var/www/html
-    owner: '{{ result_whoami.stdout }}'
-    group: '{{ result_whoami.stdout }}'
+    owner: '{{ ansible_facts.user_id }}'
+    group: '{{ ansible_facts.group_id }}'
     mode: '0755'
     state: directory
   when: not ansible_check_mode

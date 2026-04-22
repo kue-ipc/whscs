@@ -1,6 +1,7 @@
 # logrotate
 ---
 - name: Set seboolean for logrotate
+  become: true
   ansible.posix.seboolean:
     name: '{{ item }}'
     state: true

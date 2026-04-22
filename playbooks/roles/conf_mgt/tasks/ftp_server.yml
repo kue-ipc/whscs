@@ -1,6 +1,7 @@
 # ftp server
 ---
 - name: Set seboolean for ftp server
+  become: true
   ansible.posix.seboolean:
     name: '{{ item }}'
     state: true

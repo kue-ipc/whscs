@@ -1,6 +1,7 @@
 # sshd
 ---
 - name: Set seboolean for home dirs
+  become: true
   ansible.posix.seboolean:
     name: '{{ item }}'
     state: true

@@ -12,6 +12,7 @@
     name: httpd-filesystem
 
 - name: Set seboolean for nginx
+  become: true
   ansible.posix.seboolean:
     name: '{{ item }}'
     state: true

@@ -18,6 +18,7 @@
     state: stopped
 
 - name: Set seboolean for httpd
+  become: true
   ansible.posix.seboolean:
     name: '{{ item }}'
     state: true

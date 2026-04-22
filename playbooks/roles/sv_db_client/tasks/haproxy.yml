@@ -17,6 +17,7 @@
   notify: 'restart haproxy'
 
 - name: Set seboolean for haproxy
+  become: true
   ansible.posix.seboolean:
     name: haproxy_connect_any
     state: true

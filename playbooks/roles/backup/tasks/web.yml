@@ -39,6 +39,7 @@
 
 - name: Sync web with link-dest
   delegate_to: '{{ inventory_hostname }}'
+  become: true
   ansible.posix.synchronize:
     src: '{{ backup_web_src }}/'
     dest: '{{ backup_data_dir }}/web/work/'
@@ -52,6 +53,7 @@
 
 - name: Sync web without link-dest
   delegate_to: '{{ inventory_hostname }}'
+  become: true
   ansible.posix.synchronize:
     src: '{{ backup_web_src }}/'
     dest: '{{ backup_data_dir }}/web/work/'

@@ -1,6 +1,7 @@
 # update
 ---
 - name: Autoremove
+  become: true
   ansible.builtin.dnf:
     autoremove: true
 

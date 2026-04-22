@@ -1,6 +1,7 @@
 # php
 ---
 - name: Install php
+  become: true
   ansible.builtin.dnf:
     state: present
     name: php

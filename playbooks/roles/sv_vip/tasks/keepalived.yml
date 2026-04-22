@@ -1,6 +1,7 @@
 # common vip
 ---
 - name: Install Keepalived
+  become: true
   ansible.builtin.dnf:
     state: present
     name: keepalived

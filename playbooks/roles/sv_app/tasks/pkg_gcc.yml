@@ -1,6 +1,7 @@
 # GCC Toolset
 ---
 - name: Install gcc-toolset
+  become: true
   ansible.builtin.dnf:
     state: present
     name: 'gcc-toolset-{{ item }}'

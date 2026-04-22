@@ -1,11 +1,13 @@
 # phpMyAdmin
 ---
 - name: Install epel-release
+  become: true
   ansible.builtin.dnf:
     state: present
     name: epel-release
 
 - name: Install phpmyadmin
+  become: true
   ansible.builtin.dnf:
     state: present
     name: phpmyadmin

@@ -1,6 +1,7 @@
 # NFS
 ---
 - name: Install nfs-utils
+  become: true
   ansible.builtin.dnf:
     state: present
     name: nfs-utils

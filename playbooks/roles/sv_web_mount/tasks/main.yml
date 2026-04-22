@@ -41,6 +41,7 @@
   notify: 'reload systemd'
 
 - name: Intall python3-inotify for platform-python
+  become: true
   ansible.builtin.dnf:
     state: present
     name: python3-inotify

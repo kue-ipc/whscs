@@ -2,6 +2,7 @@
 # TODO: アップデートには対応していない。
 ---
 - name: Install or remove centos-release-gluster and centos-relese-storage-common
+  become: true
   ansible.builtin.dnf:
     state: '{{ (gluster_repo == "custom") | ternary("absent", "present") }}'
     name:

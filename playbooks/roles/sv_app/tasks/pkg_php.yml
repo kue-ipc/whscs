@@ -1,12 +1,14 @@
 # php
 ---
 - name: Install php app stream
+  become: true
   ansible.builtin.dnf:
     state: present
     name: '@php:{{ sv_app_versions.php }}/common'
   when: sv_app_versions.php is defined
 
 - name: Install php and extensions
+  become: true
   ansible.builtin.dnf:
     state: present
     name:

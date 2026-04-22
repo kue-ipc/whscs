@@ -24,6 +24,7 @@
   loop: '{{ sv_app_python_versions }}'
 
 - name: Install python
+  become: true
   ansible.builtin.dnf:
     state: present
     name:

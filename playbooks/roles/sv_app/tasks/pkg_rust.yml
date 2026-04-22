@@ -1,6 +1,7 @@
 # Rust
 ---
 - name: Install rust
+  become: true
   ansible.builtin.dnf:
     state: present
     name:

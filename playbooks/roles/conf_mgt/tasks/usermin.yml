@@ -34,6 +34,7 @@
   notify: 'run restorecon /var/usermin'
 
 - name: Install usermin
+  become: true
   ansible.builtin.dnf:
     state: present
     name: usermin

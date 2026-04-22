@@ -6,6 +6,7 @@
     name: sv_nginx
 
 - name: Instnall httpd-filesystem
+  become: true
   ansible.builtin.dnf:
     state: present
     name: httpd-filesystem

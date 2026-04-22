@@ -3,12 +3,14 @@
 #       EOLを迎えた場合どうなるのか不明。
 ---
 - name: Install nodejs app stream
+  become: true
   ansible.builtin.dnf:
     state: present
     name: '@nodejs:{{ sv_app_versions.nodejs }}/common'
   when: sv_app_versions.nodejs is defined
 
 - name: Install nodejs
+  become: true
   ansible.builtin.dnf:
     state: present
     name:

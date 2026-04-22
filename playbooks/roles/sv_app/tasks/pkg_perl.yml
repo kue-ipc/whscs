@@ -1,12 +1,14 @@
 # Perl
 ---
 - name: Install perl app stream
+  become: true
   ansible.builtin.dnf:
     state: present
     name: '@perl:{{ sv_app_versions.perl }}/common'
   when: sv_app_versions.perl is defined
 
 - name: Install perl and extensions
+  become: true
   ansible.builtin.dnf:
     state: present
     name:
@@ -20,6 +22,7 @@
       - perl-DBD-SQLite
 
 - name: Intall perl other extensions for EL9
+  become: true
   ansible.builtin.dnf:
     state: present
     name:

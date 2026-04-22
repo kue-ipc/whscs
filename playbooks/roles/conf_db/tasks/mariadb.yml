@@ -1,11 +1,13 @@
 # MariaDB
 ---
 - name: Install MraiaDB server
+  become: true
   ansible.builtin.dnf:
     state: present
     name: mariadb-server-galera
 
 - name: Install Python MySQL module
+  become: true
   ansible.builtin.dnf:
     state: present
     name: '{{ ansible_facts.discovered_interpreter_python | basename }}-PyMySQL'

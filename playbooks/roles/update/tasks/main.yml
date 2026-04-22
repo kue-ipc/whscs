@@ -1,6 +1,7 @@
 # update
 ---
 - name: Update all packages
+  become: true
   ansible.builtin.dnf:
     name: "*"
     exclude: '{{ update_exclude }}'
@@ -9,6 +10,7 @@
     update_only: '{{ update_only }}'
 
 - name: Autoremove
+  become: true
   ansible.builtin.dnf:
     autoremove: true
   when: update_autoremove

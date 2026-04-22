@@ -4,6 +4,7 @@
   ansible.builtin.import_tasks: gluster_repo.yml
 
 - name: Install glusterfs glusterfs-fuse
+  become: true
   ansible.builtin.dnf:
     state: present
     name:

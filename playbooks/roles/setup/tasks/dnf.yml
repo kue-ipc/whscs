@@ -10,11 +10,13 @@
   when: proxy_uri is defined
 
 - name: Install group Minimal Install
+  become: true
   ansible.builtin.dnf:
     state: present
     name: '@Minimal Install'
 
 - name: Install common package
+  become: true
   ansible.builtin.dnf:
     state: present
     name: policycoreutils-python-utils

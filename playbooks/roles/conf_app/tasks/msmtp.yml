@@ -1,6 +1,7 @@
 # msmtp
 ---
 # - name: Install epel-release
+#   become: true
 #   ansible.builtin.dnf:
 #     state: present
 #     name: epel-release
@@ -13,6 +14,7 @@
     sv_app_repo: 'epel'
 
 - name: Install msmtp
+  become: true
   ansible.builtin.dnf:
     state: present
     name: msmtp

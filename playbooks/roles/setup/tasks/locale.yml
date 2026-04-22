@@ -1,6 +1,7 @@
 # ロケール設定
 ---
 - name: Install Japanese language packages
+  become: true
   ansible.builtin.dnf:
     state: present
     name: langpacks-ja

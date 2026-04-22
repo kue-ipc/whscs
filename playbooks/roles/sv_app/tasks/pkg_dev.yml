@@ -1,6 +1,7 @@
 # Development
 
 - name: Install group Development Tools
+  become: true
   ansible.builtin.dnf:
     state: present
     name: '@Development Tools'
@@ -25,6 +26,7 @@
 
 # https://github.com/rbenv/ruby-build/wiki#rhelcentos
 - name: Intall development packages for rbenv-build
+  become: true
   ansible.builtin.dnf:
     state: present
     name:
@@ -40,6 +42,7 @@
 
 # https://github.com/pyenv/pyenv/wiki#suggested-build-environment
 - name: Install development packages for pyenv
+  become: true
   ansible.builtin.dnf:
     state: present
     name:

@@ -1,6 +1,7 @@
 # update check
 ---
 - name: Update all packages in check mode
+  become: true
   ansible.builtin.dnf:
     name: "*"
     state: latest

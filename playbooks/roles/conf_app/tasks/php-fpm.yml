@@ -1,6 +1,7 @@
 # php-fpm
 ---
 - name: Install php-fpm
+  become: true
   ansible.builtin.dnf:
     state: present
     name: php-fpm

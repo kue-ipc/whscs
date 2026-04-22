@@ -1,6 +1,7 @@
 # enable repository
 ---
 - name: Intall epel-relese
+  become: true
   ansible.builtin.dnf:
     state: present
     name: epel-release

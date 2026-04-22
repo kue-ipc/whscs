@@ -20,12 +20,14 @@
     state: present
 
 - name: Install nginx
+  become: true
   ansible.builtin.dnf:
     state: present
     name: '@nginx:{{ nginx_version }}'
   when: nginx_version is defined
 
 - name: Install nginx
+  become: true
   ansible.builtin.dnf:
     state: present
     name: nginx

@@ -1,12 +1,14 @@
 # cockpit
 ---
 - name: Install cockpit
+  become: true
   ansible.builtin.dnf:
     state: present
     name: cockpit
     install_weak_deps: false
 
 - name: Remove unnecessary cockpit modules
+  become: true
   ansible.builtin.dnf:
     state: absent
     name:
@@ -14,6 +16,7 @@
       - cockpit-storaged
 
 - name: Install necessary cockpit modules
+  become: true
   ansible.builtin.dnf:
     state: present
     name:

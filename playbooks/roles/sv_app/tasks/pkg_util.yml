@@ -1,6 +1,7 @@
 # pkg util
 ---
 - name: Install editors
+  become: true
   ansible.builtin.dnf:
     state: present
     name:
@@ -10,12 +11,14 @@
       - pinentry
 
 - name: Install terminals
+  become: true
   ansible.builtin.dnf:
     state: present
     name:
       - tmux
 
 - name: Install shell
+  become: true
   ansible.builtin.dnf:
     state: present
     name:
@@ -24,6 +27,7 @@
       - zsh
 
 - name: Install others
+  become: true
   ansible.builtin.dnf:
     state: present
     name:
@@ -33,6 +37,7 @@
       - wget
 
 - name: Install others for el9
+  become: true
   ansible.builtin.dnf:
     state: present
     name:

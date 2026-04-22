@@ -1,6 +1,7 @@
 # chrony(時刻同期)設定
 ---
 - name: Install chrony
+  become: true
   ansible.builtin.dnf:
     state: present
     name: chrony

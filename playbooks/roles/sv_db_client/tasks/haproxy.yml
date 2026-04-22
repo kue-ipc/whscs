@@ -1,6 +1,7 @@
 # HAProxy
 ---
 - name: Install HAProxy
+  become: true
   ansible.builtin.dnf:
     state: present
     name: haproxy

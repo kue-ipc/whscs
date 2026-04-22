@@ -1,12 +1,14 @@
 # Ruby
 ---
 - name: Install ruby app stream
+  become: true
   ansible.builtin.dnf:
     state: present
     name: '@ruby:{{ sv_app_versions.ruby }}/common'
   when: sv_app_versions.ruby is defined
 
 - name: Install ruby and extensions
+  become: true
   ansible.builtin.dnf:
     state: present
     name:
@@ -21,6 +23,7 @@
       - rubygem-pg
 
 - name: Intall ruby other extensions for EL9
+  become: true
   ansible.builtin.dnf:
     state: present
     name:
@@ -33,6 +36,7 @@
   when: ansible_distribution_major_version is version("9")
 
 - name: Intall ruby bundled gems for EL9
+  become: true
   ansible.builtin.dnf:
     state: present
     name:
@@ -42,6 +46,7 @@
     - sv_app_versions.ruby | default("3.0") is version("3.1", ">=")
 
 - name: Intall ruby other extensions for EL8
+  become: true
   ansible.builtin.dnf:
     state: present
     name:

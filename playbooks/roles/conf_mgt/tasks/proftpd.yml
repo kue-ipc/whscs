@@ -8,6 +8,7 @@
     sv_app_repo: 'epel'
 
 - name: Install proftpd
+  become: true
   ansible.builtin.dnf:
     state: present
     name: proftpd

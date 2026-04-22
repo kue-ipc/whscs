@@ -2,6 +2,7 @@
 ---
 # 指定がない場合、最新バージョン("latset")が入ります。
 - name: Install openjdk
+  become: true
   ansible.builtin.dnf:
     state: present
     name:

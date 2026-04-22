@@ -1,11 +1,13 @@
 # Install GlusterFS
 ---
 - name: Install centos-release-gluster
+  become: true
   ansible.builtin.dnf:
     state: present
     name: 'centos-release-gluster{{ gluster_version }}'
 
 - name: Install glusterfs-server
+  become: true
   ansible.builtin.dnf:
     state: present
     name: glusterfs-server

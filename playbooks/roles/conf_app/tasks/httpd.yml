@@ -1,6 +1,7 @@
 # httpd
 ---
 - name: Install httpd
+  become: true
   ansible.builtin.dnf:
     state: present
     name:

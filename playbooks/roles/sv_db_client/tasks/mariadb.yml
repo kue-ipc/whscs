@@ -1,6 +1,7 @@
 # MariaDB
 ---
 - name: Install MariaDB client
+  become: true
   ansible.builtin.dnf:
     state: present
     name: mariadb

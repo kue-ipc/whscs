@@ -1,5 +1,6 @@
 ---
 - name: Instnall php
+  become: true
   ansible.builtin.dnf:
     state: present
     name:

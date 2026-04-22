@@ -1,11 +1,13 @@
 # PostgreSQL
 ---
 - name: Install PostgreSQL server
+  become: true
   ansible.builtin.dnf:
     state: present
     name: postgresql-server
 
 - name: Install Python PostgreSQL module
+  become: true
   ansible.builtin.dnf:
     state: present
     name: '{{ ansible_facts.discovered_interpreter_python | basename }}-psycopg2'

@@ -34,6 +34,7 @@
 #   ユーザーのログインだけ防ぐ方法がいる？
 
 - name: Install now centos-release-gluster
+  become: true
   ansible.builtin.dnf:
     state: present
     name: 'centos-release-gluster{{ gluster_new_version }}'
@@ -55,6 +56,7 @@
     name: update
 
 - name: Uninstall old centos-release-gluster
+  become: true
   ansible.builtin.dnf:
     state: absent
     name: 'centos-release-gluster{{ gluster_old_version }}'

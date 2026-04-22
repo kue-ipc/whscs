@@ -1,5 +1,6 @@
 # reboot
 ---
 - name: Reboot
+  become: true
   ansible.builtin.reboot:
     reboot_timeout: '{{ reboot_timeout | default(omit) }}'

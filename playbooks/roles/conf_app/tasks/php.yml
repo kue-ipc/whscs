@@ -7,6 +7,7 @@
     name: php
 
 - name: Set SELinux file context for php
+  become: true
   community.general.sefcontext:
     target: '{{ item.target }}'
     ftype: '{{ item.ftype | default("a") }}'

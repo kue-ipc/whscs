@@ -23,6 +23,7 @@
 # systemd cannot reead /var/usermin/miniserv.pid with setype var_t
 # https://forum.virtualmin.com/t/selinux-issue-with-miniserv-pid-on-redhat-8/116597
 - name: Set SELinux file context for usermin
+  become: true
   community.general.sefcontext:
     target: '{{ item.target }}'
     ftype: '{{ item.ftype | default("a") }}'

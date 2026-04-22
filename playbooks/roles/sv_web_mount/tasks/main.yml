@@ -1,6 +1,7 @@
 # web mount
 ---
 - name: Set SELinux file context for dir
+  become: true
   community.general.sefcontext:
     target: '{{ item.target }}'
     ftype: '{{ item.ftype | default("a") }}'

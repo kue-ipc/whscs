@@ -7,7 +7,6 @@
 
 - name: Create ACME challenge or get ACME certificate
   delegate_to: localhost
-  become: false
   run_once: true
   community.crypto.acme_certificate:
     acme_version: 2
@@ -23,7 +22,6 @@
 
 - name: Set acme_challenge_info
   delegate_to: localhost
-  become: false
   run_once: true
   ansible.builtin.set_fact:
     acme_challenge_info: '{{ acme_certificate_ressult }}'
@@ -31,7 +29,6 @@
 
 - name: Save challenge info
   delegate_to: localhost
-  become: false
   run_once: true
   ansible.builtin.copy:
     content: '{{ acme_challenge_info | to_nice_yaml }}'
@@ -41,7 +38,6 @@
 
 - name: Copy http-01 challenge
   delegate_to: localhost
-  become: false
   run_once: true
   ansible.builtin.copy:
     content: '{{ item.value["http-01"].resource_value }}'

@@ -5,7 +5,6 @@
 
 - name: Create csr
   delegate_to: localhost
-  become: false
   run_once: true
   community.crypto.openssl_csr:
     path: '{{ tls_info.csr }}'

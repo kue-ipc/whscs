@@ -7,7 +7,6 @@
 
 - name: Create account key
   delegate_to: localhost
-  become: false
   run_once: true
   community.crypto.openssl_privatekey:
     path: '{{ acme_info.key }}'
@@ -18,7 +17,6 @@
 
 - name: Create ACME account
   delegate_to: localhost
-  become: false
   run_once: true
   community.crypto.acme_account:
     acme_version: 2
@@ -35,7 +33,6 @@
 
 - name: Get ACME account info
   delegate_to: localhost
-  become: false
   run_once: true
   community.crypto.acme_account_info:
     acme_version: 2

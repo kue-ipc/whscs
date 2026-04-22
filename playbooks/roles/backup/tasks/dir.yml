@@ -36,7 +36,6 @@
     - web
 
 - name: Run whoami
-  become: false
   ansible.builtin.command:
     cmd: whoami
   register: result_whoami

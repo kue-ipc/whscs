@@ -38,7 +38,6 @@
 #   when: last_snapshot is not defined
 
 - name: Sync web with link-dest
-  become: false
   ansible.posix.synchronize:
     src: '{{ data_dir }}/'
     dest: '{{ backup_data_dir }}/data/work/'
@@ -48,7 +47,6 @@
     - backup_last_data_backup != backup_time
 
 - name: Sync web without link-dest
-  become: false
   ansible.posix.synchronize:
     src: '{{ data_dir }}/'
     dest: '{{ backup_data_dir }}/data/work/'

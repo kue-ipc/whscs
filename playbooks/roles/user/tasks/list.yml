@@ -1,6 +1,5 @@
 - name: Find webuser yml
   delegate_to: localhost
-  become: false
   ansible.builtin.find:
     paths: '{{ data_webuser_dir }}'
     patterns: '*.yml'
@@ -14,7 +13,6 @@
 
 - name: Check existing users
   delegate_to: '{{ groups["mgt"] | first }}'
-  become: false
   ansible.builtin.find:
     paths: '{{ web_dir }}'
     file_type: directory

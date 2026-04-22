@@ -30,7 +30,6 @@
 
 - name: Delete previous files when force
   delegate_to: localhost
-  become: false
   run_once: true
   ansible.builtin.file:
     path: '{{ item }}'
@@ -114,7 +113,6 @@
 
 - name: Copy file
   delegate_to: localhost
-  become: false
   run_once: true
   ansible.builtin.copy:
     remote_src: true

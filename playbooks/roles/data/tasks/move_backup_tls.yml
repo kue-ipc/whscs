@@ -2,7 +2,6 @@
 ---
 - name: Stat file
   delegate_to: localhost
-  become: false
   run_once: true
   ansible.builtin.stat:
     path: '{{ item }}'
@@ -10,7 +9,6 @@
 
 - name: Copy file
   delegate_to: localhost
-  become: false
   run_once: true
   ansible.builtin.copy:
     remote_src: true
@@ -22,7 +20,6 @@
 
 - name: Delete file
   delegate_to: localhost
-  become: false
   run_once: true
   ansible.builtin.file:
     path: '{{ item }}'

@@ -5,7 +5,6 @@
 
 - name: Read cert file
   delegate_to: localhost
-  become: false
   run_once: true
   community.crypto.x509_certificate_info:
     path: '{{ tls_info.cert }}'
@@ -13,7 +12,6 @@
 
 - name: Read private key file
   delegate_to: localhost
-  become: false
   run_once: true
   community.crypto.openssl_privatekey_info:
     path: '{{ tls_info.key }}'
@@ -21,7 +19,6 @@
 
 - name: Verify key and cert
   delegate_to: localhost
-  become: false
   run_once: true
   ansible.builtin.assert:
     that: tls_cert_info.public_key_fingerprints.sha256 == tls_key_info.public_key_fingerprints.sha256
@@ -30,7 +27,6 @@
 
 - name: Verify cert common name matches
   delegate_to: localhost
-  become: false
   run_once: true
   ansible.builtin.assert:
     that: tls_info.cn == tls_cert_info.subject.commonName
@@ -41,7 +37,6 @@
 
 - name: Verify cert expriation time
   delegate_to: localhost
-  become: false
   run_once: true
   ansible.builtin.assert:
     that:

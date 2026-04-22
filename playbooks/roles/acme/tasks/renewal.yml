@@ -6,7 +6,6 @@
 
 - name: Retrieve renewal information for a certificate
   delegate_to: localhost
-  become: false
   run_once: true
   community.crypto.acme_certificate_renewal_info:
     acme_version: 2
@@ -17,7 +16,6 @@
 
 - name: Save renewal info
   delegate_to: localhost
-  become: false
   run_once: true
   ansible.builtin.copy:
     content: '{{ acme_renewal | to_nice_yaml }}'

@@ -80,7 +80,6 @@
   notify: 'restart nginx'
 
 - name: Run whoami
-  become: false
   ansible.builtin.command:
     cmd: whoami
   register: result_whoami
@@ -96,7 +95,6 @@
   when: not ansible_check_mode
 
 - name: Sync html dir
-  become: false
   ansible.posix.synchronize:
     src: '{{ data_html_dir }}/'
     dest: /var/www/html/

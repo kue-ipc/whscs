@@ -5,7 +5,6 @@
 
 - name: Stat webusers yml
   delegate_to: localhost
-  become: false
   run_once: true
   ansible.builtin.stat:
     path: '{{ data_webusers_yml }}'
@@ -14,7 +13,6 @@
 
 - name: Stat webuser yml list
   delegate_to: localhost
-  become: false
   run_once: true
   ansible.builtin.stat:
     path: '{{ data_webuser_dir }}/{{ item }}.yml'
@@ -24,7 +22,6 @@
 
 - name: Stat webuser dir
   delegate_to: localhost
-  become: false
   run_once: true
   ansible.builtin.stat:
     path: '{{ data_webuser_dir }}'
@@ -60,7 +57,6 @@
 
 - name: Save webusers yml
   delegate_to: localhost
-  become: false
   run_once: true
   ansible.builtin.copy:
     content: '{{ user_webusers | to_nice_yaml }}'
@@ -70,7 +66,6 @@
 
 - name: Touch webusers yml
   delegate_to: localhost
-  become: false
   run_once: true
   ansible.builtin.file:
     path: '{{ data_webusers_yml }}'

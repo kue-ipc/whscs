@@ -12,7 +12,6 @@
 
 - name: Create temp directory in local
   delegate_to: localhost
-  become: false
   run_once: true
   ansible.builtin.tempfile:
     state: directory
@@ -43,7 +42,6 @@
 
 - name: Remove temp directory in local
   delegate_to: localhost
-  become: false
   run_once: true
   ansible.builtin.file:
     path: '{{ local_tempdir.path }}'

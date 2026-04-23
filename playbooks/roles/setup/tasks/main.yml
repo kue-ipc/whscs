@@ -1,5 +1,9 @@
 # 初期セットアップ
 ---
+- name: Task cert
+  ansible.builtin.import_tasks: cert.yml
+  tags: cert
+
 - name: Task dnf
   ansible.builtin.import_tasks: dnf.yml
   tags: dnf

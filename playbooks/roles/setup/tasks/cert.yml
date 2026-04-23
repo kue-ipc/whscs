@@ -1,0 +1,16 @@
+# cert
+---
+- name: Create tursted CA certificate
+  become: true
+  ansible.builtin.copy:
+    src: '{{ data_tls_ca_certs_dir }}/{{ item }}'
+    dest: '/etc/pki/ca-trust/source/anchors/{{ item }}'
+    owner: root
+    group: root
+    mode: '0644'
+  loop: '{{ setup_trusted_cas }}'
+
+- name: Update CA trust
+  become: true
+  ansible.builtin.command: update-ca-trust
+  changed_when: true

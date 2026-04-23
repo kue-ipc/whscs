@@ -1,2 +1,4 @@
 setup_dnf_env_group: minimal-environment
 # setup_dnf_common_pkgs: ... list of common packages to be installed by dnf
+# search file in data_tls_ca_certs_dir
+setup_trusted_cas: []

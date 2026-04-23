@@ -9,6 +9,7 @@ data_tls_csrs_dir: '{{ data_tls_dir }}/csrs'
 data_tls_certs_dir: '{{ data_tls_dir }}/certs'
 data_tls_chained_certs_dir: '{{ data_tls_dir }}/chained_certs'
 data_tls_im_certs_dir: '{{ data_tls_dir }}/im_certs'
+data_tls_ca_certs_dir: '{{ data_tls_dir }}/ca_certs'
 # acme dirs
 data_acme_dir: '{{ data_dir }}/acme'
 data_acme_account_dir: '{{ data_acme_dir }}/account'

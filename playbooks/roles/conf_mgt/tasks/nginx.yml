@@ -89,6 +89,7 @@
   notify: 'restart nginx'
 
 - name: Set owner html root
+  become: true
   ansible.builtin.file:
     path: /var/www/html
     owner: '{{ ansible_facts.user_id }}'

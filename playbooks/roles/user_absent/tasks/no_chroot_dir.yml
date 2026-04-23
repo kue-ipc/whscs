@@ -1,6 +1,7 @@
 # no chroot dir
 ---
 - name: Remove chroot dir
+  become: true
   ansible.builtin.file:
     path: '{{ webuser.chroot_dir }}'
     state: absent

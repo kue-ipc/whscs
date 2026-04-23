@@ -30,6 +30,7 @@
   notify: 'restart nfs-ganesha'
 
 - name: Make systemd nfs-ganesha.service.d
+  become: true
   ansible.builtin.file:
     path: /etc/systemd/system/nfs-ganesha.service.d/
     state: directory

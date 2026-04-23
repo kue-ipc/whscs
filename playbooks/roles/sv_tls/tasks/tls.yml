@@ -1,6 +1,7 @@
 # tls dir
 ---
 - name: Make tls dir
+  become: true
   ansible.builtin.file:
     path: '{{ web_tls_dir }}'
     owner: root
@@ -9,6 +10,7 @@
     state: directory
 
 - name: Make tls certs dir
+  become: true
   ansible.builtin.file:
     path: '{{ web_tls_certs_dir }}'
     owner: root
@@ -17,6 +19,7 @@
     state: directory
 
 - name: Make tls private dir
+  become: true
   ansible.builtin.file:
     path: '{{ web_tls_private_dir }}'
     owner: root

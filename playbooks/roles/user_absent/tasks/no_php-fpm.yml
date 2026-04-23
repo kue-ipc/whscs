@@ -1,6 +1,7 @@
 # no php-fpm
 ---
 - name: Remove php-fpm conf for user
+  become: true
   ansible.builtin.file:
     path: '/etc/php-fpm.d/{{ webuser.name }}.conf'
     state: absent

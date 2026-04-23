@@ -10,6 +10,7 @@
       - centos-release-storage-common
 
 - name: Delete CentOS Gluster Custom repo
+  become: true
   ansible.builtin.file:
     path: /etc/yum.repos.d/CentOS-Gluster-Custom.repo
     state: absent

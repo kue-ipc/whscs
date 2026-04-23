@@ -27,6 +27,7 @@
     quiet: true
 
 - name: Make systemd logrotate.timer.d
+  become: true
   ansible.builtin.file:
     path: /etc/systemd/system/logrotate.timer.d/
     state: directory
@@ -47,6 +48,7 @@
   when: logrotate_time | default('00:00:00') != '00:00:00'
 
 - name: Delete on_calendar.conf in logrotate.timer.d
+  become: true
   ansible.builtin.file:
     path: '/etc/systemd/system/logrotate.timer.d/on_calendar.conf'
     state: absent

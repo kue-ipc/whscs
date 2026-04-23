@@ -7,6 +7,7 @@
     name: php-fpm
 
 - name: Make systemd php-fpm.service.d
+  become: true
   ansible.builtin.file:
     path: /etc/systemd/system/php-fpm.service.d/
     state: directory

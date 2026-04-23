@@ -75,6 +75,7 @@
   notify: 'restart all httpd'
 
 - name: Make systemd httpd@.service.d
+  become: true
   ansible.builtin.file:
     path: /etc/systemd/system/httpd@.service.d/
     state: directory

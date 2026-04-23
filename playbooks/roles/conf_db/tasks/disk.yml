@@ -41,6 +41,7 @@
     state: mounted
 
 - name: Set permission mysql
+  become: true
   ansible.builtin.file:
     path: /var/lib/mysql
     owner: mysql
@@ -49,6 +50,7 @@
     setype: mysqld_db_t
 
 - name: Set permission pgsql
+  become: true
   ansible.builtin.file:
     path: /var/lib/pgsql
     owner: postgres

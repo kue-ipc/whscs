@@ -1,6 +1,7 @@
 # no nginx
 ---
 - name: Remove nginx conf for user
+  become: true
   ansible.builtin.file:
     path: '/etc/nginx/virtual.d/{{ webuser.name }}.conf'
     state: absent

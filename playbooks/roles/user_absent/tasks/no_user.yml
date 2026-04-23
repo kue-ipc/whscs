@@ -6,6 +6,7 @@
     state: absent
 
 - name: Delete user home dir
+  become: true
   ansible.builtin.file:
     path: '{{ webuser.dir }}'
     state: absent

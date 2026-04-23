@@ -19,6 +19,7 @@
   when: ansible_facts.getent_passwd[webuser.name] is not defined
 
 - name: Make symlink user home dir
+  become: true
   ansible.builtin.file:
     src: '{{ webuser.chroot_dir }}{{ webuser.dir }}'
     dest: '{{ webuser.dir }}'

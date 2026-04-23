@@ -1,6 +1,7 @@
 # chroot user
 ---
 - name: Make user web dir
+  become: true
   ansible.builtin.file:
     path: '{{ webuser.chroot_dir }}/{{ item }}'
     owner: '{{ webuser.name }}'
@@ -19,6 +20,7 @@
   register: user_dir_stat
 
 - name: Make user home dir
+  become: true
   ansible.builtin.file:
     path: '{{ webuser.chroot_dir }}{{ webuser.dir }}'
     owner: '{{ webuser.name }}'
@@ -37,6 +39,7 @@
   when: not user_dir_stat.stat.exists
 
 - name: Make user web symlink
+  become: true
   ansible.builtin.file:
     src: '../../{{ item }}'
     dest: '{{ webuser.chroot_dir }}{{ webuser.dir }}/{{ item }}'
@@ -52,6 +55,7 @@
 ## ssh
 
 - name: Make .ssh directory
+  become: true
   ansible.builtin.file:
     path: '{{ webuser.chroot_dir }}{{ webuser.dir }}/.ssh'
     owner: '{{ webuser.name }}'

@@ -1,6 +1,7 @@
 # var
 ---
 - name: Make user var dir
+  become: true
   ansible.builtin.file:
     path: '{{ webuser.var_dir }}'
     owner: root
@@ -9,6 +10,7 @@
     state: directory
 
 - name: Make dirs in user var
+  become: true
   ansible.builtin.file:
     path: '{{ webuser.var_dir }}{{ item.path | regex_replace("^/var", "") }}'
     owner: '{{ item.owner | default("root") }}'

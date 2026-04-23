@@ -34,6 +34,7 @@
   notify: 'restart nginx'
 
 - name: Make virtual.d dir
+  become: true
   ansible.builtin.file:
     path: /etc/nginx/virtual.d
     owner: root

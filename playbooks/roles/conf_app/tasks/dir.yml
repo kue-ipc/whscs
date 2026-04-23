@@ -1,6 +1,7 @@
 # dir
 ---
 - name: Make public_html (dummy document)
+  become: true
   ansible.builtin.file:
     path: /public_html
     owner: root
@@ -9,6 +10,7 @@
     state: directory
 
 - name: Make web var dir
+  become: true
   ansible.builtin.file:
     path: '{{ web_var_dir }}'
     owner: root

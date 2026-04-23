@@ -29,6 +29,7 @@
 #     mode: '0644'
 
 - name: Remove cockpit.conf
+  become: true
   ansible.builtin.file:
     state: absent
     path: /etc/cockpit/cockpit.conf

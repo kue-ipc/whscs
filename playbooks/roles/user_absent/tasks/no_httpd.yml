@@ -8,11 +8,13 @@
     state: stopped
 
 - name: Remove httpd conf for user
+  become: true
   ansible.builtin.file:
     path: '/etc/httpd/conf/{{ webuser.name }}.conf'
     state: absent
 
 - name: Remove logrotate for httpd
+  become: true
   ansible.builtin.file:
     path: '/etc/logrotate.d/httpd@{{ webuser.name }}'
     state: absent

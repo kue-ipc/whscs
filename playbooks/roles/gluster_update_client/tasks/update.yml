@@ -3,12 +3,14 @@
   when: ansible_facts.services is not defined
 
 - name: Stop nginx
+  become: true
   ansible.builtin.systemd:
     name: nginx.service
     state: stopped
   when: ansible_facts.services["nginx.service"] is defined
 
 - name: Stop all httpd
+  become: true
   ansible.builtin.systemd:
     name: '{{ item }}'
     state: stopped
@@ -19,12 +21,14 @@
       | map(attribute="name") }}
 
 - name: Stop php-fpm
+  become: true
   ansible.builtin.systemd:
     name: php-fpm.service
     state: stopped
   when: ansible_facts.services["php-fpm.service"] is defined
 
 - name: Stop vsftpd
+  become: true
   ansible.builtin.systemd:
     name: vsftpd.service
     state: stopped

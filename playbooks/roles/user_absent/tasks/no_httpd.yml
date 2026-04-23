@@ -1,6 +1,7 @@
 # no httpd
 ---
 - name: Disable and stop httpd for user
+  become: true
   ansible.builtin.systemd:
     name: 'httpd@{{ webuser.name }}.service'
     enabled: false

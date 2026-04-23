@@ -70,6 +70,7 @@
 # TODO: implicit対応UseImplicitSSLを
 
 - name: Enable and start proftpd
+  become: true
   ansible.builtin.systemd:
     name: proftpd.service
     enabled: true

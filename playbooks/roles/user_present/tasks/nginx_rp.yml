@@ -11,6 +11,7 @@
   register: template_nginx_conf
 
 - name: Reload nginx immediately
+  become: true
   ansible.builtin.systemd:
     name: 'nginx.service'
     state: reloaded

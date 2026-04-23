@@ -27,6 +27,7 @@
   notify: 'reload systemd'
 
 - name: Enable and start php-fpm
+  become: true
   ansible.builtin.systemd:
     name: php-fpm.service
     enabled: true

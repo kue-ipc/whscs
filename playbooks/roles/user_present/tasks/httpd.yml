@@ -11,17 +11,20 @@
   register: result_template_httpd
 
 - name: Enable httpd for user
+  become: true
   ansible.builtin.systemd:
     name: 'httpd@{{ webuser.name }}.service'
     enabled: true
 
 - name: Start httpd for user
+  become: true
   ansible.builtin.systemd:
     name: 'httpd@{{ webuser.name }}.service'
     state: started
   register: result_start_httpd
 
 - name: Restart httpd for user
+  become: true
   ansible.builtin.systemd:
     name: 'httpd@{{ webuser.name }}.service'
     state: restarted

@@ -51,6 +51,7 @@
   notify: 'reload systemd'
 
 - name: Enable and start nfs-ganesha
+  become: true
   ansible.builtin.systemd:
     name: nfs-ganesha.service
     enabled: true

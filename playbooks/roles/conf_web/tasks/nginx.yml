@@ -42,6 +42,7 @@
     state: directory
 
 - name: Enable and start nginx
+  become: true
   ansible.builtin.systemd:
     name: nginx.service
     enabled: true

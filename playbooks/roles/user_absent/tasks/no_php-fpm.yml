@@ -7,6 +7,7 @@
   register: result_remove_php_fpm_conf
 
 - name: Reload php-fpm
+  become: true
   ansible.builtin.systemd:
     name: 'php-fpm.service'
     state: reloaded

@@ -1,11 +1,13 @@
 # restnart db
 ---
 - name: Rstart mariadb
+  become: true
   ansible.builtin.systemd:
     service: mariadb.service
     state: restarted
 
 - name: Restart postgresql
+  become: true
   ansible.builtin.systemd:
     service: postgresql.service
     state: restarted

@@ -5,6 +5,7 @@
     tasks_from: webuser_present
 
 - name: Restart app for user
+  become: true
   ansible.builtin.systemd:
     name: 'app@{{ webuser.name }}.service'
     state: restarted
@@ -14,6 +15,7 @@
     - not webuser.app_one or groups[webuser.host] | first == inventory_hostname
 
 - name: Restart httpd for user
+  become: true
   ansible.builtin.systemd:
     name: 'httpd@{{ webuser.name }}.service'
     state: restarted

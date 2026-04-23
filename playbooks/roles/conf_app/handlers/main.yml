@@ -17,11 +17,13 @@
   listen: 'reload firewalld'
 
 - name: Reload systed
+  become: true
   ansible.builtin.systemd:
     daemon_reload: true
   listen: 'reload systemd'
 
 - name: Restart php-fpm
+  become: true
   ansible.builtin.systemd:
     name: php-fpm.service
     state: restarted
@@ -29,6 +31,7 @@
   listen: 'restart php-fpm'
 
 - name: Restart all httpd
+  become: true
   ansible.builtin.systemd:
     name: '{{ item }}'
     state: restarted
@@ -40,6 +43,7 @@
   listen: 'restart all httpd'
 
 - name: Restart sshd
+  become: true
   ansible.builtin.systemd:
     name: sshd.service
     state: restarted

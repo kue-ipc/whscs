@@ -8,11 +8,13 @@
   when: ansible_facts.services is not defined
 
 - name: Stop glusterd
+  become: true
   ansible.builtin.systemd:
     name: glusterd.service
     state: stopped
 
 - name: Stop glustereventsd
+  become: true
   ansible.builtin.systemd:
     name: glustereventsd.service
     state: stopped
@@ -41,12 +43,14 @@
     name: 'centos-release-gluster{{ gluster_old_version }}'
 
 - name: Start glusterd
+  become: true
   ansible.builtin.systemd:
     name: glusterd.service
     state: started
     enabled: true
 
 - name: Start glustereventsd
+  become: true
   ansible.builtin.systemd:
     name: glustereventsd.service
     state: started

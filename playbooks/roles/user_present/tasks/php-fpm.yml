@@ -11,6 +11,7 @@
   register: template_php_fpm_conf
 
 - name: Reload php-fpm immediately
+  become: true
   ansible.builtin.systemd:
     name: 'php-fpm.service'
     state: reloaded

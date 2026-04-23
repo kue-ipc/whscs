@@ -137,6 +137,7 @@
   notify: 'restart usermin'
 
 - name: Enable and start usermin
+  become: true
   ansible.builtin.systemd:
     name: usermin.service
     enabled: true

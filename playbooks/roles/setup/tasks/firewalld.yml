@@ -1,6 +1,7 @@
 # ファイアウォール設定
 ---
 - name: Enable and start firewalld
+  become: true
   ansible.builtin.systemd:
     name: firewalld.service
     enabled: true

@@ -21,6 +21,7 @@
   ansible.builtin.include_tasks: postgresql_config.yml
 
 - name: Enable and start postgresql
+  become: true
   ansible.builtin.systemd:
     service: postgresql.service
     enabled: true

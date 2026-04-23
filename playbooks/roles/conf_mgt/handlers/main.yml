@@ -17,41 +17,48 @@
   changed_when: result_command_restorecon.stdout_lines | length > 0
 
 - name: Reload systemd
+  become: true
   ansible.builtin.systemd:
     daemon_reload: true
   listen: 'reload systemd'
 
 - name: Restart vfstpd
+  become: true
   ansible.builtin.systemd:
     name: vsftpd.service
     state: restarted
   listen: 'restart vsftpd'
 
 - name: Restart sshd
+  become: true
   ansible.builtin.systemd:
     name: sshd.service
     state: restarted
   listen: 'restart sshd'
 
 - name: Restart nginx
+  become: true
   ansible.builtin.systemd:
     name: nginx.service
     state: restarted
   listen: 'restart nginx'
 
 - name: Restart php-fpm
+  become: true
   ansible.builtin.systemd:
     name: php-fpm.service
     state: restarted
   listen: 'restart php-fpm'
 
 - name: Restart usnermin
+  become: true
   ansible.builtin.systemd:
     name: usermin.service
     state: restarted
   listen: 'restart usermin'
 
 - name: Restart proftpd
+  become: true
   ansible.builtin.systemd:
     name: proftpd.service
     state: restarted

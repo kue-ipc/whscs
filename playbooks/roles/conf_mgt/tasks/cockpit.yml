@@ -34,6 +34,7 @@
     path: /etc/cockpit/cockpit.conf
 
 - name: Enable and start cockpit
+  become: true
   ansible.builtin.systemd:
     name: cockpit.socket
     enabled: true

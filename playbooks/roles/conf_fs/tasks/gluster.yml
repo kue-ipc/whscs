@@ -1,6 +1,7 @@
 # GlusterFS
 ---
 - name: Enable and start glusterd
+  become: true
   ansible.builtin.systemd:
     name: glusterd.service
     enabled: true

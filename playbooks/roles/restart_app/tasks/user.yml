@@ -1,6 +1,7 @@
 # restart app
 ---
 - name: Restart php-fpm for user
+  become: true
   ansible.builtin.systemd:
     name: php-fpm.service
     state: restarted
@@ -9,12 +10,14 @@
     - '"httpd@" ~ user ~ ".service" in ansible_facts.services'
 
 - name: Restart httpd for user
+  become: true
   ansible.builtin.systemd:
     name: 'httpd@{{ user }}.service'
     state: restarted
   when: '"httpd@" ~ user ~ ".service" in ansible_facts.services'
 
 - name: Restart app for user
+  become: true
   ansible.builtin.systemd:
     name: 'app@{{ user }}.service'
     state: restarted

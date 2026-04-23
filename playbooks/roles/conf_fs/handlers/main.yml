@@ -6,17 +6,20 @@
   listen: 'reload firewalld'
 
 - name: Reload systemd
+  become: true
   ansible.builtin.systemd:
     daemon_reload: true
   listen: 'reload systemd'
 
 - name: Reload nfs-ganesha
+  become: true
   ansible.builtin.systemd:
     name: nfs-ganesha.service
     state: reloaded
   listen: 'reload nfs-ganesha'
 
 - name: Restart nfs-ganesha
+  become: true
   ansible.builtin.systemd:
     name: nfs-ganesha.service
     state: restarted

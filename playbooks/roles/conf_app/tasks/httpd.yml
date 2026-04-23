@@ -12,6 +12,7 @@
       - mod_fcgid
 
 - name: Disable and stop httpd
+  become: true
   ansible.builtin.systemd:
     name: httpd.service
     enabled: false

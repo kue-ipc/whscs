@@ -6,6 +6,7 @@
   listen: 'reload firewalld'
 
 - name: Restart keepalived
+  become: true
   ansible.builtin.systemd:
     name: keepalived.service
     state: restarted

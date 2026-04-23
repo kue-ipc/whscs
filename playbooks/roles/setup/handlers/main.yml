@@ -1,16 +1,19 @@
 ---
 - name: Reload systed
+  become: true
   ansible.builtin.systemd:
     daemon_reload: true
   listen: 'reload systemd'
 
 - name: Restart chronyd
+  become: true
   ansible.builtin.systemd:
     name: chronyd.service
     state: restarted
   listen: 'restart chronyd'
 
 - name: Restart sshd
+  become: true
   ansible.builtin.systemd:
     name: sshd.service
     state: restarted

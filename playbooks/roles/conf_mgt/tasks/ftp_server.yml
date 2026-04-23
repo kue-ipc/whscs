@@ -32,6 +32,7 @@
   when: ansible_facts.services is not defined
 
 - name: Disable and stop vsftpd
+  become: true
   ansible.builtin.systemd:
     name: vsftpd.service
     enabled: false
@@ -41,6 +42,7 @@
     - ftp_server != "vsftpd"
 
 - name: Disable and stop proftpd
+  become: true
   ansible.builtin.systemd:
     name: proftpd.service
     enabled: false

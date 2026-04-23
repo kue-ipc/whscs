@@ -1,12 +1,14 @@
 # restart app all
 ---
 - name: Restart php-fpm
+  become: true
   ansible.builtin.systemd:
     name: php-fpm.service
     state: restarted
   when: httpd_php == "php-fpm"
 
 - name: Restart all httpd
+  become: true
   ansible.builtin.systemd:
     name: '{{ item }}'
     state: restarted
@@ -17,6 +19,7 @@
       | map(attribute="name") }}
 
 - name: Restart all app
+  become: true
   ansible.builtin.systemd:
     name: '{{ item }}'
     state: restarted

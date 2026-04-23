@@ -24,6 +24,7 @@
     persistent: true
 
 - name: Enable and start haproxy
+  become: true
   ansible.builtin.systemd:
     name: haproxy.service
     enabled: true

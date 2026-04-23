@@ -21,6 +21,7 @@
     mode: '0644'
 
 - name: Enable systemd web-fs.target
+  become: true
   ansible.builtin.systemd:
     name: web-fs.target
     enabled: true

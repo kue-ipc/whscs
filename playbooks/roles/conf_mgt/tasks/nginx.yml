@@ -104,6 +104,7 @@
   when: not ansible_check_mode
 
 - name: Enable and start nginx
+  become: true
   ansible.builtin.systemd:
     name: nginx.service
     enabled: true

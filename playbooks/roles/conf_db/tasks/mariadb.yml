@@ -86,6 +86,7 @@
     - mariadb_active_servers | length == 0
 
 - name: Enable and start mariadb
+  become: true
   ansible.builtin.systemd:
     service: mariadb.service
     enabled: true

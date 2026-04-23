@@ -1,11 +1,13 @@
 # unmount
 ---
 - name: Stop check-web-mount for user
+  become: true
   ansible.builtin.systemd:
     name: 'check-web-mount@{{ webuser.name }}.service'
     state: stopped
 
 - name: Stop web-mount for user
+  become: true
   ansible.builtin.systemd:
     name: 'web-mount@{{ webuser.name }}.service'
     state: stopped

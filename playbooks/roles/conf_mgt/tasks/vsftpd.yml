@@ -86,6 +86,7 @@
   notify: 'restart vsftpd'
 
 - name: Enable and start vsftpd
+  become: true
   ansible.builtin.systemd:
     name: vsftpd.service
     enabled: true

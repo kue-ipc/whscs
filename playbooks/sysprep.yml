@@ -1,0 +1,5 @@
+---
+- name: Sysprep for tpl
+  hosts: tpl
+  roles:
+    - sysprep

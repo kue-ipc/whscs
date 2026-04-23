@@ -1,0 +1,51 @@
+# sysprep
+# RHEL10-like virtual machine template
+# https://docs.redhat.com/ja/documentation/red_hat_enterprise_linux/10/html/configuring_and_managing_linux_virtual_machines/creating-virtual-machine-templates
+---
+- name: Remove persistent net rules
+  become: true
+  ansible.builtin.file:
+    path: /etc/udev/rules.d/70-persistent-net.rules
+    state: absent
+
+# - name: Remove uuid from NetworkManager system connections
+#   become: true
+#   ansible.builtin.replace:
+#     path: /etc/NetworkManager/system-connections/*.nmconnection
+#     regexp: '^uuid=.*$'
+#     replace: 'uuid='
+
+# - name: Remove MAC address from NetworkManager system connections
+#   become: true
+#   ansible.builtin.replace:
+#     path: /etc/NetworkManager/system-connections/*.nmconnection
+#     regexp: '^mac-address=.*$'
+#     replace: 'mac-address='
+
+- name: Find SSH host keys
+  ansible.builtin.find:
+    paths: /etc/ssh
+    patterns: 'ssh_host_*'
+    file_type: file
+  register: sysprep_ssh_host_keys
+
+- name: Remove SSH host keys
+  become: true
+  ansible.builtin.file:
+    path: '{{ item.path }}'
+    state: absent
+  loop: '{{ sysprep_ssh_host_keys.files }}'
+  loop_control:
+    label: '{{ item.path }}'
+
+- name: Remove lvm system.devices
+  become: true
+  ansible.builtin.file:
+    path: /etc/lvm/devices/system.devices
+    state: absent
+
+- name: Shutdown the system
+  become: true
+  community.general.shutdown:
+    delay: 10
+    msg: 'Sysprep: Shutting down the system'

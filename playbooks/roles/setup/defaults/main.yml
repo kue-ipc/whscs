@@ -1,0 +1,2 @@
+setup_dnf_env_group: minimal-environment
+# setup_dnf_common_pkgs: 

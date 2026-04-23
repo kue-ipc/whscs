@@ -10,14 +10,41 @@
       timeout=600
   when: proxy_uri is defined
 
-- name: Install group Minimal Install
+- name: Install environment group
   become: true
   ansible.builtin.dnf:
     state: present
-    name: '@Minimal Install'
+    name: '@{{ setup_dnf_env_group }}'
 
-- name: Install common package
+- name: Install virtualization guest package for VMware
+  become: true
+  ansible.builtin.dnf:
+    state: present
+    name: open-vm-tools
+  loop: "{{ ansible_facts.virtualization_tech_guest }}"
+  when:
+    - ansible_facts.virtualization_role == "guest"
+    - ansible_facts.virtualization_type == "VMware"
+
+- name: Install virtualization guest package for KVM
+  become: true
+  ansible.builtin.dnf:
+    state: present
+    name: qemu-guest-agent
+  when:
+    - ansible_facts.virtualization_role == "guest"
+    - ansible_facts.virtualization_type == "kvm"
+
+- name: Install management package for selinux
   become: true
   ansible.builtin.dnf:
     state: present
     name: policycoreutils-python-utils
+  when: ansible_facts.selinux.status == "enabled"
+
+- name: Install common packages
+  become: true
+  ansible.builtin.dnf:
+    state: present
+    name: '{{ setup_dnf_common_pkgs }}'
+  when: setup_dnf_common_pkgs is defined

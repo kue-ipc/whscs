@@ -1,2 +1,2 @@
 setup_dnf_env_group: minimal-environment
-# setup_dnf_common_pkgs: 
+# setup_dnf_common_pkgs: ... list of common packages to be installed by dnf

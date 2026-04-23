@@ -10,6 +10,7 @@
     mode: '0644'
   loop: '{{ setup_trusted_cas }}'
 
+# TODO: 必要なときだけ実行するようにする。
 - name: Update CA trust
   become: true
   ansible.builtin.command: update-ca-trust

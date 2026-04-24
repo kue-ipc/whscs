@@ -6,6 +6,7 @@
   when: ansible_facts.getent_passwd is not defined
 
 - name: Add user
+  become: true
   ansible.builtin.user:
     name: '{{ webuser.name }}'
     uid: '{{ webuser.uid }}'

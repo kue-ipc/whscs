@@ -1,6 +1,7 @@
 # common nginx
 ---
 - name: Add nginx group
+  become: true
   ansible.builtin.group:
     name: nginx
     gid: '{{ nginx_gid }}'
@@ -8,6 +9,7 @@
     state: present
 
 - name: Add nginx user
+  become: true
   ansible.builtin.user:
     name: nginx
     uid: '{{ nginx_uid }}'

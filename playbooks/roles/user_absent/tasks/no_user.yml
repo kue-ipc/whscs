@@ -1,6 +1,7 @@
 # no user
 ---
 - name: Delete user
+  become: true
   ansible.builtin.user:
     name: '{{ webuser.name }}'
     state: absent

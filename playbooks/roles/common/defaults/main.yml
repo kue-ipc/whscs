@@ -69,6 +69,7 @@ app_life_cycle: lts
 app_dev: false
 app_util: false
 app_versions: {}
+app_src_dir: /usr/local/src
 logrotate_frequency: daily
 logrotate_rotate: 92
 logrotate_time: 00:00:00

@@ -2,14 +2,11 @@
 ---
 - name: Task gluster_repo
   ansible.builtin.import_tasks: gluster_repo.yml
+  when: gluster_repo != "build"
 
-- name: Install glusterfs glusterfs-fuse
-  become: true
-  ansible.builtin.dnf:
-    state: present
-    name:
-      - glusterfs
-      - glusterfs-fuse
+- name: Task gluster_build
+  ansible.builtin.import_tasks: gluster_build.yml
+  when: gluster_repo == "build"
 
 # {{ web_dir is mount }} では確認できないため ansible_mounts を使用する。
 - name: Set web dir mounted

@@ -1,6 +1,6 @@
 ## GlusterFS
-# repo: stream, relesae, custom
-gluster_repo: custom
+# repo: stream, relesae, custom, build
+gluster_repo: '{{ (ansible_facts.distribution_major_version is version("9", "<=")) | ternary("custom", "build") }}'
 gluster_version: "10"
 gluster_volume: web
 gluster_snapshot_name: ss

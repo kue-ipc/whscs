@@ -90,3 +90,8 @@ sv_app_default_versions:
         - '14' # 2026-11
         # - '13' # 2025-11
         # - '12' # 2024-11
+  el10:
+    default:
+      python: '3.12'
+    lts: {}
+    sts: {}

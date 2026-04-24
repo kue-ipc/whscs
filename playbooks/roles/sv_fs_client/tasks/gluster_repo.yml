@@ -69,3 +69,11 @@
     group: root
     mode: '0644'
   when: gluster_repo == "custom"
+
+- name: Install glusterfs glusterfs-fuse
+  become: true
+  ansible.builtin.dnf:
+    state: present
+    name:
+      - glusterfs
+      - glusterfs-fuse

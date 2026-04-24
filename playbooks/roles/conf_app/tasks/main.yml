@@ -4,21 +4,21 @@
   ansible.builtin.service_facts:
   when: ansible_facts.services is not defined
 
-- name: Role sv app
+- name: Role sv fs client
   ansible.builtin.import_role:
-    name: sv_app
-
-- name: Role sv tls
-  ansible.builtin.import_role:
-    name: sv_tls
+    name: sv_fs_client
 
 - name: Role sv db client
   ansible.builtin.import_role:
     name: sv_db_client
 
-- name: Role sv fs client
+- name: Role sv tls
   ansible.builtin.import_role:
-    name: sv_fs_client
+    name: sv_tls
+
+- name: Role sv app
+  ansible.builtin.import_role:
+    name: sv_app
 
 - name: Task dir
   ansible.builtin.import_tasks: dir.yml

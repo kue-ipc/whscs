@@ -21,44 +21,120 @@
   ansible.builtin.set_fact:
     gluster_source_dir: '{{ app_src_dir }}/{{ gluster_source_latest_name | regex_replace(".tar.gz$", "") }}'
 
-# FIXME: 変えてしまっていいのだろうか？
-- name: Chown app src dir
-  become: true
-  ansible.builtin.file:
-    path: '{{ app_src_dir }}'
-    state: directory
-    owner: '{{ ansible_facts.user_id }}'
-    mode: '0755'
-
 - name: Get gluster source latest
+  delegate_to: localhost
+  run_once: true
   ansible.builtin.get_url:
     url: '{{ gluster_source_latest_url }}{{ gluster_source_latest_name }}'
-    dest: '{{ app_src_dir }}/{{ gluster_source_latest_name }}'
+    dest: '{{ data_archive_src_dir }}/{{ gluster_source_latest_name }}'
     mode: '0644'
 
 - name: Extract gluster source latest
+  become: true
   ansible.builtin.unarchive:
-    src: '{{ app_src_dir }}/{{ gluster_source_latest_name }}'
-    remote_src: true
+    src: '{{ data_archive_src_dir }}/{{ gluster_source_latest_name }}'
     dest: '{{ app_src_dir }}/'
+    owner: '{{ ansible_facts.user_id }}'
     creates: '{{ gluster_source_dir }}'
 
+- name: Install develoment tools
+  become: true
+  ansible.builtin.dnf:
+    state: present
+    name: '@development'
+
+
+- name: Include task enable repo from sv_app for crb
+  ansible.builtin.include_role:
+    name: sv_app
+    tasks_from: enable_repo
+  vars:
+    sv_app_repo: crb
+
+# - name: Include task enable repo from sv_app for devel
+#   ansible.builtin.include_role:
+#     name: sv_app
+#     tasks_from: enable_repo
+#   vars:
+#     sv_app_repo: devel
+
+- name: Install build dependencies
+  become: true
+  ansible.builtin.dnf:
+    state: present
+    name:
+      # - autoconf
+      # - automake
+      # - bison
+      - dos2unix
+      # - flex
+      - fuse-devel
+      - glib2-devel
+      - libacl-devel
+      - libaio-devel
+      - libattr-devel
+      - libcurl-devel
+      - libibverbs-devel
+      - librdmacm-devel
+      - libtirpc-devel
+      # - libtool
+      - liburing-devel
+      - libuuid-devel
+      - libxml2-devel
+      - lvm2-devel
+      # - make
+      - openssl-devel
+      - pkgconfig
+      - xz-devel
+      - python3-devel
+      - python3-pyxattr
+      - python3-sphinx
+      - readline-devel
+      - rpcgen
+      # - rpm-build
+      - sqlite-devel
+      - systemtap-sdt-devel
+      # - tar
+      - userspace-rcu-devel
+      # add dependencies but not documented in glusterfs
+      - openssl
+
+# 存在しない
+# - python3-netifaces
+# - python3-paste-deploy
+# - python3-simplejson
+# - python3-webob
+
 - name: Run autogen.sh
-  ansible.builtin.command: ./autogen.sh
-  args:
+  ansible.builtin.command:
+    cmd: ./autogen.sh
     chdir: '{{ gluster_source_dir }}'
-  changed_when: true
+    creates: '{{ gluster_source_dir }}/config.status'
 
 - name: Run configure
-  ansible.builtin.command: ./configure
-  args:
+  ansible.builtin.command:
+    argv:
+      - ./configure
+      - '--without-tcmalloc'
+      - '--without-server'
     chdir: '{{ gluster_source_dir }}'
+    creates: '{{ gluster_source_dir }}/Makefile'
+
+# FIXME: コンパイル済みか確認するためのファイルが不明
+- name: Run make
+  ansible.builtin.command:
+    cmd: make
+    chdir: '{{ gluster_source_dir }}'
+    # creates: '{{ gluster_source_dir }}/src/glusterfsd/glusterfsd'
   changed_when: true
 
-- name: Run make
-  ansible.builtin.command: make
-  args:
+# FIXME: インストール済みか確認するためのファイルが不明
+- name: Run make install
+  become: true
+  ansible.builtin.command:
+    cmd: make install
     chdir: '{{ gluster_source_dir }}'
+    # creates: '{{ gluster_source_dir }}/src/glusterfsd/glusterfsd'
   changed_when: true
 
 - fail:

@@ -34,6 +34,9 @@
     - '{{ data_backup_dir }}'
     - '{{ data_backup_webuser_dir }}'
     # - '{{ data_backup_tls_dir }}'
+    # - '{{ data_archive_dir }}'
+    - '{{ data_archive_src_dir }}'
+    - '{{ data_archive_pkg_dir }}'
 
 - name: Make data dir with restricted permissions
   delegate_to: localhost

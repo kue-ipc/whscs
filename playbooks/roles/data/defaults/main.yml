@@ -23,3 +23,7 @@ data_html_dir: '{{ data_dir }}/html'
 data_backup_dir: '{{ data_dir }}/backup'
 data_backup_webuser_dir: '{{ data_backup_dir }}/webuser'
 data_backup_tls_dir: '{{ data_backup_dir }}/tls'
+# archive dir
+data_archive_dir: '{{ data_dir }}/archive'
+data_archive_src_dir: '{{ data_archive_dir }}/src'
+data_archive_pkg_dir: '{{ data_archive_dir }}/pkg'

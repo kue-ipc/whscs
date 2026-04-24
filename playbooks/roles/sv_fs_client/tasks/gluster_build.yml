@@ -51,13 +51,6 @@
   vars:
     sv_app_repo: crb
 
-# - name: Include task enable repo from sv_app for devel
-#   ansible.builtin.include_role:
-#     name: sv_app
-#     tasks_from: enable_repo
-#   vars:
-#     sv_app_repo: devel
-
 - name: Install build dependencies
   become: true
   ansible.builtin.dnf:
@@ -125,7 +118,7 @@
   ansible.builtin.command:
     cmd: make
     chdir: '{{ gluster_source_dir }}'
-    # creates: '{{ gluster_source_dir }}/src/glusterfsd/glusterfsd'
+    creates: '{{ gluster_source_dir }}/cli/src/gluster'
   changed_when: true
 
 # FIXME: インストール済みか確認するためのファイルが不明
@@ -134,8 +127,5 @@
   ansible.builtin.command:
     cmd: make install
     chdir: '{{ gluster_source_dir }}'
-    # creates: '{{ gluster_source_dir }}/src/glusterfsd/glusterfsd'
+    creates: '/usr/local/sbin/gluster'
   changed_when: true
-
-- fail:
-    msg: "STOP"

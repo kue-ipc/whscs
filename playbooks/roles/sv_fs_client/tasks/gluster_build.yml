@@ -118,14 +118,15 @@
   ansible.builtin.command:
     cmd: make
     chdir: '{{ gluster_source_dir }}'
-    creates: '{{ gluster_source_dir }}/cli/src/gluster'
+    # creates: '{{ gluster_source_dir }}/cli/src/gluster'
   changed_when: true
 
 # FIXME: インストール済みか確認するためのファイルが不明
+#   単純にファイルを見てもバージョンアップなどもあるため、毎回インストールしたほうが確実
 - name: Run make install
   become: true
   ansible.builtin.command:
     cmd: make install
     chdir: '{{ gluster_source_dir }}'
-    creates: '/usr/local/sbin/gluster'
+    # creates: '/usr/local/sbin/gluster'
   changed_when: true

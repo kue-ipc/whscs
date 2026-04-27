@@ -146,8 +146,7 @@ DirectoryIndex index.fcgi
 SSLPassPhraseDialog exec:/usr/libexec/httpd-ssl-pass-dialog
 #SSLSessionCache shmcb:/run/httpd/sslcache(512000)
 SSLSessionCacheTimeout 300
-#SSLCryptoDevice builtin
-SSLCryptoDevice rdrand
+SSLCryptoDevice {{ httpd_ssl_crypto_device }}
 
 SSLEngine on
 #SSLProtocol all -SSLv3

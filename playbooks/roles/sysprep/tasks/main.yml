@@ -8,19 +8,9 @@
     path: /etc/udev/rules.d/70-persistent-net.rules
     state: absent
 
-# - name: Remove uuid from NetworkManager system connections
-#   become: true
-#   ansible.builtin.replace:
-#     path: /etc/NetworkManager/system-connections/*.nmconnection
-#     regexp: '^uuid=.*$'
-#     replace: 'uuid='
-
-# - name: Remove MAC address from NetworkManager system connections
-#   become: true
-#   ansible.builtin.replace:
-#     path: /etc/NetworkManager/system-connections/*.nmconnection
-#     regexp: '^mac-address=.*$'
-#     replace: 'mac-address='
+# TODO: /etc/NetworkManager/system-connections/*.nmconnection について
+#    uuidやmac-addressを削除が必要かもしれない。
+#    本来はファイルを削除すべき？
 
 - name: Find SSH host keys
   ansible.builtin.find:

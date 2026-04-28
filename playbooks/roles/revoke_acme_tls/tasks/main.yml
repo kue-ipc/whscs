@@ -1,0 +1,17 @@
+# rovke acme tls certs
+---
+- name: Find superseded cert file
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.find:
+    paths: '{{ data_acme_superseded_dir }}'
+    file_type: file
+  register: revoke_acme_tls_find_cert_result
+
+- name: Task revoke
+  ansible.builtin.include_tasks:
+    file: revoke.yml
+  loop: '{{ revoke_acme_tls_find_cert_result.files | map(attribute="path") | list }}'
+  loop_control:
+    loop_var: revoke_acme_tls_cert_path
+    label: '{{ revoke_acme_tls_cert_path | basename }}'

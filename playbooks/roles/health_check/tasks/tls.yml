@@ -7,7 +7,7 @@
     tasks_from: webusers
   when: user_webusers is not defined
 
-# FIXME: rpは公開サイトのみでチェックするが、将来は公開になる。
+# FIXME: rpは公開サイトのみチェックするが、将来はすべて公開になる。
 - name: Set health_check_tls_targets
   ansible.builtin.set_fact:
     health_check_tls_targets: >-

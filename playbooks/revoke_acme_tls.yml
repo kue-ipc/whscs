@@ -1,0 +1,10 @@
+---
+- name: Revoke ACME tls
+  max_fail_percentage: 0
+  hosts:
+    - rp
+    - web
+    - app
+    # - test
+  roles:
+    - revoke_acme_tls

@@ -111,7 +111,7 @@
   vars:
     tls_domain: '{{ site }}'
 
-- name: Copy file
+- name: Copy file without cert
   delegate_to: localhost
   run_once: true
   ansible.builtin.copy:
@@ -123,14 +123,40 @@
   loop:
     - key
     - csr
-    - cert
     - chained_cert
-  register: copy_files_result
+  register: create_acme_tls_copy_files_result
 
-- name: Task move_backup in data role
+- name: Task move_file in data role for backup files without cert
   ansible.builtin.include_role:
     name: data
-    tasks_from: move_backup_tls
+    tasks_from: move_file
+  vars:
+    data_move_file_dir: '{{ data_backup_tls_dir }}'
   loop: >-
-    {{ copy_files_result.results | selectattr("changed") | selectattr("backup_file", "defined")
+    {{ create_acme_tls_copy_files_result.results
+      | selectattr("changed") | selectattr("backup_file", "defined")
       | map(attribute="backup_file") | list }}
+  loop_control:
+    loop_var: data_move_file_path
+
+- name: Copy cert file
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.copy:
+    remote_src: true
+    src: '{{ acme_tls_info.cert }}'
+    dest: '{{ tls_info.cert }}'
+    mode: '0644'
+    backup: true
+  register: create_acme_tls_copy_cert_file_result
+
+- name: Task move_file in data role for backup cert file
+  ansible.builtin.include_role:
+    name: data
+    tasks_from: move_file
+  vars:
+    data_move_file_path: '{{ create_acme_tls_copy_cert_file_result.backup_file }}'
+    data_move_file_dir: '{{ data_acme_superseded_dir }}'
+  when:
+    - create_acme_tls_copy_cert_file_result.changed
+    - create_acme_tls_copy_cert_file_result.backup_file is defined

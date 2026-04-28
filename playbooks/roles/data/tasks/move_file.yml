@@ -1,0 +1,27 @@
+# move file to dir (copy and delete)
+---
+- name: Stat file
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.stat:
+    path: '{{ data_move_file_path }}'
+  register: data_move_file_stat
+
+- name: Copy file
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.copy:
+    remote_src: true
+    src: '{{ data_move_file_path }}'
+    dest: '{{ data_move_file_dir }}/{{ data_move_file_path | basename }}'
+    mode: '{{ data_move_file_stat.stat.mode }}'
+    force: false
+  when: data_move_file_stat.stat.exists
+
+- name: Delete file
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.file:
+    path: '{{ data_move_file_path }}'
+    state: absent
+  when: data_move_file_stat.stat.exists

@@ -38,8 +38,8 @@
     - '{{ acme_info.challenge }}'
     - '{{ acme_tls_info.key }}'
     - '{{ acme_tls_info.csr }}'
-    - '{{ acme_tls_info.cert }}'
-    - '{{ acme_tls_info.chained_cert }}'
+    # - '{{ acme_tls_info.cert }}'
+    # - '{{ acme_tls_info.chained_cert }}'
   when: force
 
 - name: Set acme_challenge_info to empty when force

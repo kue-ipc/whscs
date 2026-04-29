@@ -16,6 +16,7 @@
     dest: '{{ acme_tls_info.cert }}'
     fullchain_dest: '{{ acme_tls_info.chained_cert }}'
     modify_account: false
+    include_renewal_cert_id: when_ari_supported
     data: '{{ acme_challenge_info | default(omit) }}'
     force: '{{ acme_force }}'
   register: acme_certificate_ressult

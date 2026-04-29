@@ -12,7 +12,8 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 playbook_dir = os.path.abspath(os.path.join(script_dir, "..", "playbooks"))
 data_dir = os.path.abspath(os.path.join(script_dir, "..", "data"))
 
-subprocess.run(["ansible-playbook", "user_list.yml"], cwd=playbook_dir, check=True)
+play_user_list = ["ansible-playbook", "user_list.yml"]
+subprocess.run(play_user_list, cwd=playbook_dir, check=True)
 
 with open(os.path.join(data_dir, "webusers.yml"), "r") as f:
     webusers = yaml.safe_load(f)
@@ -32,13 +33,17 @@ for user, webuser in webusers.items():
 
         print(f"Check ACME TLS for user: { user }")
         count["checked"] += 1
-        result = subprocess.run(["ansible-playbook", "check_acme_tls.yml", "-e", f"user={user}"], cwd=playbook_dir)
+        play_check_acme_tls = ["ansible-playbook", "check_acme_tls.yml",
+                               "-e", f"user={user}"]
+        result = subprocess.run(play_check_acme_tls, cwd=playbook_dir)
         if result.returncode != 0:
             print(f"Failed to check ACME TLS for user: { user }")
             count["failed"] += 1
             continue
         
-        with open(os.path.join(data_dir, "acme", "renewal", f"{ webuser['site'] }.yml"), "r") as f:
+        acme_renewal_yml = os.path.join(
+            data_dir, "acme", "renewal", f"{webuser['site']}.yml")
+        with open(acme_renewal_yml, "r") as f:
             renewal = yaml.safe_load(f)
         if not renewal.get("should_renew", False):
             print(f"ACME TLS is up to date for user: { user } ")
@@ -46,14 +51,17 @@ for user, webuser in webusers.items():
             continue
 
         print(f"Need update ACME TLS for user: { user }")
-        result = subprocess.run(["ansible-playbook", "create_acme_tls.yml", "-e", f"user={user}", "-e", "force=yes"],
-            cwd=playbook_dir)
+        play_create_acme_tls = ["ansible-playbook", "create_acme_tls.yml",
+                                "-e", f"user={user}", "-e", "force=yes"]
+        result = subprocess.run(play_create_acme_tls, cwd=playbook_dir)
         if result.returncode != 0:
             print(f"Failed to create ACME TLS for user: { user }")
             count["failed"] += 1
             continue
 
-        result = subprocess.run(["ansible-playbook", "update_tls.yml", "-e", f"user={user}"], cwd=playbook_dir)
+        play_update_tls = ["ansible-playbook", "update_tls.yml",
+                           "-e", f"user={user}"]
+        result = subprocess.run(play_update_tls, cwd=playbook_dir)
         if result.returncode != 0:
             print(f"Failed to update ACME TLS for user: { user }")
             count["failed"] += 1
@@ -74,3 +82,10 @@ if count["error"] > 0:
 if count["failed"] > 0:
     print(f"ACME TLS update completed with failures")
     exit(1)
+
+print(f"Revoke old certs")
+play_revoke_acme_tls = ["ansible-playbook", "revoke_acme_tls.yml"]
+subprocess.run(play_revoke_acme_tls,  cwd=playbook_dir, check=True)
+
+print(f"ACME TLS update completed successfully")
+exit(0)

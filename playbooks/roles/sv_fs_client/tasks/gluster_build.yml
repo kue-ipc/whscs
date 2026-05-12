@@ -1,38 +1,49 @@
 # Build glusterfs from source
 # https://docs.gluster.org/en/main/Developer-guide/Building-GlusterFS/
 ---
+# FIXME: https://download.gluster.org/ がダウンしている！！！
+
 - name: Set gluster_source_latest_url
   ansible.builtin.set_fact:
     gluster_source_latest_url: "https://download.gluster.org/pub/gluster/glusterfs/{{ gluster_version }}/LATEST/"
+  when: gluster_source_file is not defined
 
 - name: Set gluster_source_latest_url_data
   ansible.builtin.set_fact:
     gluster_source_latest_url_data: >-
       {{ lookup("url", gluster_source_latest_url, headers={"Accept": "application/json"})
         | from_json }}
+  when: gluster_source_file is not defined
 
-- name: Set gluster_source_latest_name
+- name: Set gluster_source_latest_file
   ansible.builtin.set_fact:
-    gluster_source_latest_name: >-
+    gluster_source_latest_file: >-
       {{ gluster_source_latest_url_data | selectattr("name", "search", "glusterfs-.*.tar.gz")
         | map(attribute="name") | first }}
-
-- name: Set gluster_source_dir
-  ansible.builtin.set_fact:
-    gluster_source_dir: '{{ app_src_dir }}/{{ gluster_source_latest_name | regex_replace(".tar.gz$", "") }}'
+  when: gluster_source_file is not defined
 
 - name: Get gluster source latest
   delegate_to: localhost
   run_once: true
   ansible.builtin.get_url:
-    url: '{{ gluster_source_latest_url }}{{ gluster_source_latest_name }}'
-    dest: '{{ data_archive_src_dir }}/{{ gluster_source_latest_name }}'
+    url: '{{ gluster_source_latest_url }}{{ gluster_source_latest_file }}'
+    dest: '{{ data_archive_src_dir }}/{{ gluster_source_latest_file }}'
     mode: '0644'
+  when: gluster_source_file is not defined
+
+- name: Set gluster_source_file
+  ansible.builtin.set_fact:
+    gluster_source_file: '{{ gluster_source_latest_file }}'
+  when: gluster_source_file is not defined
+
+- name: Set gluster_source_dir
+  ansible.builtin.set_fact:
+    gluster_source_dir: '{{ app_src_dir }}/{{ gluster_source_file | regex_replace(".tar.gz$", "") }}'
 
 - name: Extract gluster source latest
   become: true
   ansible.builtin.unarchive:
-    src: '{{ data_archive_src_dir }}/{{ gluster_source_latest_name }}'
+    src: '{{ data_archive_src_dir }}/{{ gluster_source_file }}'
     dest: '{{ app_src_dir }}/'
     owner: '{{ ansible_facts.user_id }}'
     creates: '{{ gluster_source_dir }}'
@@ -42,7 +53,6 @@
   ansible.builtin.dnf:
     state: present
     name: '@development'
-
 
 - name: Include task enable repo from sv_app for crb
   ansible.builtin.include_role:
@@ -113,20 +123,18 @@
     chdir: '{{ gluster_source_dir }}'
     creates: '{{ gluster_source_dir }}/Makefile'
 
-# FIXME: コンパイル済みか確認するためのファイルが不明
 - name: Run make
   ansible.builtin.command:
     cmd: make
     chdir: '{{ gluster_source_dir }}'
-    # creates: '{{ gluster_source_dir }}/cli/src/gluster'
-  changed_when: true
+    creates: '{{ gluster_source_dir }}/cli/src/gluster'
 
-# FIXME: インストール済みか確認するためのファイルが不明
-#   単純にファイルを見てもバージョンアップなどもあるため、毎回インストールしたほうが確実
+# FIXME: アップデートに未対応、かつ、中途半端だったときに走らない。
+#   強制アップデートなどの仕組みが必要と思われる。
 - name: Run make install
   become: true
   ansible.builtin.command:
     cmd: make install
     chdir: '{{ gluster_source_dir }}'
-    # creates: '/usr/local/sbin/gluster'
-  changed_when: true
+    creates: '/usr/local/sbin/gluster'
+  # changed_when: true

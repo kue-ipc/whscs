@@ -15,12 +15,10 @@
 
 - name: Task chroot dir
   ansible.builtin.include_tasks: chroot_dir.yml
-  run_once: true
   when: '"bk" in group_names'
 
 - name: Task chroot user
   ansible.builtin.include_tasks: chroot_user.yml
-  run_once: true
   when: '"mgt" in group_names'
 
 ## var

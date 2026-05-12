@@ -74,5 +74,4 @@
 
 - name: Task no chroot dir
   ansible.builtin.include_tasks: no_chroot_dir.yml
-  run_once: true
   when: '"bk" in group_names'

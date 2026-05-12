@@ -1,6 +1,7 @@
 # chroot dir
 ---
 - name: Make user chroot dir
+  run_once: true
   become: true
   ansible.builtin.file:
     path: '{{ webuser.chroot_dir }}'
@@ -10,6 +11,7 @@
     state: directory
 
 - name: Copy webuser.yml
+  run_once: true
   become: true
   ansible.builtin.copy:
     src: '{{ webuser_yml }}'
@@ -19,6 +21,7 @@
     mode: '0755'
 
 - name: Make dirs in user chroot
+  run_once: true
   become: true
   ansible.builtin.file:
     path: '{{ webuser.chroot_dir }}{{ item.path }}'
@@ -46,6 +49,7 @@
     - { path: '{{ webuser.var_dir }}' }
 
 - name: Make symlinks in user chroot
+  run_once: true
   become: true
   ansible.builtin.file:
     src: '{{ item.to }}'
@@ -61,6 +65,7 @@
     - { path: /var/lock, to: ../run/lock }
 
 - name: Make loop chroot dir
+  run_once: true
   become: true
   ansible.builtin.file:
     path: '{{ webuser.chroot_dir }}{{ webuser.chroot_dir | dirname }}'
@@ -70,6 +75,7 @@
     state: directory
 
 - name: Make loop symlink
+  run_once: true
   become: true
   ansible.builtin.file:
     src: /

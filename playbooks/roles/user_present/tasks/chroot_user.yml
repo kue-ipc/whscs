@@ -1,6 +1,7 @@
 # chroot user
 ---
 - name: Make user web dir
+  run_once: true
   become: true
   ansible.builtin.file:
     path: '{{ webuser.chroot_dir }}/{{ item }}'
@@ -15,11 +16,13 @@
 ## home
 
 - name: Stat user home dir
+  run_once: true
   ansible.builtin.stat:
     path: '{{ webuser.chroot_dir }}{{ webuser.dir }}'
   register: user_dir_stat
 
 - name: Make user home dir
+  run_once: true
   become: true
   ansible.builtin.file:
     path: '{{ webuser.chroot_dir }}{{ webuser.dir }}'
@@ -29,6 +32,7 @@
     state: directory
 
 - name: Copy user home dir from skel
+  run_once: true
   become: true
   ansible.builtin.copy:
     src: /etc/skel/
@@ -39,6 +43,7 @@
   when: not user_dir_stat.stat.exists
 
 - name: Make user web symlink
+  run_once: true
   become: true
   ansible.builtin.file:
     src: '../../{{ item }}'
@@ -55,6 +60,7 @@
 ## ssh
 
 - name: Make .ssh directory
+  run_once: true
   become: true
   ansible.builtin.file:
     path: '{{ webuser.chroot_dir }}{{ webuser.dir }}/.ssh'
@@ -64,6 +70,7 @@
     state: directory
 
 - name: Generate ssh key ed25519
+  run_once: true
   become: true
   community.crypto.openssh_keypair:
     path: '{{ webuser.chroot_dir }}{{ webuser.dir }}/.ssh/id_ed25519'
@@ -72,12 +79,14 @@
     group: '{{ webuser.group }}'
 
 - name: Slurp pub key
+  run_once: true
   become: true
   ansible.builtin.slurp:
     src: '{{ webuser.chroot_dir }}{{ webuser.dir }}/.ssh/id_ed25519.pub'
   register: slurp_pub_key
 
 - name: Copy pub authorized_keys
+  run_once: true
   become: true
   ansible.posix.authorized_key:
     path: '{{ webuser.chroot_dir }}{{ webuser.dir }}/.ssh/authorized_keys'

@@ -13,6 +13,7 @@
       {{ ("app" in group_names)
         | ternary(user_webusers | dict2items | selectattr("value.host", "in", group_names),
                   user_webusers | dict2items)
+        | selectattr("value.enabled")
         | map(attribute='value') | list
       }}
 

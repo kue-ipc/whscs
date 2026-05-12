@@ -97,10 +97,10 @@ TLSの種類を変えたい場合はcreate_tls.ymlで下記を追加する。
 
 ### 無効化
 
-サイトを無効化するにはdisabledをtrueにしてuser_presentを実行する。
+サイトを無効化するにはenabledをtrueにしてuser_presentを実行する。
 
 1. `vim ../data/webuser/{{ユーザー名}}.yml`
-    `disabled`を`true`に設定する。
+    `enabled`を`true`に設定する。
 2. `ansible-playbook user_present.yml -e user={{ユーザー名}}`
 
 ### 削除

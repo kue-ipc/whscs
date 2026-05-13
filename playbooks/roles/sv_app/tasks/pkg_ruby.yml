@@ -22,7 +22,7 @@
       - rubygem-mysql2
       - rubygem-pg
 
-- name: Intall ruby other extensions for EL9
+- name: Intall ruby other extensions for EL9 over
   become: true
   ansible.builtin.dnf:
     state: present
@@ -33,16 +33,16 @@
       - rubygem-rss
       - rubygem-rbs
       - rubygem-typeprof
-  when: ansible_distribution_major_version is version("9")
+  when: ansible_distribution_major_version is version("9", ">=")
 
-- name: Intall ruby bundled gems for EL9
+- name: Intall ruby bundled gems for EL9 over
   become: true
   ansible.builtin.dnf:
     state: present
     name:
       - ruby-bundled-gems
   when:
-    - ansible_distribution_major_version is version("9")
+    - ansible_distribution_major_version is version("9", ">=")
     - sv_app_versions.ruby | default("3.0") is version("3.1", ">=")
 
 - name: Intall ruby other extensions for EL8

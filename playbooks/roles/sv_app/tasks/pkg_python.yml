@@ -43,11 +43,18 @@
     name: python
     state: auto
     path: '/usr/bin/python3'
-  when: ansible_distribution_major_version == '8'
+  when: ansible_distribution_major_version is version('8')
 
 - name: Select auto python3 for EL8
   community.general.alternatives:
     name: python3
     state: auto
     path: '/usr/bin/python{{ sv_app_python_defalut }}'
-  when: ansible_distribution_major_version == "8"
+  when: ansible_distribution_major_version is version('8')
+
+- name: Install unversioned python packages for EL9 over
+  become: true
+  ansible.builtin.dnf:
+    state: present
+    name: python-unversioned-command
+  when: ansible_distribution_major_version is version("9", ">=")

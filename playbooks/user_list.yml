@@ -23,11 +23,9 @@
         export_names:
           - name
           - site
-          - uid
           - host
           - enabled
           - public
-          - acme
           - app_use
           - db_use
           - pg_use
@@ -53,4 +51,19 @@
           {% for user, info in user_webusers.items() %}
           {{ export_names | map("extract", info) | join(",") }}
           {% endfor %}
+        mode: '0644'
+
+    - name: Create JSON
+      delegate_to: localhost
+      ansible.builtin.copy:
+        dest: '{{ data_dir }}/webusers.json'
+        content: |
+          {{ user_webusers | ansible.utils.keep_keys(target=export_names) | to_json }}
+        mode: '0644'
+
+    - name: Copy JSON to html dir
+      delegate_to: localhost
+      ansible.builtin.copy:
+        src: '{{ data_dir }}/webusers.json'
+        dest: '{{ data_html_dir }}/webusers.json'
         mode: '0644'

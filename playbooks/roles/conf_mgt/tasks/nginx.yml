@@ -1,5 +1,4 @@
-# phpMyAdminをやめてAimerにする？
-# AWSatsは？
+# TODO: AWSatsのようなログ解析ツールは用意しないのか？
 ---
 - name: Import role common nginx
   ansible.builtin.import_role:

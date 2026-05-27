@@ -15,3 +15,13 @@
     state: present
     name:
       - nodejs
+
+# TODO: EL10ではmoduleがないのでnodejs24を入れておく。
+
+- name: Install nodejs24 for EL10
+  become: true
+  ansible.builtin.dnf:
+    state: present
+    name:
+      - nodejs24
+  when: ansible_distribution_major_version is version("10", ">=")

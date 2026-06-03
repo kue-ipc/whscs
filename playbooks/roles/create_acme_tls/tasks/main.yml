@@ -69,6 +69,7 @@
     tasks_from: cert
   vars:
     acme_domain: '{{ site }}'
+    acme_force: true
 
 - name: Sync html dir
   become: true
@@ -87,6 +88,7 @@
     tasks_from: cert
   vars:
     acme_domain: '{{ site }}'
+    acme_force: true
 
 - name: Check key and tls files
   ansible.builtin.assert:

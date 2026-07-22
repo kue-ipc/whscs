@@ -17,6 +17,12 @@ server {
         proxy_pass http://web80;
     }
 
+{% for path in web_public_prohibited_paths %}
+    location {{ path }} {
+        deny all;
+    }
+{% endfor %}
+
     location {{ web_well_known_acme_challeng_path }}/ {
         allow all;
         root {{ web_root_dir }};
@@ -53,4 +59,10 @@ server {
     location / {
         proxy_pass https://web443;
     }
+
+{% for path in web_public_prohibited_paths %}
+    location {{ path }} {
+        deny all;
+    }
+{% endfor %}
 }

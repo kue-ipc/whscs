@@ -14,3 +14,6 @@ web_tls_private_dir: '{{ web_tls_dir ~ "/private" }}'
 # well-known URI
 web_well_known_path: '{{ "/.well-known" }}'
 web_well_known_acme_challeng_path: '{{ web_well_known_path ~ "/acme-challenge" }}'
+# prohibited paths from public access
+web_public_prohibited_paths:
+  - "/wp-admin/"

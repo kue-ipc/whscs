@@ -30,6 +30,7 @@
     state: dump
     name: '{{ item }}'
     target: '{{ db_tempdir.path }}/{{ backup_time }}/{{ item }}.sql'
+    dump_extra_args: '--events --routines'
   loop: '{{ result_mysql_info.databases.keys() | difference(["information_schema", "performance_schema"]) }}'
   when: db_tempdir.path is defined
 

@@ -38,6 +38,7 @@
   loop: '{{ health_check_tls_results.results }}'
   loop_control:
     label: '{{ item.invocation.module_args.server_name }}'
+  when: not ansible_check_mode
 
 - name: Check certificate as soon as not_after
   ansible.builtin.assert:
@@ -50,6 +51,7 @@
   loop: '{{ health_check_tls_results.results }}'
   loop_control:
     label: '{{ item.invocation.module_args.server_name }}'
+  when: not ansible_check_mode
 
 - name: Check certificate SAN
   ansible.builtin.assert:
@@ -61,3 +63,4 @@
   loop: '{{ health_check_tls_results.results }}'
   loop_control:
     label: '{{ item.invocation.module_args.server_name }}'
+  when: not ansible_check_mode

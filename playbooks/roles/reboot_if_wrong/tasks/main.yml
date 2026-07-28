@@ -1,0 +1,19 @@
+---
+- name: Reboot if wrong
+  block:
+    - name: Role health_check
+      ansible.builtin.import_role:
+        name: health_check
+  rescue:
+    - name: Reboot if wrong
+      ansible.builtin.debug:
+        msg: 'Rebooting because health check failed'
+    - name: Role reboot
+      ansible.builtin.import_role:
+        name: reboot
+    - name: Sleep after reboot
+      ansible.builtin.pause:
+        seconds: '{{ reboot_if_wrong_wait }}'
+    - name: Role health_check again
+      ansible.builtin.import_role:
+        name: health_check

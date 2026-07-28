@@ -1,0 +1,13 @@
+---
+- name: Reboot if wrong
+  hosts:
+    # - all
+    # - '!ctl'
+    - mgt
+    - app
+    - test
+  serial: 1
+  max_fail_percentage: 0
+  roles:
+    - role: reboot_if_wrong
+      when: id is not defined or inventory_hostname_short[-1:] == id

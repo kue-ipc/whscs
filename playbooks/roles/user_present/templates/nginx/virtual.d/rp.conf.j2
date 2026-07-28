@@ -17,8 +17,8 @@ server {
         proxy_pass http://web80;
     }
 
-{% for path in web_public_prohibited_paths %}
-    location {{ path }} {
+{% for location in web_public_prohibited_locations %}
+    location {{ location }} {
         deny all;
     }
 {% endfor %}
@@ -60,8 +60,8 @@ server {
         proxy_pass https://web443;
     }
 
-{% for path in web_public_prohibited_paths %}
-    location {{ path }} {
+{% for location in web_public_prohibited_locations %}
+    location {{ location }} {
         deny all;
     }
 {% endfor %}

@@ -4,7 +4,7 @@
     tasks_from: webusers
   when: user_webusers is not defined
 
-- name: Get cert info
+- name: 'Get cert info {{ revoke_acme_tls_cert_path }}'
   delegate_to: localhost
   run_once: true
   community.crypto.x509_certificate_info:
@@ -12,25 +12,25 @@
   register: revoke_acme_tls_cert_info
 
 # TODO: commonName 以外の SAN も確認すべきかもしれない。
-- name: Set revoke_acme_tls_cert_domain
+- name: 'Set revoke_acme_tls_cert_domain {{ revoke_acme_tls_cert_path }}'
   ansible.builtin.set_fact:
     revoke_acme_tls_cert_domain: '{{ revoke_acme_tls_cert_info.subject.commonName }}'
 
-- name: Set revoke_acme_tls_cert_webuser
+- name: 'Set revoke_acme_tls_cert_webuser {{ revoke_acme_tls_cert_domain }}'
   ansible.builtin.set_fact:
     revoke_acme_tls_cert_webuser: >-
       {{ user_webusers | dict2items
         | selectattr("value.site", "equalto", revoke_acme_tls_cert_domain)
         | map(attribute="value") | first }}
 
-- name: Task info in acme role for cert
+- name: 'Task info in acme role for cert {{ revoke_acme_tls_cert_domain }}'
   ansible.builtin.include_role:
     name: acme
     tasks_from: info
   vars:
-    acme_domain: '{{ revoke_acme_tls_cert_info.subject.commonName }}'
+    acme_domain: '{{ revoke_acme_tls_cert_domain }}'
 
-- name: Get certificate
+- name: 'Get certificate {{ revoke_acme_tls_cert_domain }}'
   delegate_to: localhost
   community.crypto.get_certificate:
     host: '{{ inventory_hostname }}'
@@ -40,7 +40,7 @@
   register: revoke_acme_tls_cert_result
   when: revoke_acme_tls_cert_webuser.host in group_names or "app" not in group_names
 
-- name: Check certificate SAN
+- name: 'Check certificate SAN {{ revoke_acme_tls_cert_domain }}'
   ansible.builtin.assert:
     that: >-
       "DNS:" ~ revoke_acme_tls_cert_domain in
@@ -49,7 +49,7 @@
     quiet: true
   when: revoke_acme_tls_cert_webuser.host in group_names or "app" not in group_names
 
-- name: Check current not_before is after target cert not_before
+- name: 'Check current not_before is after target cert not_before {{ revoke_acme_tls_cert_domain }}'
   ansible.builtin.assert:
     that: revoke_acme_tls_cert_result.not_before > revoke_acme_tls_cert_info.not_before
     msg: '{{ revoke_acme_tls_cert_domain }} certificate is not updated'
@@ -57,7 +57,7 @@
     quiet: true
   when: revoke_acme_tls_cert_webuser.host in group_names or "app" not in group_names
 
-- name: Revoke ACME certificate
+- name: 'Revoke ACME certificate {{ revoke_acme_tls_cert_path }}'
   delegate_to: localhost
   run_once: true
   community.crypto.acme_certificate_revoke:
@@ -67,7 +67,7 @@
     certificate: '{{ revoke_acme_tls_cert_path }}'
     revoke_reason: 4 # superseded
 
-- name: Task move_file in data role for backup cert file
+- name: 'Task move_file in data role for backup cert file {{ revoke_acme_tls_cert_path }}'
   ansible.builtin.include_role:
     name: data
     tasks_from: move_file

@@ -17,7 +17,7 @@
       service name="ssh"
       accept
     permanent: true
-  loop: '{{ mgt_networks + web_networks }}'
+  loop: '{{ mgt_networks }}'
   notify: 'reload firewalld'
 
 - name: Rmevoe serivce from firewall

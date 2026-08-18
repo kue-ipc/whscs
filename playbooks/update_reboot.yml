@@ -1,8 +1,5 @@
-- name: Update and reboot all except ctl and tpl
-  hosts:
-    - all
-    - '!ctl'
-    - '!tpl'
+- name: Update and reboot
+  hosts: all
   serial: 1
   max_fail_percentage: 0
   roles:

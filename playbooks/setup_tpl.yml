@@ -1,5 +1,0 @@
----
-- name: Setup for tpl
-  hosts: tpl
-  roles:
-    - setup

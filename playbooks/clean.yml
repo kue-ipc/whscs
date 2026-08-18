@@ -1,7 +1,5 @@
 - name: Clean
-  hosts:
-    - all
-    - '!tpl'
+  hosts: all
   serial: 1
   max_fail_percentage: 0
   roles:

@@ -1,7 +1,0 @@
-- name: Update and reboot tpl
-  hosts:
-    - tpl
-  serial: 1
-  max_fail_percentage: 0
-  roles:
-    - update_reboot

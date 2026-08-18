@@ -1,8 +1,0 @@
-- name: Clean for tpl
-  hosts:
-    - all
-    - '!tpl'
-  serial: 1
-  max_fail_percentage: 0
-  roles:
-    - clean_dnf

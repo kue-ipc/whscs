@@ -14,4 +14,3 @@
     regexp: '^#?PasswordAuthentication'
     line: 'PasswordAuthentication no'
   notify: 'restart sshd'
-  when: '"ctl" not in group_names'

@@ -3,6 +3,5 @@
   hosts:
     - all
     - '!test'
-    - '!tpl'
   roles:
     - health_check

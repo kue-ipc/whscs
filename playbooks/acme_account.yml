@@ -1,6 +1,5 @@
 - name: ACME account
-  hosts:
-    - ctl
+  hosts: localhost
   tasks:
     - name: Task account in acme role
       ansible.builtin.import_role:

@@ -1,5 +1,5 @@
 ---
 - name: Setup
-  hosts: all
+  hosts: localhost
   roles:
     - setup

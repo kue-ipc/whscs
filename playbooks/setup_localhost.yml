@@ -1,5 +1,7 @@
 ---
-- name: Setup
+- name: Setup Localhost
   hosts: localhost
   roles:
     - setup
+    - data_dir
+    - sv_user_env

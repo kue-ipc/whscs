@@ -1,6 +1,4 @@
 ---
-- name: Import playbook conf_ctl
-  ansible.builtin.import_playbook: conf_ctl.yml
 - name: Import playbook conf_fs
   ansible.builtin.import_playbook: conf_fs.yml
 - name: Import playbook conf_db

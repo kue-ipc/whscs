@@ -22,22 +22,27 @@ ansibleが見に行くインベントリ、group_vars、host_varsを適当に設
 
 このうち、fs,db,bkは設定時に空のディスクが必要になる。
 
+### コントロールサーバーのセットアップ
+
+1. `ansible-playbook setup_localhost.yml`
+
+標準セットアップ、ユーザー環境整備、データディレクトリ作成を行う。
+
 ### 初回セットアップ手順
 
 コントロールサーバーのセットアップを行った後に、セットアップ、アップデート、全体設定、ユーザー同期を行う。
 
-1. `ansible-playbook -l ctl setup.yml`
-2. `ansible-playbook setup.yml`
-3. `ansible-playbook update_reboot.yml -e update_autoremove=yes`
-4. `ansible-playbook conf_all.yml`
-5. `ansible-playbook user_sync.yml`
+1. `ansible-playbook setup.yml`
+2. `ansible-playbook update_reboot.yml -e update_autoremove=yes`
+3. `ansible-playbook conf_all.yml`
+4. `ansible-playbook user_sync.yml`
 
 ### サーバーを追加する手順
 
 あらかじめ、追加するサーバーにansible実行ユーザーのの公開鍵が登録しておく。
 
 1. インベントリにサーバーを追加する。
-2. `ansible-playbook -l ctl setup.yml`
+2. `ansible-playbook setup_local.yml`
 3. `ansible-playbook setup.yml`
 4. `ansible-playbook -l {{サーバー名}} update_reboot.yml -e update_autoremove=yes`
 5. `ansible-playbook conf_all.yml`
@@ -65,6 +70,14 @@ FIXME: EL10ではconf_all.yml実行後にファイアウォールルールが読
 setup.ymlを実施する前にuser_sync.ymlとconf_all.ymlをサーバーを指定せずに実施する。ctl,fs,db,lbの場合は、user_sync.ymlを省略してもよい。
 
 ファイルサーバーの削除はansibleではできない。「Glusterのbrick構成変更」を参照すること。
+
+### テンプレートサーバーの作り方
+
+仮想マシンでクローン元になるテンプレートサーバーを準備する場合は、次のようにする。(IPアドレスが192.168.0.1の場合の例、最後の`,`は必須)
+
+1. `ansible-playbook -i "192.168.0.1," setup_template.yml`
+
+標準セットアップ、アップデート、そして、サーバー固有情報の削除を行ってからシャットダウンする。
 
 ## ユーザー/サイト管理
 

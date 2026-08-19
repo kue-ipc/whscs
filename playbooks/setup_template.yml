@@ -1,0 +1,6 @@
+---
+- name: Setup Template
+  roles:
+    - setup
+    - update_reboot
+    - sysprep

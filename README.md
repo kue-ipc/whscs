@@ -36,7 +36,7 @@ ctlのセットアップを行った後に、セットアップ、アップデ�
 
 ### サーバーを追加する手順
 
-あらかじめ、追加するサーバーにansible実行ユーザーのの公開鍵が登録しておく。
+あらかじめ、追加するサーバーにansible実行ユーザーの公開鍵を登録しておく。
 
 1. インベントリにサーバーを追加する。
 2. `ansible-playbook -l ctl setup.yml`
@@ -84,6 +84,7 @@ setup.ymlを実施する前にuser_sync.ymlとconf_all.ymlをサーバーを指�
     - 自己署名証明書を使う場合(ACMEを使用する場合を含む)
         1. `ansible-playbook create_tls.yml -e user={{ユーザー名}} -e selfsigned=yes`
 3. `vim ../data/webuser/{{ユーザー名}}.yml`
+    - public,db等必要な設定を追記
 4. `ansible-playbook user_present.yml -e user={{ユーザー名}}`
 
 `data/webuser/{{ユーザー名}}.yml`ファイルのパラメーターの詳細は[ユーザー設定](doc/webuser_yml.md)に記載している。
@@ -146,13 +147,14 @@ TLSの種類を変えたい場合はcreate_tls.ymlで下記を追加する。
 
 サイト公開には証明書が必須なため、必ず既存からの変更になる。
 
-1. `../data/acme/accont/{{fqdn}}.yml`を作成する。。内容はcertbotのオプションと同じ値を設定する。
+1. `../data/acme/account/{{fqdn}}.yml`を作成する。内容はcertbotのオプションと同じ値を設定する。
 
     ```yml
     server: {{ACMEのサーバーのURL}}
-    domain: {{fqdn}}
-    eab_kid: {{EABのKID}}
     eab_hmac_key: {{EABのワンタイムキー}}
+    eab_kid: {{EABのKID}}
+    domain: {{fqdn}}
+    key_type: rsa
     ```
 
     上記以外に、eab_hmac_alg、rsa_key_size、key_type、elliptic_curveの設定が可能。

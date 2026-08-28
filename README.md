@@ -39,7 +39,7 @@ ansibleが見に行くインベントリ、group_vars、host_varsを適当に設
 
 ### サーバーを追加する手順
 
-あらかじめ、追加するサーバーにansible実行ユーザーのの公開鍵が登録しておく。
+あらかじめ、追加するサーバーにansible実行ユーザーの公開鍵を登録しておく。
 
 1. インベントリにサーバーを追加する。
 2. `ansible-playbook setup_local.yml`
@@ -88,10 +88,15 @@ setup.ymlを実施する前にuser_sync.ymlとconf_all.ymlをサーバーを指�
 ユーザーの登録とTLSの作成後にユーザー同期を行う。
 
 1. `ansible-playbook create_webuser.yml -e user={{ユーザー名}}`
-2. `ansible-playbook create_tls.yml -e user={{ユーザー名}}`
-3. `../data/csrs/{{fqdn}}.csr`から証明書を作成し、`../data/certs/{{fqdn}}.cer`に置く。
-4. `vim ../data/webuser/{{ユーザー名}}.yml`
-5. `ansible-playbook user_present.yml -e user={{ユーザー名}}`
+2. 証明書を用意する。
+    - 認証局に証明書を発行して貰う場合
+        1. `ansible-playbook create_tls.yml -e user={{ユーザー名}}`
+        2. `../data/csrs/{{fqdn}}.csr`から証明書を作成し、`../data/certs/{{fqdn}}.cer`に置く。
+    - 自己署名証明書を使う場合(ACMEを使用する場合を含む)
+        1. `ansible-playbook create_tls.yml -e user={{ユーザー名}} -e selfsigned=yes`
+3. `vim ../data/webuser/{{ユーザー名}}.yml`
+    - public,db等必要な設定を追記
+4. `ansible-playbook user_present.yml -e user={{ユーザー名}}`
 
 `data/webuser/{{ユーザー名}}.yml`ファイルのパラメーターの詳細は[ユーザー設定](doc/webuser_yml.md)に記載している。
 
@@ -103,6 +108,8 @@ TLSの種類を変えたい場合はcreate_tls.ymlで下記を追加する。
 自己署名の場合はcreate_tls.ymlで下記を追加する。
 
 - `-e selfsigned=yes`
+
+証明書がないとサイトが作成できないため、ACMEにする場合は、ダミーで自己署名証明書を作成しておく。
 
 ### 無効化
 
@@ -149,13 +156,16 @@ TLSの種類を変えたい場合はcreate_tls.ymlで下記を追加する。
 
 ### ACME登録
 
-1. `../data/acme/accont/{{fqdn}}.yml`を作成する。。内容はcertbotのオプションと同じ値を設定する。
+サイト公開には証明書が必須なため、必ず既存からの変更になる。
+
+1. `../data/acme/account/{{fqdn}}.yml`を作成する。内容はcertbotのオプションと同じ値を設定する。
 
     ```yml
     server: {{ACMEのサーバーのURL}}
-    domain: {{fqdn}}
-    eab_kid: {{EABのKID}}
     eab_hmac_key: {{EABのワンタイムキー}}
+    eab_kid: {{EABのKID}}
+    domain: {{fqdn}}
+    key_type: rsa
     ```
 
     上記以外に、eab_hmac_alg、rsa_key_size、key_type、elliptic_curveの設定が可能。
@@ -168,9 +178,12 @@ TLSの種類を変えたい場合はcreate_tls.ymlで下記を追加する。
     acme: true
     ```
 
+6. `../data/acme/superseded`にバックアップされている古い証明書ファイルを`../data/backup/tls`に移動する。
+7. 上記の古い証明書が認証局によって署名された証明書と置き換えた場合は、手動で失効処理を行う。(自己署名の場合は不要)
+
 ACMEの自動更新は`bin/update_aacme_tls`を実行することで可能になる。cron等で定期実行されるようにすること。ユーザーがACMEを使用しているかどうかはacemの値で判定している。
 
-既存の証明書から切り替えた場合、ACMEでは失効処理ができない。手動で失効処理を行い、`../data/acme/superseded`にバックアップされているファイルを`../data/backup/tls`に移動すること。
+既存の証明書が残っている、失効処理がエラーになるので、注意が必要。
 
 ## ファイルシステム
 

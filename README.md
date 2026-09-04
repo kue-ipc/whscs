@@ -80,7 +80,7 @@ setup.ymlを実施する前にuser_sync.ymlとconf_all.ymlをサーバーを指�
 2. 証明書を用意する。
     - 認証局に証明書を発行して貰う場合
         1. `ansible-playbook create_tls.yml -e user={{ユーザー名}}`
-        2. `../data/csrs/{{fqdn}}.csr`から証明書を作成し、`../data/certs/{{fqdn}}.cer`に置く。
+        2. `../data/tls/csrs/{{fqdn}}.csr`から証明書を作成し、`../data/tls/certs/{{fqdn}}.cer`に置く。
     - 自己署名証明書を使う場合(ACMEを使用する場合を含む)
         1. `ansible-playbook create_tls.yml -e user={{ユーザー名}} -e selfsigned=yes`
 3. `vim ../data/webuser/{{ユーザー名}}.yml`

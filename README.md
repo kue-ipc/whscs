@@ -114,10 +114,10 @@ TLSの種類を変えたい場合はcreate_tls.ymlで下記を追加する。
 
 `{{ユーザー名}}.yml`のファイルを退避させてから`user_absent.yml`を実行する。
 
-1. `mv ../data/webuser/{{ユーザー名}}.yml ../data/backup/.`
+1. `mv ../data/webuser/{{ユーザー名}}.yml ../data/backup/webuser/.`
 2. `ansible-playbook user_absent.yml -e user={{ユーザー名}}`
 
-ログも含めて、ファイルサーバー上のファイルはすべて削除される。`../data/tls`にある証明書類は自動で退避や削除はされないため、必要に応じて手動で退避しておくこと。
+ログも含めて、ファイルサーバー上のファイルはすべて削除される。`../data/tls`や`../data/acme`にある証明書類は自動で退避や削除はされないため、必要に応じて手動で退避しておくこと。
 
 ### 一覧の更新
 

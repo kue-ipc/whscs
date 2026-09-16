@@ -129,7 +129,7 @@ TLSの種類を変えたい場合はcreate_tls.ymlで下記を追加する。
 ### 証明書更新
 
 1. `ansible-playbook create_tls.yml -e user={{ユーザー名}} -e backup=yes`
-2. `../data/csrs/{{fqdn}}.csr`から証明書を作成し、`../data/certs/{{fqdn}}.cer`に置く。
+2. `../data/tls/csrs/{{fqdn}}.csr`から証明書を作成し、`../data/tls/certs/{{fqdn}}.cer`に置く。
 3. `ansible-playbook update_tls.yml -e user={{ユーザー名}}`
 
 証明書の置き換え後に、nginxやhttpdの再起動も実行する。

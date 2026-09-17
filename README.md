@@ -91,7 +91,7 @@ setup.ymlを実施する前にuser_sync.ymlとconf_all.ymlをサーバーを指�
 2. 証明書を用意する。
     - 認証局に証明書を発行して貰う場合
         1. `ansible-playbook create_tls.yml -e user={{ユーザー名}}`
-        2. `../data/csrs/{{fqdn}}.csr`から証明書を作成し、`../data/certs/{{fqdn}}.cer`に置く。
+        2. `../data/tls/csrs/{{fqdn}}.csr`から証明書を作成し、`../data/tls/certs/{{fqdn}}.cer`に置く。
     - 自己署名証明書を使う場合(ACMEを使用する場合を含む)
         1. `ansible-playbook create_tls.yml -e user={{ユーザー名}} -e selfsigned=yes`
 3. `vim ../data/webuser/{{ユーザー名}}.yml`
@@ -125,10 +125,10 @@ TLSの種類を変えたい場合はcreate_tls.ymlで下記を追加する。
 
 `{{ユーザー名}}.yml`のファイルを退避させてから`user_absent.yml`を実行する。
 
-1. `mv ../data/webuser/{{ユーザー名}}.yml ../data/backup/.`
+1. `mv ../data/webuser/{{ユーザー名}}.yml ../data/backup/webuser/.`
 2. `ansible-playbook user_absent.yml -e user={{ユーザー名}}`
 
-ログも含めて、ファイルサーバー上のファイルはすべて削除される。`../data/tls`にある証明書類は自動で退避や削除はされないため、必要に応じて手動で退避しておくこと。
+ログも含めて、ファイルサーバー上のファイルはすべて削除される。`../data/tls`や`../data/acme`にある証明書類は自動で退避や削除はされないため、必要に応じて手動で退避しておくこと。
 
 ### 一覧の更新
 
@@ -140,7 +140,7 @@ TLSの種類を変えたい場合はcreate_tls.ymlで下記を追加する。
 ### 証明書更新
 
 1. `ansible-playbook create_tls.yml -e user={{ユーザー名}} -e backup=yes`
-2. `../data/csrs/{{fqdn}}.csr`から証明書を作成し、`../data/certs/{{fqdn}}.cer`に置く。
+2. `../data/tls/csrs/{{fqdn}}.csr`から証明書を作成し、`../data/tls/certs/{{fqdn}}.cer`に置く。
 3. `ansible-playbook update_tls.yml -e user={{ユーザー名}}`
 
 証明書の置き換え後に、nginxやhttpdの再起動も実行する。

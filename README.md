@@ -84,7 +84,7 @@ setup.ymlを実施する前にuser_sync.ymlとconf_all.ymlをサーバーを指�
     - 自己署名証明書を使う場合(ACMEを使用する場合を含む)
         1. `ansible-playbook create_tls.yml -e user={{ユーザー名}} -e selfsigned=yes`
 3. `vim ../data/webuser/{{ユーザー名}}.yml`
-    - public,db等必要な設定を追記
+    - host,public,db等必要な設定を追記
 4. `ansible-playbook user_present.yml -e user={{ユーザー名}}`
 
 `data/webuser/{{ユーザー名}}.yml`ファイルのパラメーターの詳細は[ユーザー設定](doc/webuser_yml.md)に記載している。

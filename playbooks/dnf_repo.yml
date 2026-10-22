@@ -1,0 +1,7 @@
+---
+- name: DNF repository settings
+  hosts:
+    - test
+    - app
+  roles:
+    - dnf_repo

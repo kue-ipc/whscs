@@ -1,0 +1,39 @@
+# appstreamのリポジトリを変更するだけ
+# - name: Change appstream repository mirrorlist off
+#   become: true
+#   ansible.builtin.replace:
+#     path: /etc/yum.repos.d/rocky.repo
+#     after: '\[appstream\]'
+#     before: '\[appstream-debuginfo\]'
+#     regexp: '^#?mirrorlist='
+#     replace: '#mirrorlist='
+
+# - name: Change appstream repository baseurl on
+#   become: true
+#   ansible.builtin.replace:
+#     path: /etc/yum.repos.d/rocky.repo
+#     after: '\[appstream\]'
+#     before: '\[appstream-debuginfo\]'
+#     regexp: '^#?baseurl='
+#     replace: 'baseurl='
+
+# 戻す
+
+# appstreamのリポジトリを変更するだけ
+- name: Change appstream repository mirrorlist no
+  become: true
+  ansible.builtin.replace:
+    path: /etc/yum.repos.d/rocky.repo
+    after: '\[appstream\]'
+    before: '\[appstream-debuginfo\]'
+    regexp: '^#?mirrorlist='
+    replace: 'mirrorlist='
+
+- name: Change appstream repository baseurl off
+  become: true
+  ansible.builtin.replace:
+    path: /etc/yum.repos.d/rocky.repo
+    after: '\[appstream\]'
+    before: '\[appstream-debuginfo\]'
+    regexp: '^#?baseurl='
+    replace: '#baseurl='
